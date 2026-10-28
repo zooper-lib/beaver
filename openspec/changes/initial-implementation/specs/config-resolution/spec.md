@@ -65,6 +65,13 @@ Beaver SHALL reject a configuration containing a key not in the schema, a value 
 - **WHEN** a file contains `wrap: {arguments: sometimes}`
 - **THEN** resolution fails with exit code 78 and the diagnostic lists `never`, `if_long`, `chop_if_long`, `chop_always`
 
+### Requirement: Incompatible trailing-comma settings are configuration errors
+A resolved configuration with `trailing_commas: remove`, `wrap.chop_on_trailing_comma: true` and `wrap.keep_existing_line_breaks: false` SHALL be rejected with exit code 78, because the chop removes the comma that requested it and the next run would undo the chop. The diagnostic SHALL name the three keys, their values and where each was set, and the changes that resolve it.
+
+#### Scenario: Inherited value completes the conflict
+- **WHEN** a project file sets `trailing_commas: remove` and `wrap.keep_existing_line_breaks: false` and inherits `chop_on_trailing_comma: true` from the `dart` preset
+- **THEN** resolution fails with exit code 78 and the diagnostic names all three keys and the preset as the source of `chop_on_trailing_comma`
+
 ### Requirement: Every key has a value after resolution
 After resolving the chain, every key in the schema SHALL have a value, because every chain terminates in a preset that defines all keys.
 
@@ -73,7 +80,7 @@ After resolving the chain, every key in the schema SHALL have a value, because e
 - **THEN** the output contains every schema key with a concrete value
 
 ### Requirement: Single built-in preset `dart`
-Beaver v1 SHALL ship exactly one built-in preset, `dart`, whose values follow dart_style 3.x conventions: `line_length` 80, `indent.size` 2, all `indent.align.*` false, `chop_on_named_arguments` empty, `trailing_commas: add_when_wrapped`, `chop_on_trailing_comma: true`, `strings.quotes: preserve`, and the default exclusion list for generated code.
+Beaver v1 SHALL ship exactly one built-in preset, `dart`, whose values follow dart_style 3.x conventions: `line_length` 80, `indent.size` 2, all `indent.align.*` false, `chop_on_named_arguments` empty, `trailing_commas: add_when_wrapped`, `chop_on_trailing_comma: true`, `strings.quotes: preserve`, and the default exclusion list for generated code. Keys not listed here take dart_style's behaviour.
 
 #### Scenario: Preset values
 - **WHEN** a file is formatted with no configuration

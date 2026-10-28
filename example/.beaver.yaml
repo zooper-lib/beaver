@@ -1,0 +1,3 @@
+# Inputs stay as written; every <key>/<value>/ folder has its own config.
+exclude:
+  - '*/before.dart'

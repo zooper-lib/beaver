@@ -1,0 +1,62 @@
+>>> Collections, strings and chains under the dart preset.
+void f(){
+  var empty=[];var emptyMap={};var emptySet=<int>{};
+  var list=[1,2,3];var typed=<int>[1,2];var constList=const[1];
+  var map={'a':1,'b':2};var set={1,2};
+  var spread=[...a,...?b];
+  var ifs=[if(c)1 else 2,for(var i  in  xs)i];
+  var nested=[[1,2],{'k':[3]}];
+  var nullAware=[?maybe];
+  var long=[firstElementInTheList,secondElementInTheList,thirdElementInTheList,fourth];
+  var kept=[a,
+    b,c];
+  var trailing=[a,b,];
+  var str='single';var dbl="double";var raw=r'raw\n';var multi='''
+line
+''';
+  var chained=receiverObject.firstMethodCall().secondMethodCall().thirdMethodCall().fourth();
+  someObject.method(argument,(value){print(value);});
+}
+<<<
+void f() {
+  var empty = [];
+  var emptyMap = {};
+  var emptySet = <int>{};
+  var list = [1, 2, 3];
+  var typed = <int>[1, 2];
+  var constList = const [1];
+  var map = {'a': 1, 'b': 2};
+  var set = {1, 2};
+  var spread = [...a, ...?b];
+  var ifs = [if (c) 1 else 2, for (var i in xs) i];
+  var nested = [[1, 2], {'k': [3]}];
+  var nullAware = [?maybe];
+  var long = [
+    firstElementInTheList,
+    secondElementInTheList,
+    thirdElementInTheList,
+    fourth,
+  ];
+  var kept = [
+    a,
+    b, c,
+  ];
+  var trailing = [
+    a,
+    b,
+  ];
+  var str = 'single';
+  var dbl = "double";
+  var raw = r'raw\n';
+  var multi = '''
+line
+''';
+  var chained = receiverObject
+      .firstMethodCall()
+      .secondMethodCall()
+      .thirdMethodCall()
+      .fourth();
+  someObject.method(argument, (value) {
+    print(value);
+  });
+}

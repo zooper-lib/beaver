@@ -1,0 +1,4 @@
+wrap:
+  chained_calls:
+    policy: chop_if_long
+    keep_single_line_if_fits: false

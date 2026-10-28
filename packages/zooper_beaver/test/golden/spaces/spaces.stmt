@@ -1,0 +1,102 @@
+>>> (spaces.around_assignment=true) around_assignment: true (preset).
+x = a; y += 1;
+<<<
+x = a;
+y += 1;
+>>> (spaces.around_assignment=false) around_assignment: false.
+x = a; y += 1;
+<<<
+x=a;
+y+=1;
+>>> (spaces.around_binary_operators=true) around_binary_operators: true (preset).
+x = a + b * c;
+<<<
+x = a + b * c;
+>>> (spaces.around_binary_operators=false) around_binary_operators: false.
+x = a + b * c;
+<<<
+x = a+b*c;
+>>> (spaces.around_arrow=true) around_arrow: true (preset).
+var f = (x) => x;
+<<<
+var f = (x) => x;
+>>> (spaces.around_arrow=false) around_arrow: false.
+var f = (x) => x;
+<<<
+var f = (x)=>x;
+>>> (spaces.after_comma=true) after_comma: true (preset).
+f(a, b, c);
+<<<
+f(a, b, c);
+>>> (spaces.after_comma=false) after_comma: false.
+f(a, b, c);
+<<<
+f(a,b,c);
+>>> (spaces.before_comma=true) before_comma: true.
+f(a, b, c);
+<<<
+f(a , b , c);
+>>> (spaces.before_comma=false) before_comma: false (preset).
+f(a, b, c);
+<<<
+f(a, b, c);
+>>> (spaces.after_colon_in_named_argument=true) after_colon_in_named_argument: true (preset).
+f(a: 1, b: 2);
+<<<
+f(a: 1, b: 2);
+>>> (spaces.after_colon_in_named_argument=false) after_colon_in_named_argument: false.
+f(a: 1, b: 2);
+<<<
+f(a:1, b:2);
+>>> (spaces.inside_parentheses=true) inside_parentheses: true.
+if (x) f(a, b);
+<<<
+if ( x ) f( a, b );
+>>> (spaces.inside_parentheses=false) inside_parentheses: false (preset).
+if (x) f(a, b);
+<<<
+if (x) f(a, b);
+>>> (spaces.inside_brackets=true) inside_brackets: true.
+var l = [1, 2];
+<<<
+var l = [ 1, 2 ];
+>>> (spaces.inside_brackets=false) inside_brackets: false (preset).
+var l = [1, 2];
+<<<
+var l = [1, 2];
+>>> (spaces.inside_braces=true) inside_braces: true.
+var m = {a: 1};
+<<<
+var m = { a: 1 };
+>>> (spaces.inside_braces=false) inside_braces: false (preset).
+var m = {a: 1};
+<<<
+var m = {a: 1};
+>>> (spaces.before_control_parentheses=true) before_control_parentheses: true (preset).
+if (x) { while (y) {} }
+<<<
+if (x) {
+  while (y) {}
+}
+>>> (spaces.before_control_parentheses=false) before_control_parentheses: false.
+if (x) { while (y) {} }
+<<<
+if(x) {
+  while(y) {}
+}
+>>> (spaces.in_empty_braces=true) in_empty_braces: true.
+var m = { };
+<<<
+var m = { };
+>>> (spaces.in_empty_braces=false) in_empty_braces: false (preset).
+var m = { };
+<<<
+var m = {};
+>>> (spaces.after_cast=true) after_cast: true (preset).
+var r = x as (int, int);
+<<<
+var r = x as (int, int);
+>>> (spaces.after_cast=false) after_cast: false.
+var r = x as (int, int);
+<<<
+var r = x as(int, int);

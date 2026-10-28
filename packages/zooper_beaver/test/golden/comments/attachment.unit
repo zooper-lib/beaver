@@ -1,0 +1,25 @@
+>>> Comment in an empty body stays inside.
+void init() {
+  // nothing yet
+}
+<<<
+void init() {
+  // nothing yet
+}
+>>> Doc comment stays with its declaration.
+/// Doc for A.
+class A {}
+
+class B {}
+<<<
+/// Doc for A.
+class A {}
+
+class B {}
+>>> Doc comment separated by a blank line moves up to its declaration.
+/// Doc for A.
+
+class A {}
+<<<
+/// Doc for A.
+class A {}

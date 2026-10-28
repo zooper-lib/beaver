@@ -1,0 +1,332 @@
+>>> Interpolations never break: a split there reads as a broken string.
+void f() {
+  out.writeln('$key: ${value is List ? jsonEncode(value) : value}  # ${resolved.provenance[key]!.split(', ').map(_origin).join(', ')}');
+}
+<<<
+void f() {
+  out.writeln(
+    '$key: ${value is List ? jsonEncode(value) : value}  # ${resolved.provenance[key]!.split(', ').map(_origin).join(', ')}',
+  );
+}
+>>> Adjacent strings: one piece per line, aligned when they are the only argument.
+void f() {
+  throw DirectiveException('Ignore region started on line ${line(open)} is still open at the ' 'start directive on line ${line(comment)}.');
+}
+<<<
+void f() {
+  throw DirectiveException(
+    'Ignore region started on line ${line(open)} is still open at the '
+    'start directive on line ${line(comment)}.',
+  );
+}
+>>> Adjacent strings indent next to another string argument.
+void f() {
+  write('p/.beaver.yaml', 'trailing_commas: remove\n' 'wrap:\n  keep_existing_line_breaks: false\n');
+}
+<<<
+void f() {
+  write(
+    'p/.beaver.yaml',
+    'trailing_commas: remove\n'
+        'wrap:\n  keep_existing_line_breaks: false\n',
+  );
+}
+>>> Blank lines between enum values with doc comments are kept.
+enum CommentPosition {
+  /// Newline before and after.
+  ownLine,
+
+  /// Code before, newline after.
+  endOfLine,
+
+  /// Code after.
+  remaining,
+}
+<<<
+enum CommentPosition {
+  /// Newline before and after.
+  ownLine,
+
+  /// Code before, newline after.
+  endOfLine,
+
+  /// Code after.
+  remaining,
+}
+>>> Blank lines between the items of a split list are kept, up to the cap.
+var list = [
+
+
+  firstElement,
+
+
+
+  secondElement,
+  thirdElement,
+];
+<<<
+var list = [
+  firstElement,
+
+  secondElement,
+  thirdElement,
+];
+>>> A split `||` pattern indents its continuation lines in a switch statement.
+void f() {
+  switch (doc) {
+    case Indent(:final contents) || Align(:final contents) || LineSuffix(:final contents):
+      walk(contents);
+  }
+}
+<<<
+void f() {
+  switch (doc) {
+    case Indent(:final contents) ||
+        Align(:final contents) ||
+        LineSuffix(:final contents):
+      walk(contents);
+  }
+}
+>>> In a switch expression arm, `||` patterns line up.
+bool f(Doc doc) => switch (doc) {
+  Group(:final contents) || Indent(:final contents) || Align(:final contents) || LineSuffix(:final contents) => true,
+  _ => false,
+};
+<<<
+bool f(Doc doc) => switch (doc) {
+  Group(:final contents) ||
+  Indent(:final contents) ||
+  Align(:final contents) ||
+  LineSuffix(:final contents) => true,
+  _ => false,
+};
+>>> A long `when` guard breaks before `when`.
+void f() {
+  switch (current) {
+    case PostfixExpression(:final operand) when current.operator.type == TokenType.BANG:
+      current = operand;
+  }
+}
+<<<
+void f() {
+  switch (current) {
+    case PostfixExpression(:final operand)
+        when current.operator.type == TokenType.BANG:
+      current = operand;
+  }
+}
+>>> A conditional keeps its condition on the `=` line; branches indent past `? `.
+void f() {
+  resolved = name == null ? resolveConfig(Directory.current.path, read: _read, explicit: explicitConfig, isDirectory: true) : resolveConfig(p.normalize(p.absolute(name)), read: _read, explicit: explicitConfig);
+}
+<<<
+void f() {
+  resolved = name == null
+      ? resolveConfig(
+          Directory.current.path,
+          read: _read,
+          explicit: explicitConfig,
+          isDirectory: true,
+        )
+      : resolveConfig(
+          p.normalize(p.absolute(name)),
+          read: _read,
+          explicit: explicitConfig,
+        );
+}
+>>> A conditional whose condition does not fit on the `=` line breaks after `=`.
+void f() {
+  final child = childIndex < children.length && identical(firstTokenOf(children[childIndex]), token) ? children[childIndex++] : null;
+}
+<<<
+void f() {
+  final child =
+      childIndex < children.length &&
+          identical(firstTokenOf(children[childIndex]), token)
+      ? children[childIndex++]
+      : null;
+}
+>>> A nested conditional in the else branch continues the chain.
+void f() {
+  final position = newlineBefore && newlineAfter ? CommentPosition.ownLine : newlineAfter ? CommentPosition.endOfLine : CommentPosition.remaining;
+}
+<<<
+void f() {
+  final position = newlineBefore && newlineAfter
+      ? CommentPosition.ownLine
+      : newlineAfter
+      ? CommentPosition.endOfLine
+      : CommentPosition.remaining;
+}
+>>> After `=>` a conditional moves to the next line when it fits there whole.
+String origin(String origin) => origin.startsWith('preset ') ? origin : display(origin);
+<<<
+String origin(String origin) =>
+    origin.startsWith('preset ') ? origin : display(origin);
+>>> A closure assigned through `??=` stays on the `=` line.
+void f() {
+  final resolved = configs[directory] ??= () {
+    return resolveConfig(path, read: _read, explicit: explicitConfig);
+  }();
+}
+<<<
+void f() {
+  final resolved = configs[directory] ??= () {
+    return resolveConfig(path, read: _read, explicit: explicitConfig);
+  }();
+}
+>>> After `=>` a call moves to the next line when it fits there whole.
+Doc group(Doc contents, {bool shouldBreak = false, GroupId? id}) => Group(contents, shouldBreak: shouldBreak, id: id);
+<<<
+Doc group(Doc contents, {bool shouldBreak = false, GroupId? id}) =>
+    Group(contents, shouldBreak: shouldBreak, id: id);
+>>> After `=>` a call that does not fit on the next line hugs the arrow.
+int get x => compute(firstArgumentxxxxxxxxxxx, secondArgumentxxxxxxxxxxxxxxxxxx, third, fourth, fifth);
+<<<
+int get x => compute(
+  firstArgumentxxxxxxxxxxx,
+  secondArgumentxxxxxxxxxxxxxxxxxx,
+  third,
+  fourth,
+  fifth,
+);
+>>> After `=>` a call breaks after the arrow rather than splitting the parameters.
+Doc keywordStatement(Token keyword, AstNode? operand, Token semicolon) => concat([tok(keyword), if (operand != null) ...[space, visit(operand)], tok(semicolon)]);
+<<<
+Doc keywordStatement(Token keyword, AstNode? operand, Token semicolon) =>
+    concat([
+      tok(keyword),
+      if (operand != null) ...[space, visit(operand)],
+      tok(semicolon),
+    ]);
+>>> A long string after a named argument moves to the next line.
+void f() {
+  parser.addOption('stdin-name', valueHelp: 'path', help: 'Path of the stdin document, for configuration and exclusions; never read.');
+}
+<<<
+void f() {
+  parser.addOption(
+    'stdin-name',
+    valueHelp: 'path',
+    help:
+        'Path of the stdin document, for configuration and exclusions; never read.',
+  );
+}
+>>> A binary after a named argument indents once.
+void f() {
+  delimited(open: node.leftParenthesis, requiredTrailingComma: node.fields.length == 1 && node.fields.single is! RecordLiteralNamedField);
+}
+<<<
+void f() {
+  delimited(
+    open: node.leftParenthesis,
+    requiredTrailingComma:
+        node.fields.length == 1 &&
+        node.fields.single is! RecordLiteralNamedField,
+  );
+}
+>>> Constructor initializers go one per line when the parameters split.
+class GoldenOptions {
+  GoldenOptions({this.leadingIndent, List<String>? experiments, Map<String, Object?>? config}) : experiments = experiments ?? [], config = config ?? {};
+}
+<<<
+class GoldenOptions {
+  GoldenOptions({
+    this.leadingIndent,
+    List<String>? experiments,
+    Map<String, Object?>? config,
+  }) : experiments = experiments ?? [],
+       config = config ?? {};
+}
+>>> A record that is the only argument hugs.
+void f() {
+  sections.add((int.parse(match[1]!), int.parse(match[2]!), match[3]!, textOfTheSection));
+}
+<<<
+void f() {
+  sections.add((
+    int.parse(match[1]!),
+    int.parse(match[2]!),
+    match[3]!,
+    textOfTheSection,
+  ));
+}
+>>> A collection in the middle of simple arguments hugs.
+void f() {
+  controlHead(node.ifKeyword, node.leftParenthesis, [visit(node.expression), if (caseClause != null) space], node.rightParenthesis);
+  expect(directives(source).regions, [(source.indexOf('start') + 5, source.length), (0, 1)]);
+}
+<<<
+void f() {
+  controlHead(node.ifKeyword, node.leftParenthesis, [
+    visit(node.expression),
+    if (caseClause != null) space,
+  ], node.rightParenthesis);
+  expect(directives(source).regions, [
+    (source.indexOf('start') + 5, source.length),
+    (0, 1),
+  ]);
+}
+>>> A spread collection in a collection `if` hugs the condition.
+void f() {
+  final list = [if (dangling != null) ...[if (block.statements.isNotEmpty) hardline, dangling]];
+}
+<<<
+void f() {
+  final list = [
+    if (dangling != null) ...[
+      if (block.statements.isNotEmpty) hardline,
+      dangling,
+    ],
+  ];
+}
+>>> A collection `for` with a long header puts its body on the next line; `in` leads.
+void f() {
+  final ends = [for (final comment in builder.comments.trailing[units.last] ?? <SourceComment>[]) comment.end];
+}
+<<<
+void f() {
+  final ends = [
+    for (final comment
+        in builder.comments.trailing[units.last] ?? <SourceComment>[])
+      comment.end,
+  ];
+}
+>>> A collection `for` whose body is an `if` always splits.
+var l = [for (final part in parts) if (!identical(part, empty)) part];
+<<<
+var l = [
+  for (final part in parts)
+    if (!identical(part, empty)) part,
+];
+>>> A single cascade section hugs a split collection.
+List<AstNode> childNodes(AstNode node) => _childCache[node] ??= [for (final child in node.childEntities) if (child is AstNode && child is! Comment) child]..sort((a, b) => startOf(a) - startOf(b));
+<<<
+List<AstNode> childNodes(AstNode node) => _childCache[node] ??= [
+  for (final child in node.childEntities)
+    if (child is AstNode && child is! Comment) child,
+]..sort((a, b) => startOf(a) - startOf(b));
+>>> Members without a block body keep their grouping; block bodies get between_members.
+class Counter {
+  Counter(this.count);
+  final int count;
+  int get doubled => count * 2;
+  int get tripled => count * 3;
+  void increment() {
+    count++;
+  }
+  void reset() {}
+}
+<<<
+class Counter {
+  Counter(this.count);
+  final int count;
+  int get doubled => count * 2;
+  int get tripled => count * 3;
+
+  void increment() {
+    count++;
+  }
+
+  void reset() {}
+}

@@ -35,3 +35,39 @@ description: chronological action log per session, consolidated weekly
 | 14:52 | Created openspec/changes/initial-implementation/tasks.md | — | ~5851 |
 <!-- session:MzViYThlNDQtMGExZS00Mjc0LWE3OTMtOGRlM2JkMDAwNDg4 -->
 | 2026-10-28T06:52:30.878Z | Wrote tasks.md for OpenSpec change initial-implementation: 17 groups, 80 checkbox tasks ordered scaffold → Doc IR → parse/harness → comments → core rules → verification → config → configurable rules → spaces/blank/braces/strings → directives → CLI → range → release → VS Code → IntelliJ → other editors → integration; planning complete | openspec/changes/initial-implementation/tasks.md | openspec status 4/4, validate --strict passes |
+
+## Session: 2026-10-28 14:53
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:55 | Created packages/zooper_beaver/lib/src/ir/doc.dart | — | ~1260 |
+| 14:56 | Created packages/zooper_beaver/lib/src/ir/printer.dart | — | ~2401 |
+| 14:57 | Created packages/zooper_beaver/test/ir_test.dart | — | ~1763 |
+| 14:59 | Created packages/zooper_beaver/lib/src/parse/parse.dart | — | ~875 |
+| 15:01 | Created packages/zooper_beaver/test/src/golden_file.dart | — | ~2152 |
+| 15:03 | Created packages/zooper_beaver/lib/src/config/schema.dart | — | ~870 |
+| 15:06 | Created packages/zooper_beaver/lib/src/comments/attach.dart | — | ~1706 |
+| 15:11 | Created packages/zooper_beaver/lib/src/rules/builder.dart | — | ~2216 |
+| 15:11 | Created packages/zooper_beaver/lib/src/rules/lists.dart | — | ~1464 |
+| 15:12 | Created packages/zooper_beaver/lib/src/rules/statements.dart | — | ~2180 |
+| 15:14 | Created packages/zooper_beaver/lib/src/rules/declarations.dart | — | ~3278 |
+| 15:16 | Created packages/zooper_beaver/lib/src/rules/expressions.dart | — | ~4300 |
+| 15:18 | Created packages/zooper_beaver/lib/src/format.dart | — | ~671 |
+| 15:30 | Created packages/zooper_beaver/lib/src/verify/verify.dart | — | ~2294 |
+| 15:35 | Created packages/zooper_beaver/lib/src/config/loader.dart | — | ~820 |
+| 15:36 | Created packages/zooper_beaver/lib/src/config/resolve.dart | — | ~1279 |
+| 15:38 | Created packages/zooper_beaver/lib/src/cli/cli.dart | — | ~4022 |
+| 15:39 | Created packages/zooper_beaver/lib/src/directives/directives.dart | — | ~879 |
+| 15:41 | Created packages/zooper_beaver/lib/src/range/range.dart | — | ~1334 |
+| 16:10 | Created .github/workflows/release.yml | — | ~1821 |
+
+## Session: 2026-10-28 17:21
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 20:56 | Edited packages/zooper_beaver/test/config_resolve_test.dart | modified test() | ~209 |
+| 21:11 | Created packages/zooper_beaver/test/example_test.dart | — | ~356 |
+| 21:12 | Edited packages/zooper_beaver/README.md | 3→5 lines | ~51 |
+| 21:15 | Edited packages/zooper_beaver/test/example_test.dart | added 1 condition(s) | ~105 |
+| 21:15 | Edited example/README.md | expanded (+8 lines) | ~214 |
+| 22:10 | Edited .github/workflows/ci.yml | 4→7 lines | ~64 |

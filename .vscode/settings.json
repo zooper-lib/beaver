@@ -1,0 +1,4 @@
+{
+  // example/ holds Beaver's input and output verbatim; dart format must not touch it.
+  "dart.doNotFormat": ["example/**"]
+}

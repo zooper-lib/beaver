@@ -1,0 +1,21 @@
+name: zooper_beaver
+description: A configurable, line-width-aware formatter for Dart with rules in a project-local .beaver.yaml.
+version: 0.1.0-dev
+repository: https://github.com/zooper-lib/beaver
+
+environment:
+  sdk: ^3.9.0
+
+executables:
+  beaver: beaver
+
+dependencies:
+  analyzer: '>=14.0.0 <15.0.0'
+  args: ^2.6.0
+  glob: ^2.1.2
+  path: ^1.9.0
+  pub_semver: ^2.1.4
+  yaml: ^3.1.2
+
+dev_dependencies:
+  test: ^1.25.0

@@ -1,0 +1,216 @@
+name: Release
+
+# One tag builds everything: five AOT binaries, checksums and the
+# binary manifest, a GitHub release, the pub package, and the editor plugins.
+# Run manually with dry_run to build and collect all artifacts without
+# releasing or publishing anything.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build artifacts only; no release, no publishing.
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  id-token: write # pub.dev automated publishing
+
+env:
+  DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        name: Read and check the version
+        run: |
+          version=$(sed -n 's/^version: //p' packages/zooper_beaver/pubspec.yaml)
+          grep -q "beaverVersion = '$version'" packages/zooper_beaver/lib/src/version.dart \
+            || { echo "lib/src/version.dart does not say $version"; exit 1; }
+          if [ "${GITHUB_REF_TYPE}" = tag ] && [ "${GITHUB_REF_NAME}" != "v$version" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match pubspec version $version"; exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  binaries:
+    needs: version
+    name: binary (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          # Linux targets cross-compile from one runner; macOS and Windows
+          # build natively.
+          - { platform: linux-x64, os: ubuntu-latest, target: '--target-os=linux --target-arch=x64', file: beaver-linux-x64, smoke: true }
+          - { platform: linux-arm64, os: ubuntu-latest, target: '--target-os=linux --target-arch=arm64', file: beaver-linux-arm64, smoke: false }
+          - { platform: macos-x64, os: macos-13, target: '', file: beaver-macos-x64, smoke: true }
+          - { platform: macos-arm64, os: macos-14, target: '', file: beaver-macos-arm64, smoke: true }
+          - { platform: windows-x64, os: windows-latest, target: '', file: beaver-windows-x64.exe, smoke: true }
+    env:
+      # Signing runs only when its secrets are configured.
+      HAS_MACOS_CERT: ${{ secrets.MACOS_CERTIFICATE != '' }}
+      HAS_WINDOWS_CERT: ${{ secrets.WINDOWS_CERTIFICATE != '' }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: packages/zooper_beaver
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: dart compile exe ${{ matrix.target }} bin/beaver.dart -o ${{ matrix.file }}
+
+      - name: Sign and notarize (macOS)
+        if: runner.os == 'macOS' && env.HAS_MACOS_CERT == 'true'
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          keychain=$RUNNER_TEMP/signing.keychain-db
+          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p ci "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p ci "$keychain"
+          security import "$RUNNER_TEMP/cert.p12" -k "$keychain" -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k ci "$keychain"
+          security list-keychains -d user -s "$keychain"
+          codesign --sign "$MACOS_SIGNING_IDENTITY" --options runtime --timestamp --force ${{ matrix.file }}
+          ditto -c -k ${{ matrix.file }} notarize.zip
+          xcrun notarytool submit notarize.zip --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD" --wait
+          codesign --verify --strict --verbose=2 ${{ matrix.file }}
+      - name: Sign (Windows)
+        if: runner.os == 'Windows' && env.HAS_WINDOWS_CERT == 'true'
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          echo "$WINDOWS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.pfx"
+          signtool=$(find "/c/Program Files (x86)/Windows Kits/10/bin" -name signtool.exe -path '*x64*' | sort | tail -1)
+          "$signtool" sign //f "$RUNNER_TEMP/cert.pfx" //p "$WINDOWS_CERTIFICATE_PASSWORD" //fd sha256 //tr http://timestamp.digicert.com //td sha256 ${{ matrix.file }}
+          "$signtool" verify //pa ${{ matrix.file }}
+
+      - name: Smoke test
+        if: matrix.smoke
+        run: |
+          ./${{ matrix.file }} --version | grep -q "beaver ${{ needs.version.outputs.version }} (protocol "
+          printf 'var  a=1;\n' | ./${{ matrix.file }} --stdin | grep -qx 'var a = 1;'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.file }}
+          path: packages/zooper_beaver/${{ matrix.file }}
+          if-no-files-found: error
+
+  release:
+    needs: [version, binaries]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums and manifest
+        run: |
+          protocol=$(sed -n 's/^const protocolVersion = \([0-9]*\);/\1/p' packages/zooper_beaver/lib/src/version.dart)
+          tool/release/manifest.sh dist "${{ needs.version.outputs.version }}" "$protocol"
+          ls -l dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release
+          path: dist
+      - name: GitHub release
+        if: env.DRY_RUN != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" dist/* --title "Beaver ${{ needs.version.outputs.version }}" --generate-notes
+
+  # 14.4: one VSIX per platform, each bundling that platform's binary.
+  vsix:
+    needs: [release]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: editors/vscode
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v4
+        with:
+          name: release
+          path: dist
+      - run: npm ci
+      - run: npm test
+      - name: Package
+        run: |
+          for pair in linux-x64:linux-x64 linux-arm64:linux-arm64 darwin-x64:macos-x64 darwin-arm64:macos-arm64 win32-x64:windows-x64; do
+            target=${pair%%:*} platform=${pair#*:}
+            rm -rf bin && mkdir bin
+            if [ "$platform" = windows-x64 ]; then
+              cp "$GITHUB_WORKSPACE/dist/beaver-windows-x64.exe" bin/beaver.exe
+            else
+              cp "$GITHUB_WORKSPACE/dist/beaver-$platform" bin/beaver && chmod +x bin/beaver
+            fi
+            npx vsce package --target "$target" -o "beaver-$target.vsix"
+          done
+          ls -l *.vsix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: editors/vscode/*.vsix
+      - name: Attach to the release
+        if: env.DRY_RUN != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${GITHUB_REF_NAME}" *.vsix
+
+  # 15.5: the plugin embeds the release's binary manifest.
+  intellij:
+    needs: [release]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: editors/intellij
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: actions/download-artifact@v4
+        with:
+          name: release
+          path: dist
+      - name: Build the plugin
+        run: BEAVER_MANIFEST="$GITHUB_WORKSPACE/dist/beaver-manifest.json" ./gradlew buildPlugin --console=plain
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intellij
+          path: editors/intellij/build/distributions/*.zip
+      - name: Attach to the release
+        if: env.DRY_RUN != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${GITHUB_REF_NAME}" build/distributions/*.zip
+
+  # 13.3: pub.dev automated publishing from this workflow must be enabled in
+  # the package admin page (GitHub Actions, tag pattern `v{{version}}`).
+  publish:
+    needs: release
+    if: github.event_name == 'push'
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: packages/zooper_beaver

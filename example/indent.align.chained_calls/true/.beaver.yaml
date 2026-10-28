@@ -1,0 +1,3 @@
+indent:
+  align:
+    chained_calls: true

@@ -64,7 +64,7 @@ Why one package: the CLI is ~hundreds of lines and has no independent consumers;
 
 ### Doc IR and printer (D4, D10)
 
-Doc is a sealed class hierarchy: `Text`, `Line(kind)`, `Group(doc, shouldBreak, id)`, `Indent`, `Align(n|string)`, `IfBreak(broken, flat, groupId)`, `Fill(parts)`, `BreakParent`, `LineSuffix`, `Concat`, plus `Marker(offset, isStart)`. Group ids are allocated by the rule builder from a per-format counter. Alignment (D10) is `IfBreak(Indent(continuation), Align(flatWidth(anchor)), groupId: anchorGroup)`; `flatWidth` is computed from the anchor Doc by the same `fits()` measurer. Alternative considered: a cost-based solver (dart_style). Rejected in D4 because rules would become interacting costs.
+Doc is a sealed class hierarchy: `Text`, `Line(kind)`, `Group(doc, shouldBreak, id)`, `Indent`, `Align(n|string|toColumn)`, `IfBreak(broken, flat, groupId)`, `Fill(parts)`, `BreakParent`, `LineSuffix`, `Concat`, plus `Marker(offset, isStart)`. Group ids are allocated by the rule builder from a per-format counter. Alignment (D10) is `IfBreak(Indent(continuation), Align.toColumn(items), groupId: anchorGroup)`; `toColumn` aligns to the output column where the contents start, read by the printer at print time, so nested and indented anchors align correctly. Alternative considered: a cost-based solver (dart_style). Rejected in D4 because rules would become interacting costs.
 
 ### Keep-existing-line-breaks and chop (D7, D9, D14)
 

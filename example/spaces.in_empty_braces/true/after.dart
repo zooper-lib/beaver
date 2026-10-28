@@ -1,0 +1,3 @@
+class Marker { }
+
+void noop() { }

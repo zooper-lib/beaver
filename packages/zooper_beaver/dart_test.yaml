@@ -1,0 +1,2 @@
+# The CLI tests change the working directory, which is process-wide.
+concurrency: 1

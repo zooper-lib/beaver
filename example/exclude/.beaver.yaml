@@ -1,0 +1,3 @@
+# Added to the dart preset's exclusions (which already skip **/*.g.dart).
+exclude:
+  - 'legacy/**'

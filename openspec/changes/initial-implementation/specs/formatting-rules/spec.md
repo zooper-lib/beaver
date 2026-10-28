@@ -51,6 +51,10 @@ A preserved newline SHALL NOT by itself cause other items in the same construct 
 - **WHEN** input is `foo(a,\n    b, c);` and the call exceeds the width with `chop_if_long`
 - **THEN** `a`, `b` and `c` are each on their own line
 
+#### Scenario: Kept break under the dart preset
+- **WHEN** input is `foo(a,\n    b, c);`, the call fits, and the `dart` preset applies (`add_when_wrapped`, `chop_on_trailing_comma: true`)
+- **THEN** output is `foo(\n  a,\n  b, c,\n);` and formatting it again changes nothing
+
 ### Requirement: Statement and member newlines are not wrap decisions
 Newlines between statements and between class members SHALL always be preserved as line breaks and governed by `blank_lines`, independent of `keep_existing_line_breaks`.
 
@@ -73,6 +77,13 @@ Newlines between statements and between class members SHALL always be preserved 
 - **WHEN** `trailing_commas: remove` and an argument list breaks
 - **THEN** the last argument has no trailing comma and the closing parenthesis is still on its own line
 
+### Requirement: Trailing commas outside optional constructs are kept
+`trailing_commas` SHALL apply only to the constructs whose trailing comma is optional per structural verification. In every other construct (for example assert arguments, list, map and object patterns, switch-expression cases) the source comma SHALL be kept as written.
+
+#### Scenario: Assert arguments
+- **WHEN** `trailing_commas: remove` and input is `assert(x, 'message',);`
+- **THEN** the comma after `'message'` is kept
+
 ### Requirement: Required trailing commas are never removed
 A trailing comma that is syntactically required (single-positional-field record literal, record type, or record pattern) SHALL be emitted unchanged under every `trailing_commas` value.
 
@@ -81,7 +92,7 @@ A trailing comma that is syntactically required (single-positional-field record 
 - **THEN** output contains `(42,)`
 
 ### Requirement: A source trailing comma is a chop request
-With `chop_on_trailing_comma: true`, a trailing comma present in the source SHALL force that construct to put every item on its own line, regardless of width. The comma's presence in the output is then decided by `trailing_commas`. With `chop_on_trailing_comma: false`, a source comma has no layout effect.
+With `chop_on_trailing_comma: true`, a trailing comma present in the source SHALL force that construct to put every item on its own line, regardless of width, unless the construct is mixed (see below). The comma's presence in the output is then decided by `trailing_commas`. With `chop_on_trailing_comma: false`, a source comma has no layout effect.
 
 #### Scenario: Flutter idiom
 - **WHEN** input is `Padding(padding: p, child: Text('hi'),)` on one line and `chop_on_trailing_comma: true`
@@ -94,6 +105,21 @@ With `chop_on_trailing_comma: true`, a trailing comma present in the source SHAL
 #### Scenario: Disabled
 - **WHEN** the same input is formatted with `chop_on_trailing_comma: false` and it fits
 - **THEN** output is on one line
+
+### Requirement: A mixed construct ignores the chop request
+A construct is mixed when the source has a newline in at least one of its list-level gaps (after the opening delimiter, between two items, before the closing delimiter) and at least two adjacent items share a line. Newlines inside an item SHALL NOT count. In a mixed construct a source trailing comma SHALL have no layout effect; the line-break rules decide.
+
+#### Scenario: Mixed layout is not chopped
+- **WHEN** input is `foo(\n  a, b,\n  c,\n);` and `chop_on_trailing_comma: true`
+- **THEN** output is unchanged
+
+#### Scenario: Newlines inside an item do not count
+- **WHEN** input is `foo(a, () {\n  x();\n},);` and `chop_on_trailing_comma: true`
+- **THEN** `a` and the function expression are each on their own line
+
+#### Scenario: Wrapped output is stable
+- **WHEN** a construct is formatted under `add_when_wrapped` and `chop_on_trailing_comma: true` and its output wraps with items sharing a line
+- **THEN** formatting the output again changes nothing
 
 ### Requirement: Named-argument-triggered expansion
 `wrap.chop_on_named_arguments` SHALL be a list of argument names, empty by default. An invocation whose direct argument list contains a named argument with a listed name SHALL have that argument list fully chopped. Nested invocations and nested collection literals SHALL be judged on their own; matching ignores the callee's name and type. `wrap.arguments: never` SHALL take precedence.
@@ -140,7 +166,7 @@ Wrapped continuation lines of an expression SHALL be indented by `indent.continu
 - **THEN** the second line is indented 4 spaces more than `final`
 
 ### Requirement: Alignment precedence
-For each `indent.align.*` rule that is `true`, wrapped items SHALL align to the column where the anchor ends when the anchor (the text before the first wrapped item) is on a single line in the output; otherwise they SHALL use continuation indent. Alignment SHALL NOT be suppressed because aligned lines overflow `line_length`.
+For each `indent.align.*` rule that is `true`, wrapped items SHALL align to the column where the anchor ends when the anchor (the text before the first wrapped item) is on a single line in the output; otherwise they SHALL use continuation indent. The column SHALL be the anchor's resolved output column, including enclosing indentation and alignment. Alignment SHALL NOT be suppressed because aligned lines overflow `line_length`.
 
 #### Scenario: Flat anchor aligns
 - **WHEN** `align.chained_calls: true` and input is `final r = obj.doThis().thenThat();` wrapping after `.doThis()`
@@ -157,6 +183,10 @@ For each `indent.align.*` rule that is `true`, wrapped items SHALL align to the 
 #### Scenario: Aligned arguments
 - **WHEN** `align.arguments: true` and `print(first, second, third);` wraps
 - **THEN** `second` and `third` start in the column of `first`
+
+#### Scenario: Nested alignment
+- **WHEN** `align.arguments: true` and an aligned argument list inside a block contains another wrapped argument list
+- **THEN** the inner items align to the column where the inner list's first item printed
 
 ### Requirement: Switch case indentation
 With `indent.switch_cases: true`, `case` and `default` labels SHALL be indented one level inside the switch body; with `false`, they SHALL align with `switch`.
@@ -205,6 +235,21 @@ Each `spaces.*` key SHALL control exactly the whitespace it names: around assign
 #### Scenario: Before first member
 - **WHEN** `before_first_member: 0` and a class body starts with a blank line
 - **THEN** the blank line is removed
+
+### Requirement: Source blank lines kept between grouped members and list items
+Between two adjacent members that both lack a block body (fields, `=>` members, constructors ending in `;`), `between_members` SHALL NOT apply; their source blank lines SHALL be kept up to `max_consecutive`. Blank lines between the items of a list that splits (arguments, parameters, collection elements, enum values) SHALL also be kept up to `max_consecutive`; a list printed on one line drops them.
+
+#### Scenario: Adjacent fields keep their grouping
+- **WHEN** `between_members: 1` and two field declarations are adjacent with no blank line
+- **THEN** output keeps them adjacent
+
+#### Scenario: Adjacent one-line members keep their grouping
+- **WHEN** `between_members: 1` and a constructor ending in `;`, a field and two `=>` getters are adjacent with no blank lines
+- **THEN** output keeps them adjacent, and a following method with a block body gets exactly one blank line before it
+
+#### Scenario: Blank lines between items of a split list
+- **WHEN** `max_consecutive: 1` and a split list literal has three blank lines between two elements
+- **THEN** output has one blank line between them
 
 ### Requirement: Brace placement is whitespace only
 `braces.else_on_new_line` SHALL control whether `else` (and `catch`/`finally`) starts a new line after the closing brace. Beaver SHALL never insert or remove braces.

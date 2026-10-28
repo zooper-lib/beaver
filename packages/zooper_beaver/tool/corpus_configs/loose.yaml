@@ -1,0 +1,18 @@
+line_length: 60
+trailing_commas: preserve
+strings:
+  quotes: double
+wrap:
+  keep_existing_line_breaks: false
+  chop_on_trailing_comma: false
+  arguments: if_long
+  conditional_expressions: never
+spaces:
+  inside_parentheses: true
+  inside_braces: true
+  before_control_parentheses: false
+  around_binary_operators: false
+braces:
+  else_on_new_line: true
+blank_lines:
+  max_consecutive: 2

@@ -1,0 +1,2 @@
+wrap:
+  binary_expressions: chop_if_long

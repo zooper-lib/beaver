@@ -1,0 +1,114 @@
+40 columns                              |
+>>> Continuation of an assignment is indented by indent.continuation.
+final x = someLongExpressionName + other;
+<<<
+final x =
+    someLongExpressionName + other;
+>>> (indent.continuation=2) A different continuation indent.
+final x = someLongExpressionName + other;
+<<<
+final x =
+  someLongExpressionName + other;
+>>> (indent.align.chained_calls=true) Flat anchor aligns.
+final r = obj.doThis().thenThat().andMore();
+<<<
+final r = obj.doThis()
+             .thenThat()
+             .andMore();
+>>> (indent.align.chained_calls=true) Broken anchor falls back to continuation.
+final r = target(argumentNumberOne, argumentNumberTwo).doThis().thenThat();
+<<<
+final r = target(
+  argumentNumberOne,
+  argumentNumberTwo,
+)
+    .doThis()
+    .thenThat();
+>>> (indent.align.chained_calls=true wrap.chained_calls.min_calls=2) Overflow does not disable alignment.
+final result = someReceiverObject.doSomethingVeryLong().thenThat();
+<<<
+final result = someReceiverObject.doSomethingVeryLong()
+                                 .thenThat();
+>>> (indent.align.arguments=true) Aligned arguments.
+print(firstArgument, secondArgument, third);
+<<<
+print(firstArgument,
+      secondArgument,
+      third);
+>>> (indent.align.parameters=true) Aligned parameters.
+void function(int first, int second, int third) {}
+<<<
+void function(int first,
+              int second,
+              int third) {}
+>>> (indent.align.arguments=true) Nested aligned lists use the resolved column inside a block.
+if (c) {
+  print(first, inner(alphaArgument, betaArgument), last);
+}
+<<<
+if (c) {
+  print(first,
+        inner(alphaArgument,
+              betaArgument),
+        last);
+}
+>>> (indent.align.arguments=true indent.align.chained_calls=true) Aligned arguments inside an aligned chain.
+obj.alpha().beta(argumentNumberOne, argumentNumberTwo).gamma();
+<<<
+obj.alpha()
+   .beta(argumentNumberOne,
+         argumentNumberTwo)
+   .gamma();
+>>> (indent.align.arguments=true) Aligned arguments inside a closure argument.
+outer(a, () {
+  call(firstArgument, secondArgument, thirdArgument);
+});
+<<<
+outer(a,
+      () {
+        call(firstArgument,
+             secondArgument,
+             thirdArgument);
+      });
+>>> Switch cases indented.
+switch (x) { case 1: a(); default: b(); }
+<<<
+switch (x) {
+  case 1:
+    a();
+  default:
+    b();
+}
+>>> (indent.switch_cases=false) Switch cases aligned with switch.
+switch (x) { case 1: a(); default: b(); }
+<<<
+switch (x) {
+case 1:
+  a();
+default:
+  b();
+}
+>>> (wrap.simple_blocks_on_one_line=true) Simple block on one line.
+if (x) {
+  return;
+}
+<<<
+if (x) { return; }
+>>> Simple block, flag off.
+if (x) { return; }
+<<<
+if (x) {
+  return;
+}
+>>> (wrap.simple_lambdas_on_one_line=true) Simple lambda on one line.
+list.map((e) {
+  return e + 1;
+});
+<<<
+list.map((e) { return e + 1; });
+>>> Simple lambda, flag off.
+list.map((e) { return e + 1; });
+<<<
+list.map((e) {
+  return e + 1;
+});
