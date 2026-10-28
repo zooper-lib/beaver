@@ -1,13 +1,13 @@
 {
   "version": 1,
   "meta": {
-    "lastScanned": "2026-10-28T06:33:28.979Z",
-    "fileCount": 7,
+    "lastScanned": "2026-10-28T06:52:17.681Z",
+    "fileCount": 23,
     "hits": 0,
     "misses": 0,
-    "renderedHash": "e9cff424660552ebfc5d9051d230e035107eff23ca984fe16b08515a19de150d",
-    "storeUpdatedAt": "2026-10-28T06:33:28.980Z",
-    "rootHash": "e56967353302c084"
+    "renderedHash": "6509be5503698dfd6c0e8c44162db32c74a32b59084065ac7d6a83375b12a826",
+    "storeUpdatedAt": "2026-10-28T06:52:17.681Z",
+    "rootHash": "816dd01527eeb6c8"
   },
   "files": {
     "AGENTS.md": {
@@ -16,7 +16,7 @@
       "hash": "e401f79554a8d796",
       "size": 297,
       "mtimeMs": 1793159006920.3125,
-      "updatedAt": "2026-10-28T06:33:28.963Z",
+      "updatedAt": "2026-10-28T06:52:17.665Z",
       "source": "scan"
     },
     "CLAUDE.md": {
@@ -25,7 +25,7 @@
       "hash": "074d6b42b583729a",
       "size": 395,
       "mtimeMs": 1793159001556.6362,
-      "updatedAt": "2026-10-28T06:33:28.963Z",
+      "updatedAt": "2026-10-28T06:52:17.665Z",
       "source": "scan"
     },
     "DRAFT.md": {
@@ -34,7 +34,7 @@
       "hash": "ee9a23fa415536a9",
       "size": 45141,
       "mtimeMs": 1793169207771.3018,
-      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "updatedAt": "2026-10-28T06:52:17.665Z",
       "source": "scan"
     },
     "LICENSE": {
@@ -43,7 +43,7 @@
       "hash": "e6f85cc9a9ecf1f2",
       "size": 1063,
       "mtimeMs": 1793157589292.375,
-      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "updatedAt": "2026-10-28T06:52:17.666Z",
       "source": "scan"
     },
     "openspec/changes/archive/.gitkeep": {
@@ -52,7 +52,151 @@
       "hash": "e3b0c44298fc1c14",
       "size": 0,
       "mtimeMs": 1793158956804.5059,
-      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "updatedAt": "2026-10-28T06:52:17.666Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/.openspec.yaml": {
+      "description": "",
+      "tokens": 12,
+      "hash": "9e0a467e3934b14a",
+      "size": 40,
+      "mtimeMs": 1793169369474.1194,
+      "updatedAt": "2026-10-28T06:52:17.666Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/design.md": {
+      "description": "Design",
+      "tokens": 3787,
+      "hash": "087d5255e43e649b",
+      "size": 15214,
+      "mtimeMs": 1793170162284.9504,
+      "updatedAt": "2026-10-28T06:52:17.666Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/proposal.md": {
+      "description": "Proposal",
+      "tokens": 1879,
+      "hash": "5faccc80f63e58b4",
+      "size": 7525,
+      "mtimeMs": 1793169487560.555,
+      "updatedAt": "2026-10-28T06:52:17.667Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/cli/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1514,
+      "hash": "ceb50fae7c0da25b",
+      "size": 6055,
+      "mtimeMs": 1793169890413.5818,
+      "updatedAt": "2026-10-28T06:52:17.667Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/comment-attachment/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1001,
+      "hash": "cd6f5cb645a00422",
+      "size": 4003,
+      "mtimeMs": 1793169804252.8748,
+      "updatedAt": "2026-10-28T06:52:17.667Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/config-resolution/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1851,
+      "hash": "2e25f679a2c7d80c",
+      "size": 7402,
+      "mtimeMs": 1793169631959.8918,
+      "updatedAt": "2026-10-28T06:52:17.667Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/formatting-rules/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 3393,
+      "hash": "af3c6bb675492176",
+      "size": 13569,
+      "mtimeMs": 1793169737129.8096,
+      "updatedAt": "2026-10-28T06:52:17.668Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/golden-test-harness/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1307,
+      "hash": "16da7a2ee7c3ba84",
+      "size": 5235,
+      "mtimeMs": 1793169890680.5134,
+      "updatedAt": "2026-10-28T06:52:17.668Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/ignore-directives/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1071,
+      "hash": "8f090ce073be06a5",
+      "size": 4283,
+      "mtimeMs": 1793169804387.0042,
+      "updatedAt": "2026-10-28T06:52:17.668Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/intellij-plugin/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1315,
+      "hash": "f2065a3a3d27f8b4",
+      "size": 5258,
+      "mtimeMs": 1793169957334.2927,
+      "updatedAt": "2026-10-28T06:52:17.668Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/layout-printer/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1387,
+      "hash": "c75ece9ab7414b52",
+      "size": 5545,
+      "mtimeMs": 1793169666305.0835,
+      "updatedAt": "2026-10-28T06:52:17.668Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/release-distribution/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 940,
+      "hash": "6fefa2e295a97ce8",
+      "size": 3759,
+      "mtimeMs": 1793169957460.5046,
+      "updatedAt": "2026-10-28T06:52:17.669Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/stdin-protocol/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1268,
+      "hash": "8147bf41219b223e",
+      "size": 5072,
+      "mtimeMs": 1793169890561.3782,
+      "updatedAt": "2026-10-28T06:52:17.669Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/structural-verification/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1222,
+      "hash": "db4f807e96579a27",
+      "size": 4887,
+      "mtimeMs": 1793169804506.3916,
+      "updatedAt": "2026-10-28T06:52:17.669Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/specs/vscode-extension/spec.md": {
+      "description": "Spec Delta",
+      "tokens": 1184,
+      "hash": "a9bd7fdfda3685bd",
+      "size": 4736,
+      "mtimeMs": 1793169957202.9001,
+      "updatedAt": "2026-10-28T06:52:17.669Z",
+      "source": "scan"
+    },
+    "openspec/changes/initial-implementation/tasks.md": {
+      "description": "Tasks",
+      "tokens": 5485,
+      "hash": "33a21d6982425aa1",
+      "size": 22000,
+      "mtimeMs": 1793170336572.414,
+      "updatedAt": "2026-10-28T06:52:17.669Z",
       "source": "scan"
     },
     "openspec/config.yaml": {
@@ -61,7 +205,7 @@
       "hash": "f0082e9c22e8ce1d",
       "size": 998,
       "mtimeMs": 1793158956824.6968,
-      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "updatedAt": "2026-10-28T06:52:17.669Z",
       "source": "scan"
     },
     "openspec/specs/.gitkeep": {
@@ -70,7 +214,7 @@
       "hash": "e3b0c44298fc1c14",
       "size": 0,
       "mtimeMs": 1793158956804.2493,
-      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "updatedAt": "2026-10-28T06:52:17.670Z",
       "source": "scan"
     }
   },
