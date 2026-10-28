@@ -13,9 +13,22 @@ class DartWorkflowsTest : BasePlatformTestCase() {
     override fun createTempDirTestFixture() =
         com.intellij.testFramework.fixtures.impl.TempDirTestFixtureImpl()
 
+    private lateinit var root: com.intellij.openapi.vfs.VirtualFile
+
     override fun setUp() {
         super.setUp()
         BeaverSettings.instance.executablePath = System.getenv("BEAVER_BINARY")!!
+        // Folder reformat and actions on save only touch project content.
+        root = myFixture.tempDirFixture.findOrCreateDir(".")
+        com.intellij.testFramework.PsiTestUtil.addContentRoot(module, root)
+    }
+
+    override fun tearDown() {
+        try {
+            com.intellij.testFramework.PsiTestUtil.removeContentEntry(module, root)
+        } finally {
+            super.tearDown()
+        }
     }
 
     private fun assumeDart(file: com.intellij.psi.PsiFile) =
@@ -49,7 +62,9 @@ class DartWorkflowsTest : BasePlatformTestCase() {
             assumeDart(file)
             val document = file.viewProvider.document!!
             WriteCommandAction.runWriteCommandAction(project) { document.setText("var  saved=1;\n") }
-            com.intellij.openapi.fileEditor.FileDocumentManager.getInstance().saveDocument(document)
+            // Actions on save run on an explicit save (Save All, Ctrl+S), not on
+            // every programmatic save.
+            com.intellij.testFramework.PlatformTestUtil.invokeNamedAction("SaveAll")
             waitFor { String(file.virtualFile.contentsToByteArray()) == "var saved = 1;\n" }
             assertEquals("var saved = 1;\n", String(file.virtualFile.contentsToByteArray()))
         } finally {

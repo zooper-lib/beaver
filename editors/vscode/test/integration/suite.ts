@@ -22,6 +22,12 @@ async function setText(editor: vscode.TextEditor, text: string) {
 
 function tests() {
   suite('Beaver', () => {
+    // Opening a Dart file activates the extension in the background; the
+    // first format must not race the provider's registration.
+    suiteSetup(async () => {
+      await vscode.extensions.getExtension('zooper.beaver')!.activate();
+    });
+
     test('Format Document', async () => {
       const editor = await open('a.dart', 'var  a=1;\n');
       await vscode.commands.executeCommand('editor.action.formatDocument');
@@ -42,15 +48,20 @@ function tests() {
       assert.equal(editor.document.getText(), 'var buffer = 2;\n');
     });
 
-    test('a change near the end yields one local edit', async () => {
+    test('a change near the end yields only local edits', async () => {
       const editor = await open('d.dart', 'var a = 1;\nvar b = 2;\nvar  c=3;\n');
       const edits = await vscode.commands.executeCommand<vscode.TextEdit[]>(
         'vscode.executeFormatDocumentProvider',
         editor.document.uri,
         { tabSize: 2, insertSpaces: true },
       );
-      assert.equal(edits.length, 1);
-      assert.equal(edits[0].range.start.line, 2);
+      // VS Code splits the provider's single edit into minimal ones; all of
+      // them must stay on the changed line.
+      assert.ok(edits.length > 0);
+      for (const edit of edits) {
+        assert.equal(edit.range.start.line, 2);
+        assert.equal(edit.range.end.line, 2);
+      }
     });
 
     test('typing during formatting discards the result', async () => {

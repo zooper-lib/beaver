@@ -61,7 +61,11 @@ jobs:
       fail-fast: false
       matrix:
         # Oldest and newest IDE in the declared range (gradle.properties).
-        ide: ['2024.3.6', '2025.3']
+        # IntelliJ IDEA Community is not published from 2025.3 on; the
+        # unified IntelliJ IDEA (IU) replaces it.
+        include:
+          - { ide: '2024.3.6', type: IC }
+          - { ide: '2025.3', type: IU }
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
@@ -76,11 +80,11 @@ jobs:
           java-version: 21
       - name: Test, including folder reformat and Reformat on Save
         working-directory: editors/intellij
-        run: BEAVER_BINARY="$RUNNER_TEMP/beaver" ./gradlew test -PwithDart=true -PplatformVersion=${{ matrix.ide }} --console=plain
+        run: BEAVER_BINARY="$RUNNER_TEMP/beaver" ./gradlew test -PwithDart=true -PplatformType=${{ matrix.type }} -PplatformVersion=${{ matrix.ide }} --console=plain
       - name: Plugin Verifier
         if: matrix.ide == '2025.3'
         working-directory: editors/intellij
-        run: ./gradlew verifyPlugin --console=plain
+        run: ./gradlew verifyPlugin -PplatformType=${{ matrix.type }} -PplatformVersion=${{ matrix.ide }} --console=plain
 
   editors:
     name: Documented editor configurations
