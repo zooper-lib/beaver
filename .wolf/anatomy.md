@@ -1,7 +1,7 @@
 # anatomy.md
 
 > Auto-maintained by OpenWolf. Last scanned: 2026-10-28T14:10:24.648Z
-> Files: 878 tracked | Anatomy hits: 0 | Misses: 0
+> Files: 885 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -16,7 +16,7 @@
 
 ## .github/workflows/
 
-- `ci.yml` — CI: CI (~1476 tok)
+- `ci.yml` — CI: CI (~1558 tok)
 - `release.yml` — CI: Release (~2517 tok)
 
 ## docs/
@@ -52,7 +52,7 @@
 
 - `.gitignore` — Git ignore rules (~10 tok)
 - `build.gradle.kts` — Gradle Kotlin build configuration (~809 tok)
-- `gradle.properties` — Plugin version: independent of the formatter version. (~155 tok)
+- `gradle.properties` — Plugin version: independent of the formatter version. (~174 tok)
 - `gradlew` — you may not use this file except in compliance with the License. (~2292 tok)
 - `gradlew.bat` (~773 tok)
 - `settings.gradle.kts` — Gradle Kotlin settings (~10 tok)
@@ -60,16 +60,22 @@
 ## editors/intellij/.kotlin/sessions/
 
 - `kotlin-compiler-11211552953999540599.salive` (~0 tok)
+- `kotlin-compiler-11388244402809998786.salive` (~0 tok)
 - `kotlin-compiler-11504656380341749643.salive` (~0 tok)
 - `kotlin-compiler-11738155765955484829.salive` (~0 tok)
+- `kotlin-compiler-12648863017526282639.salive` (~0 tok)
 - `kotlin-compiler-13757639581876646826.salive` (~0 tok)
+- `kotlin-compiler-14887668586889148413.salive` (~0 tok)
 - `kotlin-compiler-14937229076618430528.salive` (~0 tok)
+- `kotlin-compiler-1506138980457316143.salive` (~0 tok)
 - `kotlin-compiler-15864434303860708750.salive` (~0 tok)
 - `kotlin-compiler-16230758394065571957.salive` (~0 tok)
+- `kotlin-compiler-2278174799909718003.salive` (~0 tok)
 - `kotlin-compiler-2459887284804740381.salive` (~0 tok)
 - `kotlin-compiler-2706210512951659281.salive` (~0 tok)
 - `kotlin-compiler-5536396340374344436.salive` (~0 tok)
 - `kotlin-compiler-5562755372379455990.salive` (~0 tok)
+- `kotlin-compiler-6466367981397079794.salive` (~0 tok)
 - `kotlin-compiler-7041476127320362317.salive` (~0 tok)
 
 ## editors/intellij/gradle/wrapper/
@@ -95,7 +101,8 @@
 
 - `BeaverFormattingServiceTest.kt` — Runs the platform's reformat entry points against a real beaver (~856 tok)
 - `BinaryResolverTest.kt` — BinaryResolverTest: manifest, resolver, read (~1623 tok)
-- `DartWorkflowsTest.kt` — Folder reformat and Reformat on Save. The platform skips files of a type (~726 tok)
+- `DartWorkflowsTest.kt` — Folder reformat and Reformat on Save. The platform skips files of a type (~881 tok)
+- `ZzDiagTest.kt` — ZzDiagTest: createTempDirTestFixture (~249 tok)
 
 ## editors/vscode/
 
@@ -120,7 +127,7 @@
 ## editors/vscode/test/integration/
 
 - `run.ts` — Launches VS Code with the extension and a scratch workspace, and runs the (~368 tok)
-- `suite.ts` — Runs inside VS Code (see run.ts). (~1448 tok)
+- `suite.ts` — Runs inside VS Code (see run.ts). (~1578 tok)
 
 ## example/
 
