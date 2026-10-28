@@ -1,7 +1,7 @@
 # anatomy.md
 
 > Auto-maintained by OpenWolf. Last scanned: 2026-10-28T14:10:24.648Z
-> Files: 885 tracked | Anatomy hits: 0 | Misses: 0
+> Files: 887 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -70,6 +70,8 @@
 - `kotlin-compiler-1506138980457316143.salive` (~0 tok)
 - `kotlin-compiler-15864434303860708750.salive` (~0 tok)
 - `kotlin-compiler-16230758394065571957.salive` (~0 tok)
+- `kotlin-compiler-17814252035007599574.salive` (~0 tok)
+- `kotlin-compiler-17852573604591435785.salive` (~0 tok)
 - `kotlin-compiler-2278174799909718003.salive` (~0 tok)
 - `kotlin-compiler-2459887284804740381.salive` (~0 tok)
 - `kotlin-compiler-2706210512951659281.salive` (~0 tok)
