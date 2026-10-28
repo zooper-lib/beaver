@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "meta": {
+    "lastScanned": "2026-10-28T06:33:28.979Z",
+    "fileCount": 7,
+    "hits": 0,
+    "misses": 0,
+    "renderedHash": "e9cff424660552ebfc5d9051d230e035107eff23ca984fe16b08515a19de150d",
+    "storeUpdatedAt": "2026-10-28T06:33:28.980Z",
+    "rootHash": "e56967353302c084"
+  },
+  "files": {
+    "AGENTS.md": {
+      "description": "OpenWolf",
+      "tokens": 75,
+      "hash": "e401f79554a8d796",
+      "size": 297,
+      "mtimeMs": 1793159006920.3125,
+      "updatedAt": "2026-10-28T06:33:28.963Z",
+      "source": "scan"
+    },
+    "CLAUDE.md": {
+      "description": "OpenWolf",
+      "tokens": 99,
+      "hash": "074d6b42b583729a",
+      "size": 395,
+      "mtimeMs": 1793159001556.6362,
+      "updatedAt": "2026-10-28T06:33:28.963Z",
+      "source": "scan"
+    },
+    "DRAFT.md": {
+      "description": "Beaver — a configurable Dart formatter",
+      "tokens": 11260,
+      "hash": "ee9a23fa415536a9",
+      "size": 45141,
+      "mtimeMs": 1793169207771.3018,
+      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "source": "scan"
+    },
+    "LICENSE": {
+      "description": "Project license",
+      "tokens": 284,
+      "hash": "e6f85cc9a9ecf1f2",
+      "size": 1063,
+      "mtimeMs": 1793157589292.375,
+      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "source": "scan"
+    },
+    "openspec/changes/archive/.gitkeep": {
+      "description": "",
+      "tokens": 0,
+      "hash": "e3b0c44298fc1c14",
+      "size": 0,
+      "mtimeMs": 1793158956804.5059,
+      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "source": "scan"
+    },
+    "openspec/config.yaml": {
+      "description": "",
+      "tokens": 286,
+      "hash": "f0082e9c22e8ce1d",
+      "size": 998,
+      "mtimeMs": 1793158956824.6968,
+      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "source": "scan"
+    },
+    "openspec/specs/.gitkeep": {
+      "description": "",
+      "tokens": 0,
+      "hash": "e3b0c44298fc1c14",
+      "size": 0,
+      "mtimeMs": 1793158956804.2493,
+      "updatedAt": "2026-10-28T06:33:28.964Z",
+      "source": "scan"
+    }
+  },
+  "preamble": [
+    "> Project structure index. Auto-maintained by OpenWolf hooks and daemon.",
+    "> Run `openwolf scan` to generate, or wait for the first Claude Code session.",
+    "> Status: Pending initial scan"
+  ]
+}
