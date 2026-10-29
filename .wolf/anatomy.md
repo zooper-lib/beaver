@@ -1,7 +1,7 @@
 # anatomy.md
 
 > Auto-maintained by OpenWolf. Last scanned: 2026-10-29T04:42:31.326Z
-> Files: 893 tracked | Anatomy hits: 0 | Misses: 0
+> Files: 894 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -17,7 +17,7 @@
 ## .github/workflows/
 
 - `ci.yml` — CI: CI (~2110 tok)
-- `release.yml` — CI: Release (~2519 tok)
+- `release.yml` — CI: Release (~2568 tok)
 
 ## docs/
 
@@ -51,7 +51,7 @@
 ## editors/intellij/
 
 - `.gitignore` — Git ignore rules (~10 tok)
-- `build.gradle.kts` — Gradle Kotlin build configuration (~809 tok)
+- `build.gradle.kts` — Gradle Kotlin build configuration (~850 tok)
 - `gradle.properties` — Plugin version: independent of the formatter version. (~174 tok)
 - `gradlew` — you may not use this file except in compliance with the License. (~2292 tok)
 - `gradlew.bat` (~773 tok)
@@ -64,6 +64,7 @@
 - `kotlin-compiler-11504656380341749643.salive` (~0 tok)
 - `kotlin-compiler-11738155765955484829.salive` (~0 tok)
 - `kotlin-compiler-12648863017526282639.salive` (~0 tok)
+- `kotlin-compiler-13070930914694973815.salive` (~0 tok)
 - `kotlin-compiler-13757639581876646826.salive` (~0 tok)
 - `kotlin-compiler-14887668586889148413.salive` (~0 tok)
 - `kotlin-compiler-14937229076618430528.salive` (~0 tok)

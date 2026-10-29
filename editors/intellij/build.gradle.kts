@@ -41,8 +41,14 @@ intellijPlatform {
             untilBuild = providers.gradleProperty("untilBuild")
         }
     }
-    // Plugin Verifier: the supported range, checked in CI.
-    pluginVerification { ides { recommended() } }
+    // Plugin Verifier: the oldest and newest IDE of the declared range
+    // (sinceBuild/untilBuild), the same pair CI tests against.
+    pluginVerification {
+        ides {
+            create("IC", "2024.3.6")
+            create("IU", "2025.3")
+        }
+    }
 }
 
 // The binary manifest from the release and the declared versions are

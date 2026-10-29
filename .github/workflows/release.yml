@@ -194,8 +194,10 @@ jobs:
         with:
           name: release
           path: dist
-      - name: Build the plugin
-        run: BEAVER_MANIFEST="$GITHUB_WORKSPACE/dist/beaver-manifest.json" ./gradlew buildPlugin --console=plain
+      # The packaged plugin, with this release's manifest, is checked by the
+      # Plugin Verifier against the oldest and newest supported IDE.
+      - name: Build and verify the plugin
+        run: BEAVER_MANIFEST="$GITHUB_WORKSPACE/dist/beaver-manifest.json" ./gradlew buildPlugin verifyPlugin --console=plain
       - uses: actions/upload-artifact@v4
         with:
           name: intellij
