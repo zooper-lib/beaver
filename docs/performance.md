@@ -46,6 +46,8 @@ Measured by each plugin's test suite on Beaver's own `lib/src/cli/cli.dart` (541
 |---|---|---:|---:|---:|
 | IntelliJ IDEA Community 2024.3.6 | Apple M4 Pro | 286 | 92 | 98 |
 | IntelliJ IDEA 2025.3 | Apple M4 Pro | 383 | 72 | 157 |
-| VS Code | CI (ubuntu-latest) | not yet recorded | | |
+| VS Code | CI (`ubuntu-latest`, under xvfb) | 213 | 144 | 293 |
 
-The IntelliJ test checks for the formatted file every 20 ms, so its figures can be up to 20 ms high. Against the 150 ms threshold: an ordinary save is inside it in IntelliJ; most of that time is the IDE's own save and formatting pipeline, since the CLI round trip for a file this size is about 16 ms. The first save of a session is above it, once, because the binary is located and checked then.
+The IntelliJ test checks for the formatted file every 20 ms, so its figures can be up to 20 ms high. VS Code's six later saves were 110, 293, 214, 144, 65 and 53 ms: a shared CI runner, with a slower CPU than the machine above, varies a lot from save to save.
+
+Against the 150 ms threshold: the median save is inside it in both editors, in VS Code only just. Single saves exceed it (IntelliJ 2025.3 once at 157 ms, VS Code on CI up to 293 ms), and so does the first save of a session, because the binary is located and checked then. Beaver's own share is small: the CLI round trip for a file this size is about 16 ms on the M4 Pro, so most of the time is the editor's own save and formatting pipeline. No daemon is needed for that share; if save latency becomes a complaint, the editors' overhead is where to look first.

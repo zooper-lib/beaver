@@ -24,7 +24,7 @@
 - `cli.md` — Command line (~960 tok)
 - `directives.md` — Ignore directives (~606 tok)
 - `install.md` — Installing Beaver (~424 tok)
-- `performance.md` — Performance (~827 tok)
+- `performance.md` — Performance (~936 tok)
 - `safety-corpus.md` — Safety corpus (~390 tok)
 - `stdin-protocol.md` — The stdin protocol (~805 tok)
 - `versioning.md` — Versions (~337 tok)
@@ -841,7 +841,7 @@
 - `.openspec.yaml` (~12 tok)
 - `design.md` — Design (~3807 tok)
 - `proposal.md` — Proposal (~1879 tok)
-- `tasks.md` — Tasks (~5485 tok)
+- `tasks.md` — Tasks (~5518 tok)
 
 ## openspec/changes/initial-implementation/specs/cli/
 

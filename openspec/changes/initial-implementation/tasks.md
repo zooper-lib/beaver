@@ -109,7 +109,7 @@ Specs: `specs/*/spec.md`. Design: `design.md`. Decisions: `DRAFT.md` §12.
 
 - [x] 14.1 Scaffold the TypeScript extension with `extensionKind: ["workspace"]`, document and range formatting providers for `dart`, buffer-authoritative `--stdin --stdin-name` invocation, 0-based → 1-based range conversion, prefix/suffix trim to a single edit, cancellation killing the process, stale-result discard; verify the extension's integration tests: Format Document, Format Selection, unsaved edits, change near the end yields a local edit, typing during format discards the result
 - [x] 14.2 Implement binary resolution (setting → PATH → bundled) with `--version` probe and protocol check, explicit/PATH incompatibility as an error with no fallback, excluded-file and non-zero-exit handling with no buffer change; verify tests: PATH preferred over bundled, incompatible explicit path errors, exit 65 leaves buffer unchanged, `.g.dart` save shows no error
-- [ ] 14.3 Add the "Beaver: Show Formatter Information" command; verify it displays version, protocol, source, path, platform and resolved config
+- [x] 14.3 Add the "Beaver: Show Formatter Information" command; verify it displays version, protocol, source, path, platform and resolved config
 - [ ] 14.4 Add platform-specific VSIX packaging (one bundled binary each) to the release workflow; verify five VSIX files are produced and the Linux VSIX installs and formats inside a dev container while the UI runs on another OS
 - [x] 14.5 Write `docs/editors/vscode.md` (install, default formatter for `[dart]`, format on save, coexistence with the Dart extension); verify the documented settings produce format-on-save in a test workspace
 
@@ -124,14 +124,14 @@ Specs: `specs/*/spec.md`. Design: `design.md`. Decisions: `DRAFT.md` §12.
 
 ## 16. Other editors
 
-- [ ] 16.1 Write `docs/editors/{helix,zed,neovim,emacs,sublime}.md` with a valid, copy-paste external-formatter configuration each and an explicit statement of whether selection formatting is available in that editor; verify each configuration file parses (TOML/JSON/Lua) and formats a file in the respective editor
-- [ ] 16.2 Add a CI job that runs each documented configuration headlessly where the editor supports it (Helix, Neovim) and verifies the formatted output equals the CLI's
+- [x] 16.1 Write `docs/editors/{helix,zed,neovim,emacs,sublime}.md` with a valid, copy-paste external-formatter configuration each and an explicit statement of whether selection formatting is available in that editor; verify each configuration file parses (TOML/JSON/Lua) and formats a file in the respective editor — Zed and Sublime: configuration parsing only (valid JSON in CI); running them in their editors is deferred by decision (2026-10-29)
+- [x] 16.2 Add a CI job that runs each documented configuration headlessly where the editor supports it (Helix, Neovim) and verifies the formatted output equals the CLI's
 
 ## 17. Integration checks
 
 - [x] 17.1 Run the full scored corpus and the strict suites at both analyzer bounds; verify zero structural or idempotence failures, and record the match percentage overall and per area in `UPSTREAM.md`
 - [x] 17.2 Run the §4.4 corpus test over a set of real packages (top pub packages and a Flutter checkout) under the `dart` preset and three non-default configurations; verify all three invariants hold on every file and failures, if any, are reduced to golden cases
-- [ ] 17.3 Measure end-to-end format-on-save latency (process start, config, parse, format, verify) in VS Code and IntelliJ on a representative file and record it in `docs/performance.md`; verify the number is compared against the 150 ms threshold from `DRAFT.md` §3 and the result is stated
+- [x] 17.3 Measure end-to-end format-on-save latency (process start, config, parse, format, verify) in VS Code and IntelliJ on a representative file and record it in `docs/performance.md`; verify the number is compared against the 150 ms threshold from `DRAFT.md` §3 and the result is stated
 
 ## Workflow follow-up
 

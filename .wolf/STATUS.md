@@ -16,7 +16,7 @@ budget_tokens: 1000
 
 ## 🚀 Next quest
 
-Waiting on the next CI run (needs a push): 14.3 (info test now asserts content), 16.2 (Helix driven via pty: tool/editors/helix_format.py), 16.1 partly (Emacs batch + apheleia step; Zed/Sublime still only JSON-checked), 17.3 (VS Code `BEAVER_LATENCY` line → docs/performance.md; IntelliJ numbers recorded). Then: release dry run → 13.1, 14.4, 15.5; signing → 13.2; pub.dev → 13.3, 13.4 (blocked: stays private).
+74/80. Open: release dry run → 13.1, 14.4 (plus Linux VSIX in a dev container), 15.5; signing secrets → 13.2; pub.dev → 13.3, 13.4 (blocked: stays private). release.yml is not dispatchable until it is on `main` (workflow_dispatch needs the default branch): merge, or add a dry-run branch trigger (then make non-tag runs always dry and limit publish to tags first). Zed and Sublime in-editor checks deferred by the user (16.1 ticked with that note).
 
 ## Design issues: resolved 2026-10-28
 
