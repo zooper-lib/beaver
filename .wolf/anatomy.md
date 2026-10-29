@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T04:42:31.326Z
-> Files: 898 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T16:39:34.170Z
+> Files: 911 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -26,6 +26,7 @@
 - `directives.md` — Ignore directives (~606 tok)
 - `install.md` — Installing Beaver (~694 tok)
 - `performance.md` — Performance (~936 tok)
+- `proposed-settings.md` — Proposed settings (~16001 tok)
 - `safety-corpus.md` — Safety corpus (~390 tok)
 - `stdin-protocol.md` — The stdin protocol (~805 tok)
 - `versioning.md` — Versions (~337 tok)
@@ -834,6 +835,45 @@
 ## openspec/
 
 - `config.yaml` (~286 tok)
+
+## openspec/changes/add-new-settings/
+
+- `.openspec.yaml` (~12 tok)
+- `design.md` — Design (~3706 tok)
+- `proposal.md` — Proposal (~2130 tok)
+- `tasks.md` — Tasks (~3614 tok)
+
+## openspec/changes/add-new-settings/specs/cli/
+
+- `spec.md` — Spec Delta (~377 tok)
+
+## openspec/changes/add-new-settings/specs/comment-attachment/
+
+- `spec.md` — Spec Delta (~643 tok)
+
+## openspec/changes/add-new-settings/specs/config-resolution/
+
+- `spec.md` — Spec Delta (~4260 tok)
+
+## openspec/changes/add-new-settings/specs/editorconfig-integration/
+
+- `spec.md` — Spec Delta (~1484 tok)
+
+## openspec/changes/add-new-settings/specs/formatting-rules/
+
+- `spec.md` — Spec Delta (~10212 tok)
+
+## openspec/changes/add-new-settings/specs/golden-test-harness/
+
+- `spec.md` — Spec Delta (~289 tok)
+
+## openspec/changes/add-new-settings/specs/layout-printer/
+
+- `spec.md` — Spec Delta (~190 tok)
+
+## openspec/changes/add-new-settings/specs/stdin-protocol/
+
+- `spec.md` — Spec Delta (~240 tok)
 
 ## openspec/changes/archive/
 
