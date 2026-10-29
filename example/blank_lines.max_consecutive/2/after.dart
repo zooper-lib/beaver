@@ -1,0 +1,6 @@
+void example() {
+  prepare();
+
+
+  run();
+}

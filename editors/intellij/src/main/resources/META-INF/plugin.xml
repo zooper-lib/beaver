@@ -1,0 +1,23 @@
+<idea-plugin>
+  <id>dev.zooper.beaver</id>
+  <name>Beaver Dart Formatter</name>
+  <vendor url="https://github.com/zooper-lib/beaver">Zooper</vendor>
+  <description><![CDATA[
+    Formats Dart with <a href="https://github.com/zooper-lib/beaver">Beaver</a>, the configurable
+    formatter whose rules live in <code>.beaver.yaml</code>. Reformat Code, Reformat Selection,
+    folder reformat and Reformat on Save all use it.
+  ]]></description>
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <formattingService implementation="dev.zooper.beaver.BeaverFormattingService"/>
+    <applicationConfigurable parentId="tools" instance="dev.zooper.beaver.BeaverConfigurable"
+                             id="dev.zooper.beaver.settings" displayName="Beaver"/>
+    <notificationGroup id="Beaver" displayType="BALLOON"/>
+  </extensions>
+
+  <actions>
+    <action id="dev.zooper.beaver.ShowInformation" class="dev.zooper.beaver.ShowInformationAction"
+            text="Beaver: Show Formatter Information"/>
+  </actions>
+</idea-plugin>

@@ -1,0 +1,22 @@
+>>> Ignored statement keeps its bytes; the next statement is formatted.
+// beaver-ignore
+final x   =   1;
+final y   =   2;
+<<<
+// beaver-ignore
+final x   =   1;
+final y = 2;
+>>> Ignored list element.
+var list = [
+  aaa  +  bbb,
+  // beaver-ignore
+  ccc  +  ddd,
+  eee  +  fff,
+];
+<<<
+var list = [
+  aaa + bbb,
+  // beaver-ignore
+  ccc  +  ddd,
+  eee + fff,
+];

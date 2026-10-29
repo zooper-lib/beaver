@@ -1,0 +1,40 @@
+>>> else on the same line as the brace (preset).
+if (x) { a(); } else { b(); }
+<<<
+if (x) {
+  a();
+} else {
+  b();
+}
+>>> (braces.else_on_new_line=true) else on a new line.
+if (x) { a(); } else { b(); }
+<<<
+if (x) {
+  a();
+}
+else {
+  b();
+}
+>>> (braces.else_on_new_line=true) catch and finally on new lines.
+try { a(); } catch (e) { b(); } finally { c(); }
+<<<
+try {
+  a();
+}
+catch (e) {
+  b();
+}
+finally {
+  c();
+}
+>>> A braceless if stays braceless.
+if (x) return;
+<<<
+if (x) return;
+>>> A braceless if with else stays braceless.
+if (x) a(); else b();
+<<<
+if (x)
+  a();
+else
+  b();

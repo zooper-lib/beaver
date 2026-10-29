@@ -1,0 +1,283 @@
+40 columns                              |
+>>> (wrap.arguments=never) arguments never, fits.
+foo(alpha, beta, gamma);
+<<<
+foo(alpha, beta, gamma);
+>>> (wrap.arguments=never) arguments never, overflows.
+function(firstArgument, secondArgument, third);
+<<<
+function(firstArgument, secondArgument, third);
+>>> (wrap.arguments=if_long) arguments if_long, fits.
+foo(alpha, beta, gamma);
+<<<
+foo(alpha, beta, gamma);
+>>> (wrap.arguments=if_long trailing_commas=remove) arguments if_long, overflows.
+function(firstArgument, secondArgument, third);
+<<<
+function(
+  firstArgument, secondArgument, third
+);
+>>> (wrap.arguments=chop_if_long) arguments chop_if_long, fits.
+foo(alpha, beta, gamma);
+<<<
+foo(alpha, beta, gamma);
+>>> (wrap.arguments=chop_if_long) arguments chop_if_long, overflows.
+function(firstArgument, secondArgument, third);
+<<<
+function(
+  firstArgument,
+  secondArgument,
+  third,
+);
+>>> (wrap.arguments=chop_always) arguments chop_always, fits.
+foo(alpha, beta, gamma);
+<<<
+foo(
+  alpha,
+  beta,
+  gamma,
+);
+>>> (wrap.arguments=chop_always) arguments chop_always, overflows.
+function(firstArgument, secondArgument, third);
+<<<
+function(
+  firstArgument,
+  secondArgument,
+  third,
+);
+>>> (wrap.parameters=never) parameters never, fits.
+void f(int a, int b) {}
+<<<
+void f(int a, int b) {}
+>>> (wrap.parameters=never) parameters never, overflows.
+void function(int first, int second, int third) {}
+<<<
+void function(int first, int second, int third) {}
+>>> (wrap.parameters=if_long) parameters if_long, fits.
+void f(int a, int b) {}
+<<<
+void f(int a, int b) {}
+>>> (wrap.parameters=if_long trailing_commas=remove) parameters if_long, overflows.
+void function(int first, int second, int third) {}
+<<<
+void function(
+  int first, int second, int third
+) {}
+>>> (wrap.parameters=chop_if_long) parameters chop_if_long, fits.
+void f(int a, int b) {}
+<<<
+void f(int a, int b) {}
+>>> (wrap.parameters=chop_if_long) parameters chop_if_long, overflows.
+void function(int first, int second, int third) {}
+<<<
+void function(
+  int first,
+  int second,
+  int third,
+) {}
+>>> (wrap.parameters=chop_always) parameters chop_always, fits.
+void f(int a, int b) {}
+<<<
+void f(
+  int a,
+  int b,
+) {}
+>>> (wrap.parameters=chop_always) parameters chop_always, overflows.
+void function(int first, int second, int third) {}
+<<<
+void function(
+  int first,
+  int second,
+  int third,
+) {}
+>>> (wrap.collection_literals=never) collection_literals never, fits.
+var l = [1, 2, 3];
+<<<
+var l = [1, 2, 3];
+>>> (wrap.collection_literals=never) collection_literals never, overflows.
+var list = [firstElement, secondElement, third];
+<<<
+var list = [firstElement, secondElement, third];
+>>> (wrap.collection_literals=if_long) collection_literals if_long, fits.
+var l = [1, 2, 3];
+<<<
+var l = [1, 2, 3];
+>>> (wrap.collection_literals=if_long trailing_commas=remove) collection_literals if_long, overflows.
+var list = [firstElement, secondElement, third];
+<<<
+var list = [
+  firstElement, secondElement, third
+];
+>>> (wrap.collection_literals=chop_if_long) collection_literals chop_if_long, fits.
+var l = [1, 2, 3];
+<<<
+var l = [1, 2, 3];
+>>> (wrap.collection_literals=chop_if_long) collection_literals chop_if_long, overflows.
+var list = [firstElement, secondElement, third];
+<<<
+var list = [
+  firstElement,
+  secondElement,
+  third,
+];
+>>> (wrap.collection_literals=chop_always) collection_literals chop_always, fits.
+var l = [1, 2, 3];
+<<<
+var l = [
+  1,
+  2,
+  3,
+];
+>>> (wrap.collection_literals=chop_always) collection_literals chop_always, overflows.
+var list = [firstElement, secondElement, third];
+<<<
+var list = [
+  firstElement,
+  secondElement,
+  third,
+];
+>>> (wrap.binary_expressions=never) binary_expressions never, fits.
+x = a + b;
+<<<
+x = a + b;
+>>> (wrap.binary_expressions=never) binary_expressions never, overflows.
+value = operandOne + operandTwo + operandThree + four;
+<<<
+value =
+    operandOne + operandTwo + operandThree + four;
+>>> (wrap.binary_expressions=if_long) binary_expressions if_long, fits.
+x = a + b;
+<<<
+x = a + b;
+>>> (wrap.binary_expressions=if_long) binary_expressions if_long, overflows.
+value = operandOne + operandTwo + operandThree + four;
+<<<
+value =
+    operandOne + operandTwo +
+    operandThree + four;
+>>> (wrap.binary_expressions=chop_if_long) binary_expressions chop_if_long, fits.
+x = a + b;
+<<<
+x = a + b;
+>>> (wrap.binary_expressions=chop_if_long) binary_expressions chop_if_long, overflows.
+value = operandOne + operandTwo + operandThree + four;
+<<<
+value =
+    operandOne +
+    operandTwo +
+    operandThree +
+    four;
+>>> (wrap.binary_expressions=chop_always) binary_expressions chop_always, fits.
+x = a + b;
+<<<
+x =
+    a +
+    b;
+>>> (wrap.binary_expressions=chop_always) binary_expressions chop_always, overflows.
+value = operandOne + operandTwo + operandThree + four;
+<<<
+value =
+    operandOne +
+    operandTwo +
+    operandThree +
+    four;
+>>> (wrap.conditional_expressions=never) conditional_expressions never, fits.
+x = c ? a : b;
+<<<
+x = c ? a : b;
+>>> (wrap.conditional_expressions=never) conditional_expressions never, overflows.
+value = condition ? whenTrueResult : whenFalseResult;
+<<<
+value =
+    condition ? whenTrueResult : whenFalseResult;
+>>> (wrap.conditional_expressions=if_long) conditional_expressions if_long, fits.
+x = c ? a : b;
+<<<
+x = c ? a : b;
+>>> (wrap.conditional_expressions=if_long) conditional_expressions if_long, overflows.
+value = condition ? whenTrueResult : whenFalseResult;
+<<<
+value = condition ? whenTrueResult
+    : whenFalseResult;
+>>> (wrap.conditional_expressions=chop_if_long) conditional_expressions chop_if_long, fits.
+x = c ? a : b;
+<<<
+x = c ? a : b;
+>>> (wrap.conditional_expressions=chop_if_long) conditional_expressions chop_if_long, overflows.
+value = condition ? whenTrueResult : whenFalseResult;
+<<<
+value = condition
+    ? whenTrueResult
+    : whenFalseResult;
+>>> (wrap.conditional_expressions=chop_always) conditional_expressions chop_always, fits.
+x = c ? a : b;
+<<<
+x = c
+    ? a
+    : b;
+>>> (wrap.conditional_expressions=chop_always) conditional_expressions chop_always, overflows.
+value = condition ? whenTrueResult : whenFalseResult;
+<<<
+value = condition
+    ? whenTrueResult
+    : whenFalseResult;
+>>> (wrap.chained_calls.policy=never wrap.chained_calls.keep_single_line_if_fits=false) chained_calls never.
+result = source.first().second().third().fourth();
+<<<
+result = source.first().second().third().fourth();
+>>> (wrap.chained_calls.policy=if_long wrap.chained_calls.keep_single_line_if_fits=false) chained_calls if_long.
+result = source.first().second().third().fourth();
+<<<
+result = source.first().second().third()
+    .fourth();
+>>> (wrap.chained_calls.policy=chop_if_long wrap.chained_calls.keep_single_line_if_fits=false) chained_calls chop_if_long.
+result = source.first().second().third().fourth();
+<<<
+result = source
+    .first()
+    .second()
+    .third()
+    .fourth();
+>>> (wrap.chained_calls.policy=chop_always wrap.chained_calls.keep_single_line_if_fits=false) chained_calls chop_always.
+result = source.first().second().third().fourth();
+<<<
+result = source
+    .first()
+    .second()
+    .third()
+    .fourth();
+>>> (wrap.arguments=if_long) if_long under the dart preset: the added comma is not a chop request while items share a line.
+function(firstArgument, secondArgument, third);
+<<<
+function(
+  firstArgument, secondArgument, third,
+);
+>>> (wrap.chained_calls.min_calls=3) Chain reaches min_calls.
+a.b().c().d();
+<<<
+a
+    .b()
+    .c()
+    .d();
+>>> (wrap.chained_calls.min_calls=3) Short chain fits.
+a.b().c();
+<<<
+a.b().c();
+>>> (wrap.chained_calls.policy=chop_always) keep_single_line_if_fits keeps a short chain.
+a.b().c();
+<<<
+a.b().c();
+>>> (wrap.before_operator=true) Before operator.
+value = operandOne + operandTwo + operandThree;
+<<<
+value =
+    operandOne
+    + operandTwo
+    + operandThree;
+>>> (wrap.before_operator=false) After operator.
+value = operandOne + operandTwo + operandThree;
+<<<
+value =
+    operandOne +
+    operandTwo +
+    operandThree;

@@ -1,0 +1,86 @@
+>>> One case per statement kind under the dart preset.
+void f()async{
+  {var  inner=1;}
+  var  x=1;final  int  y;late  String  z;
+  if(x>0){x++;}else  if(x<0){x--;}else{x=0;}
+  if(x==0)return;
+  for(var  i=0;i<10;i++){print(i);}
+  for(final  e  in  list){print(e);}
+  await  for(final  e  in  stream){print(e);}
+  while(x>0){x--;}
+  do{x++;}while(x<10);
+  switch(x){case  1:print('one');case  2:case  3:print('few');default:break;}
+  try{risky();}on  FormatException  catch(e){print(e);}catch(e,s){rethrow;}finally{cleanup();}
+  outer:for(;;){break  outer;}
+  assert(x>0,'positive');
+  final (a,b)=(1,2);
+  if(x  case  int  n  when  n>0){print(n);}
+  yieldAll();
+  return;
+}
+Iterable<int> g()sync*{yield  1;yield*  other();}
+<<<
+void f() async {
+  {
+    var inner = 1;
+  }
+  var x = 1;
+  final int y;
+  late String z;
+  if (x > 0) {
+    x++;
+  } else if (x < 0) {
+    x--;
+  } else {
+    x = 0;
+  }
+  if (x == 0) return;
+  for (var i = 0; i < 10; i++) {
+    print(i);
+  }
+  for (final e in list) {
+    print(e);
+  }
+  await for (final e in stream) {
+    print(e);
+  }
+  while (x > 0) {
+    x--;
+  }
+  do {
+    x++;
+  } while (x < 10);
+  switch (x) {
+    case 1:
+      print('one');
+    case 2:
+    case 3:
+      print('few');
+    default:
+      break;
+  }
+  try {
+    risky();
+  } on FormatException catch (e) {
+    print(e);
+  } catch (e, s) {
+    rethrow;
+  } finally {
+    cleanup();
+  }
+  outer:
+  for (;;) {
+    break outer;
+  }
+  assert(x > 0, 'positive');
+  final (a, b) = (1, 2);
+  if (x case int n when n > 0) {
+    print(n);
+  }
+  yieldAll();
+  return;
+}
+Iterable<int> g() sync* {
+  yield 1;
+  yield* other();
+}

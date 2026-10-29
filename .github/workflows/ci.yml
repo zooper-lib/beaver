@@ -1,0 +1,163 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: test (${{ matrix.deps }} analyzer)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # lowest = analyzer at the range lower bound, latest = newest allowed.
+        deps: [lowest, latest]
+    defaults:
+      run:
+        working-directory: packages/zooper_beaver
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Resolve dependencies (${{ matrix.deps }})
+        run: |
+          dart pub upgrade
+          # Only the analyzer goes to its lower bound; other dev tools stay current.
+          if [ "${{ matrix.deps }}" = lowest ]; then dart pub downgrade analyzer; fi
+          dart pub deps --style=compact | grep '^- analyzer '
+      - run: dart analyze --fatal-infos
+      # The repository is formatted by Beaver itself (dart preset).
+      - name: Formatted by Beaver
+        run: dart run bin/beaver.dart --check .
+      - run: dart test
+
+  vscode:
+    name: VS Code extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Build beaver
+        working-directory: packages/zooper_beaver
+        run: dart pub get && dart compile exe bin/beaver.dart -o "$RUNNER_TEMP/beaver"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Unit tests
+        working-directory: editors/vscode
+        run: npm ci && BEAVER_BINARY="$RUNNER_TEMP/beaver" npm test
+      - name: Integration tests (inside VS Code)
+        working-directory: editors/vscode
+        run: BEAVER_BINARY="$RUNNER_TEMP/beaver" xvfb-run -a npm run test:integration
+
+  intellij:
+    name: IntelliJ plugin (${{ matrix.ide }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Oldest and newest IDE in the declared range (gradle.properties).
+        # IntelliJ IDEA Community is not published from 2025.3 on; the
+        # unified IntelliJ IDEA (IU) replaces it.
+        include:
+          - { ide: '2024.3.6', type: IC }
+          - { ide: '2025.3', type: IU }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Build beaver
+        working-directory: packages/zooper_beaver
+        run: dart pub get && dart compile exe bin/beaver.dart -o "$RUNNER_TEMP/beaver"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Test, including folder reformat and Reformat on Save
+        working-directory: editors/intellij
+        run: BEAVER_BINARY="$RUNNER_TEMP/beaver" ./gradlew test -PwithDart=true -PplatformType=${{ matrix.type }} -PplatformVersion=${{ matrix.ide }} --console=plain
+      - name: Plugin Verifier
+        if: matrix.ide == '2025.3'
+        working-directory: editors/intellij
+        run: ./gradlew verifyPlugin -PplatformType=${{ matrix.type }} -PplatformVersion=${{ matrix.ide }} --console=plain
+
+  editors:
+    name: Documented editor configurations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Build beaver onto PATH
+        working-directory: packages/zooper_beaver
+        run: |
+          dart pub get
+          mkdir -p "$HOME/bin" && dart compile exe bin/beaver.dart -o "$HOME/bin/beaver"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+      - name: Sample file and expected output
+        run: |
+          mkdir -p /tmp/project && cd /tmp/project
+          printf 'name: sample\n' > pubspec.yaml
+          printf 'void main(){print( "hi" );}\n' > sample.dart
+          beaver --stdin --stdin-name sample.dart < sample.dart > expected.dart
+      - name: Neovim with conform.nvim (the documented init.lua)
+        run: |
+          curl -fsSL https://github.com/neovim/neovim/releases/download/v0.11.4/nvim-linux-x86_64.tar.gz | tar xz -C "$HOME"
+          git clone --depth 1 https://github.com/stevearc/conform.nvim "$HOME/conform.nvim"
+          { echo "vim.opt.rtp:prepend('$HOME/conform.nvim')"; python3 tool/editors/extract.py docs/editors/neovim.md lua; } > /tmp/init.lua
+          cp /tmp/project/sample.dart /tmp/project/nvim.dart
+          cd /tmp/project && "$HOME/nvim-linux-x86_64/bin/nvim" --headless -u /tmp/init.lua \
+            -c 'lua require("conform").format({ async = false })' -c 'wq' nvim.dart
+          diff -u expected.dart nvim.dart
+      - name: Helix (the documented languages.toml)
+        run: |
+          curl -fsSL https://github.com/helix-editor/helix/releases/download/25.07.1/helix-25.07.1-x86_64-linux.tar.xz | tar xJ -C "$HOME"
+          mkdir -p "$HOME/.config/helix"
+          python3 tool/editors/extract.py docs/editors/helix.md toml > "$HOME/.config/helix/languages.toml"
+          # The health check parses the file and resolves the formatter.
+          "$HOME/helix-25.07.1-x86_64-linux/hx" --health dart | tee /tmp/health.txt
+          grep -q "beaver" /tmp/health.txt
+          # Helix has no batch mode: drive it in a pseudo terminal to save.
+          cp /tmp/project/sample.dart /tmp/project/hx.dart
+          cd /tmp/project && python3 "$GITHUB_WORKSPACE/tool/editors/helix_format.py" \
+            "$HOME/helix-25.07.1-x86_64-linux/hx" hx.dart
+          diff -u expected.dart hx.dart
+      - name: Emacs with apheleia (the documented configuration)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq emacs-nox
+          git clone --depth 1 https://github.com/radian-software/apheleia "$HOME/apheleia"
+          # dart-mode itself is not needed to test the setup: a stand-in mode
+          # with the same name receives the documented mapping.
+          { echo "(add-to-list 'load-path \"$HOME/apheleia\")"
+            echo "(require 'apheleia)"
+            echo "(define-derived-mode dart-mode prog-mode \"Dart\")"
+            python3 tool/editors/extract.py docs/editors/emacs.md elisp; } > /tmp/init.el
+          cp /tmp/project/sample.dart /tmp/project/emacs.dart
+          # Save, as a user would; apheleia formats after saving and saves
+          # again. Wait until the file on disk is the formatted one.
+          cd /tmp/project && emacs --batch -l /tmp/init.el --eval '
+            (let ((expected (with-temp-buffer
+                              (insert-file-contents "expected.dart")
+                              (buffer-string)))
+                  (deadline (+ (float-time) 20)))
+              (find-file "emacs.dart")
+              (dart-mode)
+              (set-buffer-modified-p t)
+              (save-buffer)
+              (while (and (< (float-time) deadline)
+                          (not (equal expected
+                                      (with-temp-buffer
+                                        (insert-file-contents "emacs.dart")
+                                        (buffer-string)))))
+                (accept-process-output nil 0.1)))'
+          diff -u expected.dart emacs.dart
+      - name: Zed and Sublime settings are valid JSON
+        run: |
+          python3 tool/editors/extract.py docs/editors/zed.md json | python3 -m json.tool > /dev/null
+          python3 tool/editors/extract.py docs/editors/sublime.md json | python3 -m json.tool > /dev/null

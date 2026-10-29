@@ -1,0 +1,59 @@
+>>> Hand-aligned matrix is byte-identical.
+// beaver-ignore-start
+const matrix = [
+  1,  0,   0,
+  0,  1,   0,
+  0,  0,   1,
+];
+// beaver-ignore-end
+var   after=1;
+<<<
+// beaver-ignore-start
+const matrix = [
+  1,  0,   0,
+  0,  1,   0,
+  0,  0,   1,
+];
+// beaver-ignore-end
+var after = 1;
+>>> dart format off/on are aliases.
+var  a=1;
+// dart format off
+var  b=2;
+// dart format on
+var  c=3;
+<<<
+var a = 1;
+// dart format off
+var  b=2;
+// dart format on
+var c = 3;
+>>> Region cutting through an argument list.
+void f() {
+  call(first+1, // beaver-ignore-start
+      second  ,   third); // beaver-ignore-end
+  other ( );
+}
+<<<
+void f() {
+  call(
+    first + 1, // beaver-ignore-start
+      second  ,   third); // beaver-ignore-end
+  other();
+}
+>>> Unterminated start runs to the end of the file.
+var  a=1;
+// beaver-ignore-start
+var  b=2;
+var  c   =3;
+<<<
+var a = 1;
+// beaver-ignore-start
+var  b=2;
+var  c   =3;
+>>> A near-miss is an ordinary comment.
+// beaver-ignore please
+var  a=1;
+<<<
+// beaver-ignore please
+var a = 1;

@@ -1,0 +1,116 @@
+>>> Consecutive blank lines collapse to max_consecutive.
+void f() {
+  a();
+
+
+
+  b();
+}
+<<<
+void f() {
+  a();
+
+  b();
+}
+>>> (blank_lines.max_consecutive=2) A higher cap keeps two.
+void f() {
+  a();
+
+
+
+  b();
+}
+<<<
+void f() {
+  a();
+
+
+  b();
+}
+>>> Exactly one blank line between adjacent methods.
+class A {
+  void a() {}
+  void b() {}
+
+
+  void c() {}
+}
+<<<
+class A {
+  void a() {}
+
+  void b() {}
+
+  void c() {}
+}
+>>> Fields keep their own grouping.
+class A {
+  int a = 0;
+  int b = 0;
+
+  int c = 0;
+}
+<<<
+class A {
+  int a = 0;
+  int b = 0;
+
+  int c = 0;
+}
+>>> Blank line before the first member is removed.
+class A {
+
+  int a = 0;
+}
+<<<
+class A {
+  int a = 0;
+}
+>>> (blank_lines.before_first_member=1) Or set to one.
+class A {
+  int a = 0;
+}
+<<<
+class A {
+
+  int a = 0;
+}
+>>> Blank line after imports and around classes.
+import 'a.dart';
+class A {}
+class B {}
+void f() {}
+<<<
+import 'a.dart';
+
+class A {}
+
+class B {}
+
+void f() {}
+>>> (blank_lines.after_imports=2 blank_lines.around_class_declarations=0) Other counts.
+import 'a.dart';
+class A {}
+
+class B {}
+<<<
+import 'a.dart';
+
+
+class A {}
+class B {}
+>>> A comment separated by a blank line keeps it; none after.
+void f() {
+  a();
+
+  // about b
+
+  b();
+}
+<<<
+void f() {
+  a();
+
+  // about b
+  b();
+}

@@ -1,0 +1,164 @@
+40 columns                              |
+>>> (trailing_commas=preserve) Kept break, call fits: siblings stay together.
+foo(a,
+    b, c);
+<<<
+foo(
+  a,
+  b, c
+);
+>>> (trailing_commas=preserve) Kept break, call overflows: everything chops.
+foo(firstArgument,
+    secondArgument, thirdArgumentEvenLonger);
+<<<
+foo(
+  firstArgument,
+  secondArgument,
+  thirdArgumentEvenLonger
+);
+>>> (wrap.arguments=never) never removes developer breaks.
+foo(a,
+    b, c);
+<<<
+foo(a, b, c);
+>>> Under the dart preset a kept break adds a comma; siblings stay together.
+foo(a,
+    b, c);
+<<<
+foo(
+  a,
+  b, c,
+);
+>>> (wrap.keep_existing_line_breaks=false) Flag off: breaks are not kept.
+foo(a,
+    b, c);
+<<<
+foo(a, b, c);
+>>> (wrap.keep_existing_line_breaks=false) Statements stay on separate lines.
+a();
+b();
+<<<
+a();
+b();
+>>> Kept break between binary operands.
+x = a +
+    b + c;
+<<<
+x =
+    a +
+    b + c;
+>>> add_when_wrapped adds a comma to a broken list.
+var list = [firstElement, secondElement, third];
+<<<
+var list = [
+  firstElement,
+  secondElement,
+  third,
+];
+>>> (wrap.chop_on_trailing_comma=false) add_when_wrapped removes it from a flat list.
+foo(a, b,);
+<<<
+foo(a, b);
+>>> (trailing_commas=remove) remove on a broken list.
+function(firstArgument, secondArgument, third);
+<<<
+function(
+  firstArgument,
+  secondArgument,
+  third
+);
+>>> (trailing_commas=remove) A required record comma is kept.
+final r = (42,);
+<<<
+final r = (42,);
+>>> Source trailing comma chops (Flutter idiom).
+foo(a, b,);
+<<<
+foo(
+  a,
+  b,
+);
+>>> (trailing_commas=remove) The comma chops and is then removed.
+foo(a, b,);
+<<<
+foo(
+  a,
+  b
+);
+>>> Mixed layout with a trailing comma: existing breaks decide, no chop.
+foo(
+  a, b,
+  c,
+);
+<<<
+foo(
+  a, b,
+  c,
+);
+>>> Mixed layout with a trailing comma: no chop when everything shares one line after the bracket.
+foo(
+  a, b, c,
+);
+<<<
+foo(
+  a, b, c,
+);
+>>> Fully chopped list with a trailing comma stays chopped.
+foo(
+  a,
+  b,
+);
+<<<
+foo(
+  a,
+  b,
+);
+>>> Line breaks inside an item do not make the list mixed.
+foo(a, () {
+  x();
+},);
+<<<
+foo(
+  a,
+  () {
+    x();
+  },
+);
+>>> (wrap.keep_existing_line_breaks=false) Mixed layout without kept breaks re-lays out by policy.
+foo(
+  a, b,
+  c,
+);
+<<<
+foo(a, b, c);
+>>> (trailing_commas=preserve wrap.chop_on_trailing_comma=false) preserve keeps a flat comma.
+foo(a, b,);
+<<<
+foo(a, b,);
+>>> (wrap.chop_on_named_arguments=[child,children]) Matching invocation chops; nested call stays flat.
+Padding(padding: p, child: Text('hi'));
+<<<
+Padding(
+  padding: p,
+  child: Text('hi'),
+);
+>>> (wrap.chop_on_named_arguments=[child,children]) Nested list is not expanded.
+Column(children: [Text('A'), Text('B')]);
+<<<
+Column(
+  children: [Text('A'), Text('B')],
+);
+>>> (wrap.chop_on_named_arguments=[child]) Documented false positive.
+process(child: value);
+<<<
+process(
+  child: value,
+);
+>>> Empty list: no invocation is chopped.
+Padding(padding: p, child: Text('hi'));
+<<<
+Padding(padding: p, child: Text('hi'));
+>>> (wrap.chop_on_named_arguments=[child] wrap.arguments=never) never takes precedence.
+Padding(padding: p, child: Text('hi'));
+<<<
+Padding(padding: p, child: Text('hi'));

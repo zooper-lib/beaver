@@ -1,0 +1,59 @@
+40 columns                              |
+### comment-attachment scenarios.
+>>> Own-line comment leads the next statement.
+foo();
+// about bar
+bar();
+<<<
+foo();
+// about bar
+bar();
+>>> End-of-line comment trails the preceding argument.
+foo(a, // about a
+    b);
+<<<
+foo(
+  a, // about a
+  b,
+);
+>>> Remaining comment leads the following argument.
+foo(/* x */ a);
+<<<
+foo(/* x */ a);
+>>> Comment in an empty argument list.
+foo(/* none */);
+<<<
+foo(/* none */);
+>>> Line comment before a closing bracket.
+foo(a, b // last
+);
+<<<
+foo(
+  a,
+  b, // last
+);
+>>> Own-line comment between arguments forces a break.
+foo(a,
+    // about b
+    b);
+<<<
+foo(
+  a,
+  // about b
+  b,
+);
+>>> Inline block comment keeps a space on each side.
+x = a /* note */+ b;
+<<<
+x = a /* note */ + b;
+>>> Blank line before a comment is kept, none after.
+foo();
+
+// about bar
+
+bar();
+<<<
+foo();
+
+// about bar
+bar();

@@ -1,0 +1,36 @@
+>>> (strings.quotes=single) Double to single.
+x = "hello";
+<<<
+x = 'hello';
+>>> (strings.quotes=single) Conversion would need escapes.
+x = "it's";
+<<<
+x = "it's";
+>>> (strings.quotes=single) Raw string unchanged.
+x = r"raw";
+<<<
+x = r"raw";
+>>> (strings.quotes=single) Interpolated string converted.
+x = "a $b ${c + d} e";
+<<<
+x = 'a $b ${c + d} e';
+>>> (strings.quotes=single) Escaped old delimiter at the end keeps its value.
+x = "a\"";
+<<<
+x = 'a\"';
+>>> (strings.quotes=double) Single to double.
+x = 'hello';
+<<<
+x = "hello";
+>>> (strings.quotes=single) Multi-line string.
+x = """
+line
+""";
+<<<
+x = '''
+line
+''';
+>>> Preserve keeps every delimiter.
+x = "a" + 'b';
+<<<
+x = "a" + 'b';

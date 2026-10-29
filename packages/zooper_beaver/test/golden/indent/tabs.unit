@@ -1,0 +1,9 @@
+40 columns                              |
+>>> (indent.style=tabs) Tabs for levels, spaces for alignment.
+void f() { var x = someLongFunctionName + anotherOperand; }
+<<<
+void f() {
+	var x =
+	    someLongFunctionName +
+	    anotherOperand;
+}

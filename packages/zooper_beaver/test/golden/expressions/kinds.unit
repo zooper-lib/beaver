@@ -1,0 +1,70 @@
+>>> One case per expression kind under the dart preset.
+void f()async{
+  a=b+c*d-e/f%g~/h;
+  a+=1;a??=b;
+  var t=cond?yes:no;
+  var u=-x;var v=!flag;var w=x++;var n=x!;
+  var cast=obj  as  String;var check=obj  is!  int;
+  var call=foo(1,named:2);
+  var method=obj.method<int>(arg);
+  var cascade=Builder()..a=1..b();
+  var idx=list[0];var nidx=list?[0];
+  var prop=obj?.field;
+  var fn=(int  x)=>x*2;
+  var block=(x){return  x;};
+  var awaited=await  future;
+  var thrown=()=>throw  Error();
+  var rec=(1,name:'a');
+  var created=const  Point(1,2);
+  var newCreated=new  Point(1,2);
+  var interp='a ${b+c} $d';
+  var adjacent='a' 'b';
+  var sym=#foo.bar;
+  var sw=switch(x){1=>'one',_=>'other'};
+  var dot=.value;
+  var longExpression=someFunctionName(firstArgument)+anotherFunction(secondArgument)+third;
+  var chain=list.where((e)=>e.isEven).map((e)=>e*2).toList();
+}
+<<<
+void f() async {
+  a = b + c * d - e / f % g ~/ h;
+  a += 1;
+  a ??= b;
+  var t = cond ? yes : no;
+  var u = -x;
+  var v = !flag;
+  var w = x++;
+  var n = x!;
+  var cast = obj as String;
+  var check = obj is! int;
+  var call = foo(1, named: 2);
+  var method = obj.method<int>(arg);
+  var cascade = Builder()
+    ..a = 1
+    ..b();
+  var idx = list[0];
+  var nidx = list?[0];
+  var prop = obj?.field;
+  var fn = (int x) => x * 2;
+  var block = (x) {
+    return x;
+  };
+  var awaited = await future;
+  var thrown = () => throw Error();
+  var rec = (1, name: 'a');
+  var created = const Point(1, 2);
+  var newCreated = new Point(1, 2);
+  var interp = 'a ${b + c} $d';
+  var adjacent =
+      'a'
+      'b';
+  var sym = #foo.bar;
+  var sw = switch (x) {
+    1 => 'one',
+    _ => 'other'
+  };
+  var dot = .value;
+  var longExpression =
+      someFunctionName(firstArgument) + anotherFunction(secondArgument) + third;
+  var chain = list.where((e) => e.isEven).map((e) => e * 2).toList();
+}

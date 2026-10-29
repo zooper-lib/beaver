@@ -1,0 +1,77 @@
+>>> One case per declaration kind under the dart preset.
+library  my.lib;
+import  'a.dart'  as  a  show  b,c;
+export 'b.dart' hide d;
+part  'c.dart';
+@Deprecated('x')
+abstract  class  Shape<T  extends num>  extends  Base  with  M  implements  I,J{
+  static  const  int  sides=0;
+  final T  value;
+  Shape(this.value):super();
+  const  Shape.named({required  this.value});
+  factory  Shape.make()=>throw  0;
+  T  get  area;
+  set  area(T  v){}
+  @override
+  String  toString()=>'Shape($value)';
+  operator  ==(Object  other)=>identical(this,other);
+}
+mixin  M  on  Base{void  m(){}}
+enum  Color{red,green,blue}
+enum  Planet{mercury(1),venus(2);final  int  n;const  Planet(this.n);}
+extension  StringX  on  String{bool  get  isBlank=>trim().isEmpty;}
+extension  type  Id(int  value)implements  Object{}
+typedef  Callback=void  Function(int  x);
+typedef  int  Compare<T>(T  a,T  b);
+int  topLevel=1,other=2;
+void  function<T>(T  a,[int  b=0]){}
+void  named({int  a=1,required  String  b}){}
+external  void  ext();
+<<<
+library my.lib;
+import 'a.dart' as a show b, c;
+export 'b.dart' hide d;
+part 'c.dart';
+
+@Deprecated('x')
+abstract class Shape<T extends num> extends Base with M implements I, J {
+  static const int sides = 0;
+  final T value;
+  Shape(this.value) : super();
+  const Shape.named({required this.value});
+  factory Shape.make() => throw 0;
+  T get area;
+
+  set area(T v) {}
+
+  @override
+  String toString() => 'Shape($value)';
+  operator ==(Object other) => identical(this, other);
+}
+
+mixin M on Base {
+  void m() {}
+}
+
+enum Color { red, green, blue }
+
+enum Planet {
+  mercury(1),
+  venus(2);
+
+  final int n;
+  const Planet(this.n);
+}
+
+extension StringX on String {
+  bool get isBlank => trim().isEmpty;
+}
+
+extension type Id(int value) implements Object {}
+
+typedef Callback = void Function(int x);
+typedef int Compare<T>(T a, T b);
+int topLevel = 1, other = 2;
+void function<T>(T a, [int b = 0]) {}
+void named({int a = 1, required String b}) {}
+external void ext();

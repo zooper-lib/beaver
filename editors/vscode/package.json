@@ -1,0 +1,63 @@
+{
+  "name": "beaver",
+  "displayName": "Beaver Dart Formatter",
+  "description": "Format Dart with Beaver, the configurable formatter (.beaver.yaml).",
+  "version": "0.1.0",
+  "publisher": "zooper",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zooper-lib/beaver"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Formatters"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "activationEvents": [
+    "onLanguage:dart"
+  ],
+  "main": "./out/src/extension.js",
+  "beaver": {
+    "formatterVersion": "0.1.0-dev",
+    "protocolVersion": 1
+  },
+  "contributes": {
+    "configuration": {
+      "title": "Beaver",
+      "properties": {
+        "beaver.executablePath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine-overridable",
+          "description": "Path to the beaver executable. Empty: the one on PATH, else the bundled one."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "beaver.showInformation",
+        "title": "Beaver: Show Formatter Information"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "test": "tsc -p . && node --test out/test/*.test.js",
+    "package": "vsce package",
+    "test:integration": "tsc -p . && node out/test/integration/run.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.0.0",
+    "@types/vscode": "~1.90.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.0.0",
+    "mocha": "^10.8.2",
+    "typescript": "^5.4.0"
+  }
+}

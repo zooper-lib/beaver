@@ -1,0 +1,5 @@
+# Formatter input and output, not a program: the names in these files are
+# placeholders, so analyzing them would only report errors.
+analyzer:
+  exclude:
+    - '**'

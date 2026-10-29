@@ -1,0 +1,12 @@
+indent:
+  style: tabs
+  align:
+    arguments: true
+    parameters: true
+    chained_calls: true
+wrap:
+  chop_on_named_arguments: [child, children]
+  simple_blocks_on_one_line: true
+  simple_lambdas_on_one_line: true
+  chained_calls:
+    min_calls: 3

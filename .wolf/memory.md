@@ -1,0 +1,90 @@
+---
+description: chronological action log per session, consolidated weekly
+---
+# Memory
+
+> Chronological action log. Hooks and AI append to this file automatically.
+> Old sessions are consolidated by the daemon weekly.
+
+## Session: 2026-10-28 11:44
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-28 11:49
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:38 | Created openspec/changes/initial-implementation/proposal.md | — | ~2004 |
+| 14:40 | Created openspec/changes/initial-implementation/specs/config-resolution/spec.md | — | ~1974 |
+| 14:41 | Created openspec/changes/initial-implementation/specs/layout-printer/spec.md | — | ~1479 |
+| 14:42 | Created openspec/changes/initial-implementation/specs/formatting-rules/spec.md | — | ~3619 |
+| 14:43 | Created openspec/changes/initial-implementation/specs/comment-attachment/spec.md | — | ~1068 |
+| 14:43 | Created openspec/changes/initial-implementation/specs/ignore-directives/spec.md | — | ~1143 |
+| 14:43 | Created openspec/changes/initial-implementation/specs/structural-verification/spec.md | — | ~1304 |
+| 14:44 | Created openspec/changes/initial-implementation/specs/cli/spec.md | — | ~1615 |
+| 14:44 | Created openspec/changes/initial-implementation/specs/stdin-protocol/spec.md | — | ~1353 |
+| 14:44 | Created openspec/changes/initial-implementation/specs/golden-test-harness/spec.md | — | ~1394 |
+| 14:45 | Created openspec/changes/initial-implementation/specs/vscode-extension/spec.md | — | ~1263 |
+| 14:45 | Created openspec/changes/initial-implementation/specs/intellij-plugin/spec.md | — | ~1403 |
+| 14:45 | Created openspec/changes/initial-implementation/specs/release-distribution/spec.md | — | ~1003 |
+| 14:48 | Created openspec/changes/initial-implementation/design.md | — | ~4039 |
+| 14:49 | Edited openspec/changes/initial-implementation/design.md | inline fix | ~208 |
+<!-- session:MzViYThlNDQtMGExZS00Mjc0LWE3OTMtOGRlM2JkMDAwNDg4 -->
+| 2026-10-28T06:49:24.674Z | Grilled DRAFT.md into 20 recorded design decisions (D1-D20, §12), then opened OpenSpec change initial-implementation covering the whole draft: proposal, 12 capability delta specs, and design.md mapping decisions to modules and pipeline | DRAFT.md,openspec/changes/initial-implementation/proposal.md,openspec/changes/initial-implementation/specs/*/spec.md,openspec/changes/initial-implementation/design.md | openspec validate --strict passes; tasks artifact still pending |
+| 14:52 | Created openspec/changes/initial-implementation/tasks.md | — | ~5851 |
+<!-- session:MzViYThlNDQtMGExZS00Mjc0LWE3OTMtOGRlM2JkMDAwNDg4 -->
+| 2026-10-28T06:52:30.878Z | Wrote tasks.md for OpenSpec change initial-implementation: 17 groups, 80 checkbox tasks ordered scaffold → Doc IR → parse/harness → comments → core rules → verification → config → configurable rules → spaces/blank/braces/strings → directives → CLI → range → release → VS Code → IntelliJ → other editors → integration; planning complete | openspec/changes/initial-implementation/tasks.md | openspec status 4/4, validate --strict passes |
+
+## Session: 2026-10-28 14:53
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:55 | Created packages/zooper_beaver/lib/src/ir/doc.dart | — | ~1260 |
+| 14:56 | Created packages/zooper_beaver/lib/src/ir/printer.dart | — | ~2401 |
+| 14:57 | Created packages/zooper_beaver/test/ir_test.dart | — | ~1763 |
+| 14:59 | Created packages/zooper_beaver/lib/src/parse/parse.dart | — | ~875 |
+| 15:01 | Created packages/zooper_beaver/test/src/golden_file.dart | — | ~2152 |
+| 15:03 | Created packages/zooper_beaver/lib/src/config/schema.dart | — | ~870 |
+| 15:06 | Created packages/zooper_beaver/lib/src/comments/attach.dart | — | ~1706 |
+| 15:11 | Created packages/zooper_beaver/lib/src/rules/builder.dart | — | ~2216 |
+| 15:11 | Created packages/zooper_beaver/lib/src/rules/lists.dart | — | ~1464 |
+| 15:12 | Created packages/zooper_beaver/lib/src/rules/statements.dart | — | ~2180 |
+| 15:14 | Created packages/zooper_beaver/lib/src/rules/declarations.dart | — | ~3278 |
+| 15:16 | Created packages/zooper_beaver/lib/src/rules/expressions.dart | — | ~4300 |
+| 15:18 | Created packages/zooper_beaver/lib/src/format.dart | — | ~671 |
+| 15:30 | Created packages/zooper_beaver/lib/src/verify/verify.dart | — | ~2294 |
+| 15:35 | Created packages/zooper_beaver/lib/src/config/loader.dart | — | ~820 |
+| 15:36 | Created packages/zooper_beaver/lib/src/config/resolve.dart | — | ~1279 |
+| 15:38 | Created packages/zooper_beaver/lib/src/cli/cli.dart | — | ~4022 |
+| 15:39 | Created packages/zooper_beaver/lib/src/directives/directives.dart | — | ~879 |
+| 15:41 | Created packages/zooper_beaver/lib/src/range/range.dart | — | ~1334 |
+| 16:10 | Created .github/workflows/release.yml | — | ~1821 |
+
+## Session: 2026-10-28 17:21
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 20:56 | Edited packages/zooper_beaver/test/config_resolve_test.dart | modified test() | ~209 |
+| 21:11 | Created packages/zooper_beaver/test/example_test.dart | — | ~356 |
+| 21:12 | Edited packages/zooper_beaver/README.md | 3→5 lines | ~51 |
+| 21:15 | Edited packages/zooper_beaver/test/example_test.dart | added 1 condition(s) | ~105 |
+| 21:15 | Edited example/README.md | expanded (+8 lines) | ~214 |
+| 22:10 | Edited .github/workflows/ci.yml | 4→7 lines | ~64 |
+
+## Session: 2026-10-28 23:34
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-28 05:34
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-29 11:34
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:41 | Created tool/editors/helix_format.py | — | ~383 |
+| 12:42 | Edited .github/workflows/ci.yml | expanded (+29 lines) | ~488 |
