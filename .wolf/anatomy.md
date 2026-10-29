@@ -1,7 +1,7 @@
 # anatomy.md
 
 > Auto-maintained by OpenWolf. Last scanned: 2026-10-29T04:42:31.326Z
-> Files: 894 tracked | Anatomy hits: 0 | Misses: 0
+> Files: 895 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -13,6 +13,7 @@
 - `CLAUDE.md` — OpenWolf (~99 tok)
 - `DRAFT.md` — Beaver — a configurable Dart formatter (~11634 tok)
 - `LICENSE` — Project license (~284 tok)
+- `README.md` — Project documentation (~1494 tok)
 
 ## .github/workflows/
 
@@ -23,7 +24,7 @@
 
 - `cli.md` — Command line (~960 tok)
 - `directives.md` — Ignore directives (~606 tok)
-- `install.md` — Installing Beaver (~424 tok)
+- `install.md` — Installing Beaver (~694 tok)
 - `performance.md` — Performance (~936 tok)
 - `safety-corpus.md` — Safety corpus (~390 tok)
 - `stdin-protocol.md` — The stdin protocol (~805 tok)
@@ -842,7 +843,7 @@
 - `.openspec.yaml` (~12 tok)
 - `design.md` — Design (~3807 tok)
 - `proposal.md` — Proposal (~1879 tok)
-- `tasks.md` — Tasks (~5518 tok)
+- `tasks.md` — Tasks (~5612 tok)
 
 ## openspec/changes/initial-implementation/specs/cli/
 
@@ -904,7 +905,7 @@
 - `dart_test.yaml` — The CLI tests change the working directory, which is process-wide. (~24 tok)
 - `LICENSE` — Project license (~284 tok)
 - `pubspec.yaml` — Dart/Flutter package manifest (~120 tok)
-- `README.md` — Project documentation (~172 tok)
+- `README.md` — Project documentation (~357 tok)
 - `tool_attach.dart` (~174 tok)
 - `tool_bisect.dart` — Dev tool: finds the smallest class member / top-level declaration of a file that fails under a config. (~475 tok)
 - `tool_cat.dart` (~198 tok)

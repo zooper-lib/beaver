@@ -16,7 +16,7 @@ budget_tokens: 1000
 
 ## 🚀 Next quest
 
-74/80. Open: release dry run → 13.1, 14.4 (plus Linux VSIX in a dev container), 15.5; signing secrets → 13.2; pub.dev → 13.3, 13.4 (blocked: stays private). release.yml is not dispatchable until it is on `main` (workflow_dispatch needs the default branch): merge, or add a dry-run branch trigger (then make non-tag runs always dry and limit publish to tags first). Zed and Sublime in-editor checks deferred by the user (16.1 ticked with that note).
+78/80. Open, blocked on purpose: 13.3 + 13.4 (pub.dev publish and install check; project stays private). 13.2 ticked as deferred: releases ship unsigned (stated in packages/zooper_beaver/README.md and docs/install.md). When going public: publish, verify 13.3/13.4, then /opsx:archive.
 
 ## Design issues: resolved 2026-10-28
 

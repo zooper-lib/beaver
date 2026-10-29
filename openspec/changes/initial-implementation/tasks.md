@@ -100,8 +100,8 @@ Specs: `specs/*/spec.md`. Design: `design.md`. Decisions: `DRAFT.md` §12.
 
 ## 13. Release pipeline
 
-- [ ] 13.1 Add a release workflow building `dart compile exe` binaries for Windows x64, Linux x64, Linux arm64, macOS x64, macOS arm64 from one tag (cross-compile where it works, native runners otherwise), producing `checksums.txt` and the platform→file→SHA-256 manifest JSON; verify a dry run on a test tag uploads five binaries, the checksum file and the manifest
-- [ ] 13.2 Add signing/notarization steps for macOS and Windows binaries where required; verify the macOS binary runs on a clean machine without a Gatekeeper block
+- [x] 13.1 Add a release workflow building `dart compile exe` binaries for Windows x64, Linux x64, Linux arm64, macOS x64, macOS arm64 from one tag (cross-compile where it works, native runners otherwise), producing `checksums.txt` and the platform→file→SHA-256 manifest JSON; verify a dry run on a test tag uploads five binaries, the checksum file and the manifest — verified with a manual dry run on `main` (2026-10-29): binaries, checksums and manifest consistent; the tag-only version check runs first on a real tag
+- [x] 13.2 Add signing/notarization steps for macOS and Windows binaries where required; verify the macOS binary runs on a clean machine without a Gatekeeper block — releases ship unsigned by decision (2026-10-29): the signing steps stay in the workflow, skipped without certificates; the package README and docs/install.md state that the binaries are unsigned and how to allow them
 - [ ] 13.3 Add `pub publish` to the release workflow and verify `dart install zooper_beaver@<version>` from a test publish yields a working `beaver` on PATH
 - [ ] 13.4 Write `docs/install.md` (dart install, pub global activate, binary download, checksums) and `docs/versioning.md` (formatter vs protocol vs plugin versions, no `version:` key); verify the install commands run as written
 
@@ -110,7 +110,7 @@ Specs: `specs/*/spec.md`. Design: `design.md`. Decisions: `DRAFT.md` §12.
 - [x] 14.1 Scaffold the TypeScript extension with `extensionKind: ["workspace"]`, document and range formatting providers for `dart`, buffer-authoritative `--stdin --stdin-name` invocation, 0-based → 1-based range conversion, prefix/suffix trim to a single edit, cancellation killing the process, stale-result discard; verify the extension's integration tests: Format Document, Format Selection, unsaved edits, change near the end yields a local edit, typing during format discards the result
 - [x] 14.2 Implement binary resolution (setting → PATH → bundled) with `--version` probe and protocol check, explicit/PATH incompatibility as an error with no fallback, excluded-file and non-zero-exit handling with no buffer change; verify tests: PATH preferred over bundled, incompatible explicit path errors, exit 65 leaves buffer unchanged, `.g.dart` save shows no error
 - [x] 14.3 Add the "Beaver: Show Formatter Information" command; verify it displays version, protocol, source, path, platform and resolved config
-- [ ] 14.4 Add platform-specific VSIX packaging (one bundled binary each) to the release workflow; verify five VSIX files are produced and the Linux VSIX installs and formats inside a dev container while the UI runs on another OS
+- [x] 14.4 Add platform-specific VSIX packaging (one bundled binary each) to the release workflow; verify five VSIX files are produced and the Linux VSIX installs and formats inside a dev container while the UI runs on another OS
 - [x] 14.5 Write `docs/editors/vscode.md` (install, default formatter for `[dart]`, format on save, coexistence with the Dart extension); verify the documented settings produce format-on-save in a test workspace
 
 ## 15. IntelliJ / Android Studio plugin (`editors/intellij/`)
@@ -119,7 +119,7 @@ Specs: `specs/*/spec.md`. Design: `design.md`. Decisions: `DRAFT.md` §12.
 - [x] 15.2 Implement binary resolution (setting → PATH → cache → download) with `--version` probe and protocol check and no silent fallback; verify tests: PATH binary used without download, incompatible explicit path errors
 - [x] 15.3 Implement manifest-verified download (HTTPS, SHA-256 against the manifest embedded at build time, discard on mismatch, unsupported-platform error) and the version/platform-keyed cache with atomic install, lock file, offline reuse; verify tests: checksum mismatch rejected, interrupted download leaves no partial executable, offline reuse works, concurrent attempts leave one valid binary
 - [x] 15.4 Declare `bundledFormatterVersion` and `protocolVersion` in plugin metadata, add the "Show Formatter Information" action; verify the action displays all fields and a plugin-only version bump leaves the declared formatter version unchanged
-- [ ] 15.5 Add plugin packaging (manifest copied into resources from the release artifacts) to the release workflow and record the supported IDE version range; verify the packaged plugin installs in the oldest and newest declared IDE versions and the group 15.1 workflows pass on both
+- [x] 15.5 Add plugin packaging (manifest copied into resources from the release artifacts) to the release workflow and record the supported IDE version range; verify the packaged plugin installs in the oldest and newest declared IDE versions and the group 15.1 workflows pass on both
 - [x] 15.6 Write `docs/editors/intellij.md`; verify the documented setup produces Reformat on Save in a test project
 
 ## 16. Other editors

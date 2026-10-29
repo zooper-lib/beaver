@@ -42,6 +42,15 @@ On Linux use `sha256sum -c -` instead of `shasum -a 256 -c -`. On Windows, compa
 
 The release also carries `beaver-manifest.json`, the platform → file → SHA-256 table the IntelliJ plugin uses to verify its downloads.
 
+### The binaries are not signed
+
+The release binaries are not code-signed: no Apple Developer ID or notarization on macOS, no code-signing certificate on Windows. The checksums above are what proves a binary is the released one.
+
+- **macOS:** a binary downloaded with a browser is quarantined, and Gatekeeper refuses to run it ("cannot be opened because the developer cannot be verified"). After checking its SHA-256, remove the quarantine with `xattr -d com.apple.quarantine beaver`, or open it once and choose System Settings → Privacy & Security → Open Anyway. A download with `curl`, as above, is not quarantined.
+- **Windows:** SmartScreen shows "Windows protected your PC" for a downloaded `.exe`; choose More info → Run anyway, or run `Unblock-File beaver-windows-x64.exe` in PowerShell. Some managed machines block unsigned executables entirely; use `dart install` there.
+
+`dart install zooper_beaver` compiles Beaver on your machine and is not affected. The IntelliJ plugin downloads the binary itself, without quarantine, and checks it against `beaver-manifest.json`.
+
 ## Editors
 
 See [VS Code](editors/vscode.md), [IntelliJ / Android Studio](editors/intellij.md), and the external-formatter setups for [Helix](editors/helix.md), [Zed](editors/zed.md), [Neovim](editors/neovim.md), [Emacs](editors/emacs.md) and [Sublime Text](editors/sublime.md).
