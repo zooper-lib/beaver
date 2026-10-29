@@ -51,7 +51,7 @@ jobs:
           # build natively.
           - { platform: linux-x64, os: ubuntu-latest, target: '--target-os=linux --target-arch=x64', file: beaver-linux-x64, smoke: true }
           - { platform: linux-arm64, os: ubuntu-latest, target: '--target-os=linux --target-arch=arm64', file: beaver-linux-arm64, smoke: false }
-          - { platform: macos-x64, os: macos-13, target: '', file: beaver-macos-x64, smoke: true }
+          - { platform: macos-x64, os: macos-15-intel, target: '', file: beaver-macos-x64, smoke: true }
           - { platform: macos-arm64, os: macos-14, target: '', file: beaver-macos-arm64, smoke: true }
           - { platform: windows-x64, os: windows-latest, target: '', file: beaver-windows-x64.exe, smoke: true }
     env:

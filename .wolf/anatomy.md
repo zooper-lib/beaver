@@ -17,7 +17,7 @@
 ## .github/workflows/
 
 - `ci.yml` — CI: CI (~2110 tok)
-- `release.yml` — CI: Release (~2517 tok)
+- `release.yml` — CI: Release (~2519 tok)
 
 ## docs/
 
