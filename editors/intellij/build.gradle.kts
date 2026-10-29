@@ -41,6 +41,8 @@ intellijPlatform {
             untilBuild = providers.gradleProperty("untilBuild")
         }
     }
+    // JetBrains Marketplace upload token (release workflow only).
+    publishing { token = providers.environmentVariable("PUBLISH_TOKEN") }
     // Plugin Verifier: the oldest and newest IDE of the declared range
     // (sinceBuild/untilBuild), the same pair CI tests against.
     pluginVerification {

@@ -16,7 +16,7 @@ on:
 
 permissions:
   contents: write
-  id-token: write # pub.dev automated publishing
+  id-token: write # trusted publishing: pub.dev and the VS Code Marketplace
 
 env:
   DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
@@ -176,6 +176,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "${GITHUB_REF_NAME}" *.vsix
+      # Trusted publishing, no token: add a trusted publishing policy for this
+      # repository and workflow to the `zooper` publisher on the Marketplace,
+      # then set the repository variable VSCODE_MARKETPLACE to 'true'.
+      - name: Publish to the VS Code Marketplace
+        if: env.DRY_RUN != 'true' && vars.VSCODE_MARKETPLACE == 'true'
+        run: npx vsce publish --oidc --packagePath *.vsix
 
   # 15.5: the plugin embeds the release's binary manifest.
   intellij:
@@ -207,6 +213,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload "${GITHUB_REF_NAME}" build/distributions/*.zip
+      # After the first version was uploaded by hand and approved, set the
+      # secret JETBRAINS_TOKEN (a JetBrains Marketplace permanent token) and
+      # the repository variable JETBRAINS_MARKETPLACE to 'true'.
+      - name: Publish to the JetBrains Marketplace
+        if: env.DRY_RUN != 'true' && vars.JETBRAINS_MARKETPLACE == 'true'
+        env:
+          PUBLISH_TOKEN: ${{ secrets.JETBRAINS_TOKEN }}
+        run: BEAVER_MANIFEST="$GITHUB_WORKSPACE/dist/beaver-manifest.json" ./gradlew publishPlugin --console=plain
 
   # 13.3: pub.dev automated publishing from this workflow must be enabled in
   # the package admin page (GitHub Actions, tag pattern `v{{version}}`).

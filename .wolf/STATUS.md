@@ -16,13 +16,12 @@ budget_tokens: 1000
 
 ## 🚀 Next quest
 
-78/80. Open, blocked on purpose: 13.3 + 13.4 (pub.dev publish and install check; project stays private). 13.2 ticked as deferred: releases ship unsigned (stated in packages/zooper_beaver/README.md and docs/install.md). When going public: publish, verify 13.3/13.4, then /opsx:archive.
+Release prep for 0.1.0 done (DRAFT.md deleted; decisions live in git history and openspec/). VS Code Marketplace trusted publishing set up by the user (variable VSCODE_MARKETPLACE). JetBrains: step in release.yml gated on vars.JETBRAINS_MARKETPLACE + secrets.JETBRAINS_TOKEN; first upload is manual. No Open VSX. Next: push, tag v0.1.0, manual pub.dev publish + enable automated publishing, manual JetBrains upload; then verify 13.3/13.4 and /opsx:archive.
 
 ## Design issues: resolved 2026-10-28
 
 - D9 mixed-construct exception (option B): a source trailing comma is not a chop request when the list is already split with adjacent items sharing a line; only list-level gaps count. `lib/src/rules/lists.dart` `delimited`. Corpus 50.1% → 48.6% (kept breaks now stay, as D7 says).
 - `remove` + `chop_on_trailing_comma: true` + `keep_existing_line_breaks: false` → exit 78 (`resolve.dart`).
-- Preset values per D3 kept; §5 marked as an example. `Align.toColumn`, field blank-line exception, conservative comma contexts: accepted and written into DRAFT/design/specs.
 
 ## Dogfooding (2026-10-28)
 

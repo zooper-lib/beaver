@@ -1,7 +1,7 @@
 # anatomy.md
 
 > Auto-maintained by OpenWolf. Last scanned: 2026-10-29T04:42:31.326Z
-> Files: 895 tracked | Anatomy hits: 0 | Misses: 0
+> Files: 898 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -13,12 +13,12 @@
 - `CLAUDE.md` — OpenWolf (~99 tok)
 - `DRAFT.md` — Beaver — a configurable Dart formatter (~11634 tok)
 - `LICENSE` — Project license (~284 tok)
-- `README.md` — Project documentation (~1494 tok)
+- `README.md` — Project documentation (~2387 tok)
 
 ## .github/workflows/
 
 - `ci.yml` — CI: CI (~2110 tok)
-- `release.yml` — CI: Release (~2568 tok)
+- `release.yml` — CI: Release (~2842 tok)
 
 ## docs/
 
@@ -52,8 +52,8 @@
 ## editors/intellij/
 
 - `.gitignore` — Git ignore rules (~10 tok)
-- `build.gradle.kts` — Gradle Kotlin build configuration (~850 tok)
-- `gradle.properties` — Plugin version: independent of the formatter version. (~174 tok)
+- `build.gradle.kts` — Gradle Kotlin build configuration (~887 tok)
+- `gradle.properties` — Plugin version: independent of the formatter version. (~173 tok)
 - `gradlew` — you may not use this file except in compliance with the License. (~2292 tok)
 - `gradlew.bat` (~773 tok)
 - `settings.gradle.kts` — Gradle Kotlin settings (~10 tok)
@@ -83,6 +83,7 @@
 - `kotlin-compiler-5562755372379455990.salive` (~0 tok)
 - `kotlin-compiler-6466367981397079794.salive` (~0 tok)
 - `kotlin-compiler-7041476127320362317.salive` (~0 tok)
+- `kotlin-compiler-7420942266414474463.salive` (~0 tok)
 - `kotlin-compiler-7485511644421521163.salive` (~0 tok)
 - `kotlin-compiler-9236992095175424569.salive` (~0 tok)
 - `kotlin-compiler-9300387452934361179.salive` (~0 tok)
@@ -118,7 +119,7 @@
 - `.gitignore` — Git ignore rules (~9 tok)
 - `.vscodeignore` — test/** (~19 tok)
 - `LICENSE` — Project license (~284 tok)
-- `package.json` — Node.js package manifest (~442 tok)
+- `package.json` — Node.js package manifest (~448 tok)
 - `README.md` — Project documentation (~170 tok)
 - `tsconfig.json` — TypeScript configuration (~83 tok)
 
@@ -901,11 +902,11 @@
 
 - `.gitignore` — Git ignore rules (~7 tok)
 - `analysis_options.yaml` (~21 tok)
-- `CHANGELOG.md` — Change log (~12 tok)
+- `CHANGELOG.md` — Change log (~226 tok)
 - `dart_test.yaml` — The CLI tests change the working directory, which is process-wide. (~24 tok)
 - `LICENSE` — Project license (~284 tok)
-- `pubspec.yaml` — Dart/Flutter package manifest (~120 tok)
-- `README.md` — Project documentation (~357 tok)
+- `pubspec.yaml` — Dart/Flutter package manifest (~119 tok)
+- `README.md` — Project documentation (~951 tok)
 - `tool_attach.dart` (~174 tok)
 - `tool_bisect.dart` — Dev tool: finds the smallest class member / top-level declaration of a file that fails under a config. (~475 tok)
 - `tool_cat.dart` (~198 tok)
@@ -924,14 +925,19 @@
 
 - `beaver.dart` (~66 tok)
 
+## packages/zooper_beaver/example/
+
+- `zooper_beaver_example.dart` — Formatting from Dart code. Most projects use the `beaver` command instead: (~151 tok)
+
 ## packages/zooper_beaver/lib/
 
 - `beaver.dart` — / Beaver: a configurable, line-width-aware Dart formatter. (~49 tok)
+- `zooper_beaver.dart` — / Beaver: a configurable, line-width-aware Dart formatter. (~84 tok)
 
 ## packages/zooper_beaver/lib/src/
 
 - `format.dart` — / The formatting pipeline. The only place verification runs. (~1487 tok)
-- `version.dart` — / The formatter version; must equal `version:` in pubspec.yaml. (~72 tok)
+- `version.dart` — / The formatter version; must equal `version:` in pubspec.yaml. (~71 tok)
 
 ## packages/zooper_beaver/lib/src/cli/
 
@@ -996,7 +1002,7 @@
 - `dart_style_corpus_test.dart` — / Scores Beaver against dart_style's tall corpus. Mismatches are reported, (~383 tok)
 - `directives_test.dart` — Declares source (~655 tok)
 - `docs_test.dart` — / Every example in the rule and directive docs is a golden test case. (~254 tok)
-- `example_test.dart` — / The rule showcase in `example/` is real formatter output: every (~491 tok)
+- `example_test.dart` — / The rule showcase in `example/` is real formatter output: every (~493 tok)
 - `format_test.dart` (~104 tok)
 - `golden_file_test.dart` — Declares FormatException (~913 tok)
 - `golden_runner_test.dart` — Declares VerificationFailure (~753 tok)

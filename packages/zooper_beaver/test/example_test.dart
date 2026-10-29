@@ -7,7 +7,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
-import 'package:zooper_beaver/beaver.dart';
+import 'package:zooper_beaver/zooper_beaver.dart';
 import 'package:zooper_beaver/src/config/resolve.dart';
 import 'package:zooper_beaver/src/config/schema.dart';
 

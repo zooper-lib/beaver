@@ -1,6 +1,7 @@
 {
   "name": "beaver",
   "displayName": "Beaver Dart Formatter",
+  "icon": "icon.png",
   "description": "Format Dart with Beaver, the configurable formatter (.beaver.yaml).",
   "version": "0.1.0",
   "publisher": "zooper",
@@ -23,7 +24,7 @@
   ],
   "main": "./out/src/extension.js",
   "beaver": {
-    "formatterVersion": "0.1.0-dev",
+    "formatterVersion": "0.1.0",
     "protocolVersion": 1
   },
   "contributes": {
@@ -56,7 +57,7 @@
     "@types/node": "^20.0.0",
     "@types/vscode": "~1.90.0",
     "@vscode/test-electron": "^2.5.2",
-    "@vscode/vsce": "^3.0.0",
+    "@vscode/vsce": "^4.1.0",
     "mocha": "^10.8.2",
     "typescript": "^5.4.0"
   }
