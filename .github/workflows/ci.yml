@@ -120,10 +120,43 @@ jobs:
           curl -fsSL https://github.com/helix-editor/helix/releases/download/25.07.1/helix-25.07.1-x86_64-linux.tar.xz | tar xJ -C "$HOME"
           mkdir -p "$HOME/.config/helix"
           python3 tool/editors/extract.py docs/editors/helix.md toml > "$HOME/.config/helix/languages.toml"
-          # Helix has no batch mode; its health check parses the file and
-          # resolves the formatter command.
+          # The health check parses the file and resolves the formatter.
           "$HOME/helix-25.07.1-x86_64-linux/hx" --health dart | tee /tmp/health.txt
           grep -q "beaver" /tmp/health.txt
+          # Helix has no batch mode: drive it in a pseudo terminal to save.
+          cp /tmp/project/sample.dart /tmp/project/hx.dart
+          cd /tmp/project && python3 "$GITHUB_WORKSPACE/tool/editors/helix_format.py" \
+            "$HOME/helix-25.07.1-x86_64-linux/hx" hx.dart
+          diff -u expected.dart hx.dart
+      - name: Emacs with apheleia (the documented configuration)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq emacs-nox
+          git clone --depth 1 https://github.com/radian-software/apheleia "$HOME/apheleia"
+          # dart-mode itself is not needed to test the setup: a stand-in mode
+          # with the same name receives the documented mapping.
+          { echo "(add-to-list 'load-path \"$HOME/apheleia\")"
+            echo "(require 'apheleia)"
+            echo "(define-derived-mode dart-mode prog-mode \"Dart\")"
+            python3 tool/editors/extract.py docs/editors/emacs.md elisp; } > /tmp/init.el
+          cp /tmp/project/sample.dart /tmp/project/emacs.dart
+          # Save, as a user would; apheleia formats after saving and saves
+          # again. Wait until the file on disk is the formatted one.
+          cd /tmp/project && emacs --batch -l /tmp/init.el --eval '
+            (let ((expected (with-temp-buffer
+                              (insert-file-contents "expected.dart")
+                              (buffer-string)))
+                  (deadline (+ (float-time) 20)))
+              (find-file "emacs.dart")
+              (dart-mode)
+              (set-buffer-modified-p t)
+              (save-buffer)
+              (while (and (< (float-time) deadline)
+                          (not (equal expected
+                                      (with-temp-buffer
+                                        (insert-file-contents "emacs.dart")
+                                        (buffer-string)))))
+                (accept-process-output nil 0.1)))'
+          diff -u expected.dart emacs.dart
       - name: Zed and Sublime settings are valid JSON
         run: |
           python3 tool/editors/extract.py docs/editors/zed.md json | python3 -m json.tool > /dev/null

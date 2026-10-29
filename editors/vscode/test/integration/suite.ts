@@ -110,9 +110,46 @@ function tests() {
       }
     });
 
-    test('Show Formatter Information runs', async () => {
+    // Task 17.3: end-to-end format on save on a representative file (541
+    // lines), process start included. Reported, not asserted: CI machines
+    // vary; docs/performance.md records the numbers.
+    test('format-on-save latency', async () => {
+      const source = fs.readFileSync(
+        path.resolve(__dirname, '../../../../../packages/zooper_beaver/lib/src/cli/cli.dart'),
+        'utf8',
+      );
+      const editor = await open('latency.dart', source);
+      const times: number[] = [];
+      for (let i = 0; i < 7; i++) {
+        // Unformatted again: a doubled space after the first `import`.
+        await setText(editor, source.replace('import ', 'import  '));
+        const start = performance.now();
+        await editor.document.save();
+        times.push(performance.now() - start);
+        assert.equal(editor.document.getText(), source);
+      }
+      // The binary is already resolved by earlier tests; the first save still
+      // pays any one-off cost of this file.
+      const sorted = times.slice(1).sort((a, b) => a - b);
+      console.log(
+        `BEAVER_LATENCY vscode first=${times[0].toFixed(1)}ms ` +
+          `median=${sorted[Math.floor(sorted.length / 2)].toFixed(1)}ms max=${sorted[sorted.length - 1].toFixed(1)}ms ` +
+          `runs=[${times.map((t) => t.toFixed(0)).join(', ')}]`,
+      );
+    });
+
+    test('Show Formatter Information lists versions, source, path, platform and configuration', async () => {
       await open('j.dart', 'var a = 1;\n');
-      await vscode.commands.executeCommand('beaver.showInformation');
+      const info = await vscode.commands.executeCommand<string>('beaver.showInformation');
+      assert.match(info, /^Extension: \S+ \(bundles formatter \S+, protocol \d+\)$/m);
+      assert.match(info, new RegExp(`^Platform: ${process.platform}-${process.arch}$`, 'm'));
+      assert.match(info, /^Formatter: \d+\.\d+\.\d+\S*$/m);
+      assert.match(info, /^Protocol: 1$/m);
+      // The workspace sets beaver.executablePath.
+      const lines = info.split('\n');
+      assert.ok(lines.includes('Source: setting'), info);
+      assert.ok(lines.includes(`Path: ${process.env.BEAVER_BINARY}`), info);
+      assert.match(info, /^Resolved configuration:\n[\s\S]*^line_length: 80 {2}# preset dart$/m);
     });
   });
 }

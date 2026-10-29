@@ -107,20 +107,20 @@ Specs: `specs/*/spec.md`. Design: `design.md`. Decisions: `DRAFT.md` §12.
 
 ## 14. VS Code extension (`editors/vscode/`)
 
-- [ ] 14.1 Scaffold the TypeScript extension with `extensionKind: ["workspace"]`, document and range formatting providers for `dart`, buffer-authoritative `--stdin --stdin-name` invocation, 0-based → 1-based range conversion, prefix/suffix trim to a single edit, cancellation killing the process, stale-result discard; verify the extension's integration tests: Format Document, Format Selection, unsaved edits, change near the end yields a local edit, typing during format discards the result
-- [ ] 14.2 Implement binary resolution (setting → PATH → bundled) with `--version` probe and protocol check, explicit/PATH incompatibility as an error with no fallback, excluded-file and non-zero-exit handling with no buffer change; verify tests: PATH preferred over bundled, incompatible explicit path errors, exit 65 leaves buffer unchanged, `.g.dart` save shows no error
+- [x] 14.1 Scaffold the TypeScript extension with `extensionKind: ["workspace"]`, document and range formatting providers for `dart`, buffer-authoritative `--stdin --stdin-name` invocation, 0-based → 1-based range conversion, prefix/suffix trim to a single edit, cancellation killing the process, stale-result discard; verify the extension's integration tests: Format Document, Format Selection, unsaved edits, change near the end yields a local edit, typing during format discards the result
+- [x] 14.2 Implement binary resolution (setting → PATH → bundled) with `--version` probe and protocol check, explicit/PATH incompatibility as an error with no fallback, excluded-file and non-zero-exit handling with no buffer change; verify tests: PATH preferred over bundled, incompatible explicit path errors, exit 65 leaves buffer unchanged, `.g.dart` save shows no error
 - [ ] 14.3 Add the "Beaver: Show Formatter Information" command; verify it displays version, protocol, source, path, platform and resolved config
 - [ ] 14.4 Add platform-specific VSIX packaging (one bundled binary each) to the release workflow; verify five VSIX files are produced and the Linux VSIX installs and formats inside a dev container while the UI runs on another OS
-- [ ] 14.5 Write `docs/editors/vscode.md` (install, default formatter for `[dart]`, format on save, coexistence with the Dart extension); verify the documented settings produce format-on-save in a test workspace
+- [x] 14.5 Write `docs/editors/vscode.md` (install, default formatter for `[dart]`, format on save, coexistence with the Dart extension); verify the documented settings produce format-on-save in a test workspace
 
 ## 15. IntelliJ / Android Studio plugin (`editors/intellij/`)
 
-- [ ] 15.1 Scaffold the Kotlin plugin with `AsyncDocumentFormattingService` registered at `com.intellij.formattingService`, buffer-authoritative stdin invocation, `--range` for selections, off-UI-thread execution with cancellation, prefix/suffix local edit, no document change on failure; verify plugin tests: Reformat Code, Reformat Selection, folder reformat, Reformat on Save, unsaved document, syntax error leaves document unchanged, excluded file no error
+- [x] 15.1 Scaffold the Kotlin plugin with `AsyncDocumentFormattingService` registered at `com.intellij.formattingService`, buffer-authoritative stdin invocation, `--range` for selections, off-UI-thread execution with cancellation, prefix/suffix local edit, no document change on failure; verify plugin tests: Reformat Code, Reformat Selection, folder reformat, Reformat on Save, unsaved document, syntax error leaves document unchanged, excluded file no error
 - [x] 15.2 Implement binary resolution (setting → PATH → cache → download) with `--version` probe and protocol check and no silent fallback; verify tests: PATH binary used without download, incompatible explicit path errors
 - [x] 15.3 Implement manifest-verified download (HTTPS, SHA-256 against the manifest embedded at build time, discard on mismatch, unsupported-platform error) and the version/platform-keyed cache with atomic install, lock file, offline reuse; verify tests: checksum mismatch rejected, interrupted download leaves no partial executable, offline reuse works, concurrent attempts leave one valid binary
 - [x] 15.4 Declare `bundledFormatterVersion` and `protocolVersion` in plugin metadata, add the "Show Formatter Information" action; verify the action displays all fields and a plugin-only version bump leaves the declared formatter version unchanged
 - [ ] 15.5 Add plugin packaging (manifest copied into resources from the release artifacts) to the release workflow and record the supported IDE version range; verify the packaged plugin installs in the oldest and newest declared IDE versions and the group 15.1 workflows pass on both
-- [ ] 15.6 Write `docs/editors/intellij.md`; verify the documented setup produces Reformat on Save in a test project
+- [x] 15.6 Write `docs/editors/intellij.md`; verify the documented setup produces Reformat on Save in a test project
 
 ## 16. Other editors
 

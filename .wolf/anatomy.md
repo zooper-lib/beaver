@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-28T14:10:24.648Z
-> Files: 887 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T04:42:31.326Z
+> Files: 893 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -16,7 +16,7 @@
 
 ## .github/workflows/
 
-- `ci.yml` — CI: CI (~1558 tok)
+- `ci.yml` — CI: CI (~2110 tok)
 - `release.yml` — CI: Release (~2517 tok)
 
 ## docs/
@@ -24,7 +24,7 @@
 - `cli.md` — Command line (~960 tok)
 - `directives.md` — Ignore directives (~606 tok)
 - `install.md` — Installing Beaver (~424 tok)
-- `performance.md` — Performance (~580 tok)
+- `performance.md` — Performance (~827 tok)
 - `safety-corpus.md` — Safety corpus (~390 tok)
 - `stdin-protocol.md` — The stdin protocol (~805 tok)
 - `versioning.md` — Versions (~337 tok)
@@ -75,10 +75,15 @@
 - `kotlin-compiler-2278174799909718003.salive` (~0 tok)
 - `kotlin-compiler-2459887284804740381.salive` (~0 tok)
 - `kotlin-compiler-2706210512951659281.salive` (~0 tok)
+- `kotlin-compiler-3270766577368986299.salive` (~0 tok)
+- `kotlin-compiler-5443610545001082372.salive` (~0 tok)
 - `kotlin-compiler-5536396340374344436.salive` (~0 tok)
 - `kotlin-compiler-5562755372379455990.salive` (~0 tok)
 - `kotlin-compiler-6466367981397079794.salive` (~0 tok)
 - `kotlin-compiler-7041476127320362317.salive` (~0 tok)
+- `kotlin-compiler-7485511644421521163.salive` (~0 tok)
+- `kotlin-compiler-9236992095175424569.salive` (~0 tok)
+- `kotlin-compiler-9300387452934361179.salive` (~0 tok)
 
 ## editors/intellij/gradle/wrapper/
 
@@ -103,7 +108,7 @@
 
 - `BeaverFormattingServiceTest.kt` — Runs the platform's reformat entry points against a real beaver (~856 tok)
 - `BinaryResolverTest.kt` — BinaryResolverTest: manifest, resolver, read (~1623 tok)
-- `DartWorkflowsTest.kt` — Folder reformat and Reformat on Save. The platform skips files of a type (~881 tok)
+- `DartWorkflowsTest.kt` — Folder reformat and Reformat on Save. The platform skips files of a type (~1330 tok)
 - `ZzDiagTest.kt` — ZzDiagTest: createTempDirTestFixture (~249 tok)
 
 ## editors/vscode/
@@ -118,7 +123,7 @@
 ## editors/vscode/src/
 
 - `binary.ts` — The executable named [name] on PATH, or null. (~572 tok)
-- `extension.ts` — Beaver for VS Code: document and range formatting through `beaver --stdin` (~1584 tok)
+- `extension.ts` — Beaver for VS Code: document and range formatting through `beaver --stdin` (~1611 tok)
 - `protocol.ts` — Protocol version this extension speaks; must equal `beaver --version`'s. (~649 tok)
 - `run.ts` — Runs [binary] with [args], writing [input] to stdin. [onCancel] receives a (~340 tok)
 
@@ -129,7 +134,7 @@
 ## editors/vscode/test/integration/
 
 - `run.ts` — Launches VS Code with the extension and a scratch workspace, and runs the (~368 tok)
-- `suite.ts` — Runs inside VS Code (see run.ts). (~1578 tok)
+- `suite.ts` — Runs inside VS Code (see run.ts). (~2156 tok)
 
 ## example/
 
@@ -1538,3 +1543,7 @@
 ## packages/zooper_beaver/test/src/
 
 - `golden_file.dart` — / Parser for golden test files in dart_style's `.stmt`/`.unit` grammar, (~2306 tok)
+
+## tool/editors/
+
+- `helix_format.py` — Formats a file in Helix, which has no batch mode, by driving it in a pseudo (~383 tok)

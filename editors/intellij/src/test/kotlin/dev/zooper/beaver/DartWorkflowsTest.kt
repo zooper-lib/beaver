@@ -72,4 +72,37 @@ class DartWorkflowsTest : BasePlatformTestCase() {
         }
     }
 
+    /**
+     * Task 17.3: end-to-end Reformat on Save on a representative file (541
+     * lines), process start included. Reported, not asserted: machines vary;
+     * docs/performance.md records the numbers.
+     */
+    fun `test Reformat on Save latency`() {
+        val source = java.io.File("../../packages/zooper_beaver/lib/src/cli/cli.dart").readText()
+        val options = com.intellij.codeInsight.actions.onSave.FormatOnSaveOptions.getInstance(project)
+        options.isRunOnSaveEnabled = true
+        try {
+            val file = myFixture.addFileToProject("latency.dart", source)
+            assumeDart(file)
+            val document = file.viewProvider.document!!
+            val times = (1..7).map {
+                WriteCommandAction.runWriteCommandAction(project) {
+                    document.setText(source.replaceFirst("import ", "import  "))
+                }
+                val start = System.nanoTime()
+                com.intellij.testFramework.PlatformTestUtil.invokeNamedAction("SaveAll")
+                waitFor { String(file.virtualFile.contentsToByteArray()) == source }
+                assertEquals(source, String(file.virtualFile.contentsToByteArray()))
+                (System.nanoTime() - start) / 1e6
+            }
+            // The first save also locates and probes the binary.
+            val sorted = times.drop(1).sorted()
+            println(
+                "BEAVER_LATENCY intellij first=%.1fms median=%.1fms max=%.1fms runs=%s"
+                    .format(times[0], sorted[sorted.size / 2], sorted.last(), times.map { "%.0f".format(it) }),
+            )
+        } finally {
+            options.isRunOnSaveEnabled = false
+        }
+    }
 }

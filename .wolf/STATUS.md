@@ -8,7 +8,7 @@ budget_tokens: 1000
 
 ## ✅ Done
 
-- OpenSpec `initial-implementation`: 65/80 tasks ticked (groups 1–12, 15.2–15.4, 17.1, 17.2). Nothing committed yet.
+- OpenSpec `initial-implementation`: 70/80 tasks ticked; CI green on GitHub (2026-10-28), which verified 14.1, 14.2, 14.5, 15.1, 15.6. Committed on feature/initial-implementation, not pushed by Claude.
 - Engine + CLI in `packages/zooper_beaver/` (IR/printer, emit+splicing, parse, D6 comments, rules + generic fallback, D17 verify, config with injected IO, D8 directives, D15 ranges, `lib/src/cli/`). 426 tests, identical at analyzer 14.0.0/14.6.0; dart_style tall corpus 54.1%, 0 safety failures; real-code corpus 1,829 files × 4 configs clean (`tool/corpus.dart`).
 - Editors: `editors/vscode` (14 node tests pass, VSIX packaging works), `editors/intellij` (18 tests pass against local Android Studio 2025.2 via `-PlocalPlatformPath`).
 - CI/release: `.github/workflows/ci.yml` (dart both bounds, vscode+xvfb, intellij IDE matrix, editor configs), `release.yml` (5 binaries, checksums+manifest via `tool/release/manifest.sh`, signing gated on secrets, VSIX, plugin, pub publish). Never run on GitHub.
@@ -16,10 +16,7 @@ budget_tokens: 1000
 
 ## 🚀 Next quest
 
-Get the 15 open tasks verified; all need things outside this machine:
-- Push the branch and run CI (vscode integration under xvfb, IntelliJ on IDEA 2024.3.6/2025.3 with Dart incl. folder reformat + Reformat on Save, Helix/Neovim configs) → 14.x, 15.1/15.5/15.6, 16.x.
-- `release.yml` via workflow_dispatch dry_run → 13.1, 14.4. Signing secrets → 13.2. pub.dev automated publishing setup + a real publish (ask first) → 13.3, 13.4.
-- 17.3: CLI round trip measured (16 ms / 58 ms); in-editor latency still open.
+Waiting on the next CI run (needs a push): 14.3 (info test now asserts content), 16.2 (Helix driven via pty: tool/editors/helix_format.py), 16.1 partly (Emacs batch + apheleia step; Zed/Sublime still only JSON-checked), 17.3 (VS Code `BEAVER_LATENCY` line → docs/performance.md; IntelliJ numbers recorded). Then: release dry run → 13.1, 14.4, 15.5; signing → 13.2; pub.dev → 13.3, 13.4 (blocked: stays private).
 
 ## Design issues: resolved 2026-10-28
 

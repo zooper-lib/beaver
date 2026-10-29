@@ -40,4 +40,12 @@ Against the 150 ms threshold: well inside it, also for one of the largest files 
 
 ### Inside VS Code and IntelliJ
 
-Not yet measured inside the editors themselves (their own overhead of collecting the buffer and applying the edit comes on top of the round trip above).
+Measured by each plugin's test suite on Beaver's own `lib/src/cli/cli.dart` (541 lines), from the save request until the formatted file is on disk: the editor collects the buffer, runs `beaver`, applies the edit and writes the file. Seven saves, each after making the file unformatted again; the first save also locates and checks the binary, so it is listed on its own. The tests print a `BEAVER_LATENCY` line and do not fail on it (machines vary).
+
+| Editor | Machine | First save (ms) | Median of the rest (ms) | Max of the rest (ms) |
+|---|---|---:|---:|---:|
+| IntelliJ IDEA Community 2024.3.6 | Apple M4 Pro | 286 | 92 | 98 |
+| IntelliJ IDEA 2025.3 | Apple M4 Pro | 383 | 72 | 157 |
+| VS Code | CI (ubuntu-latest) | not yet recorded | | |
+
+The IntelliJ test checks for the formatted file every 20 ms, so its figures can be up to 20 ms high. Against the 150 ms threshold: an ordinary save is inside it in IntelliJ; most of that time is the IDE's own save and formatting pipeline, since the CLI round trip for a file this size is about 16 ms. The first save of a session is above it, once, because the binary is located and checked then.

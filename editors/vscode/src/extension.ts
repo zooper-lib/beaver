@@ -122,9 +122,12 @@ export function activate(context: vscode.ExtensionContext): void {
       } catch (e) {
         lines.push(`Formatter: unavailable: ${e instanceof BinaryError ? e.message : String(e)}`);
       }
+      const text = lines.join('\n');
       output.clear();
-      output.appendLine(lines.join('\n'));
+      output.appendLine(text);
       output.show(true);
+      // Returned as well, for callers and tests.
+      return text;
     }),
   );
 }
