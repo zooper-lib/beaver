@@ -394,7 +394,14 @@ extension ExpressionRules on DocBuilder {
         split,
       ]);
     }
-    if (!isBlockLike(rhs)) {
+    // `wrap.binary_expressions.break_after_prefix: false`: the first operand
+    // stays on the operator's line.
+    if (rhs is BinaryExpression && !config.binaryBreakAfterPrefix) {
+      return concat([op, if (spaced) space, visit(rhs)]);
+    }
+    // `wrap.chained_calls.break_after_prefix: true`: a chain moves like any
+    // other non-block value.
+    if (!isBlockLike(rhs) || (config.chainBreakAfterPrefix && isChain(rhs))) {
       return before
           ? group(moved(visit(rhs)))
           : concat([op, group(nextLine(concat([lead, visit(rhs)])))]);
@@ -440,8 +447,9 @@ extension ExpressionRules on DocBuilder {
     _ => false,
   };
 
-  /// Whether an operand chain hangs off something that already indents it.
-  bool _parentIndents(AstNode node) {
+  /// Whether [node] is the value after a prefix that moves it to its own
+  /// line when its list's `break_after_prefix` is on.
+  bool followsPrefix(AstNode node) {
     final parent = node.parent;
     return parent is VariableDeclaration ||
         parent is AssignmentExpression ||
@@ -449,7 +457,15 @@ extension ExpressionRules on DocBuilder {
         parent is FormalParameterDefaultClause ||
         parent is NamedArgument ||
         parent is PatternVariableDeclaration ||
-        parent is SwitchExpressionCase ||
+        parent is SwitchExpressionCase;
+  }
+
+  /// Whether an operand chain hangs off something that already indents it:
+  /// a prefix that moved it to its own line, or a block-indented control
+  /// condition.
+  bool _parentIndents(AstNode node) {
+    final parent = node.parent;
+    return (config.binaryBreakAfterPrefix && followsPrefix(node)) ||
         // `wrap.control_conditions: block` indents the condition itself.
         (config.values['wrap.control_conditions'] == 'block' &&
             (parent is IfStatement ||
@@ -545,6 +561,10 @@ extension ExpressionRules on DocBuilder {
       fill: policy == WrapPolicy.ifLong && !threshold,
     );
     if (settings.align) return group(alignToColumn(body));
+    // `indent_from: target`: offset from the first operand's column.
+    if (config.binaryIndentFromTarget) {
+      return group(alignToColumn(align(settings.indent, body)));
+    }
     return group(_parentIndents(node) ? body : align(settings.indent, body));
   }
 

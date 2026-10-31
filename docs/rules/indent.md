@@ -26,7 +26,7 @@ void f() {
 
 Wrapped continuation lines of an expression are indented by this many spaces beyond the statement. Preset `dart`: `4`.
 
-A list map with an `indent` field uses that field as the offset of its broken items. Its preset `inherit` follows `indent.continuation` for `wrap.chained_calls` and `wrap.binary_expressions`, and `indent.size` for the other lists, so a team that only changes these two keys keeps today's layout everywhere. The numeric indent is never added on top of an alignment column.
+A list map with an `indent` field uses that field as the offset of its broken items. Its preset `inherit` follows `indent.continuation` for `wrap.chained_calls` and `wrap.binary_expressions`, and `indent.size` for the other lists, so a team that only changes these two keys keeps today's layout everywhere. The numeric indent is never added on top of an alignment column. `wrap.chained_calls.indent_from` and `wrap.binary_expressions.indent_from` choose what that offset is measured from: the line (`line`, the preset) or the column where the chain's target or the first operand starts (`target`), see [wrap](wrap.md).
 
 Before:
 

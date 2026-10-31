@@ -96,6 +96,7 @@ final class DottedNameListType extends ValueType {
 const _policy = EnumType(['never', 'if_long', 'chop_if_long', 'chop_always']);
 const _bool = BoolType();
 const _closeBracket = EnumType(['own_line', 'after_last_item']);
+const _indentFrom = EnumType(['line', 'target']);
 const _trailingCommas = EnumType([
   'preserve',
   'remove',
@@ -187,7 +188,11 @@ const listConstructs = [
     delimited: true,
     inheritsFrom: 'collection_literals',
   ),
-  ListConstruct('binary_expressions', indent: 'indent.continuation'),
+  ListConstruct(
+    'binary_expressions',
+    indent: 'indent.continuation',
+    extra: {'break_after_prefix': _bool, 'indent_from': _indentFrom},
+  ),
   ListConstruct('conditional_expressions', align: false),
   ListConstruct(
     'chained_calls',
@@ -195,6 +200,8 @@ const listConstructs = [
     extra: {
       'keep_single_line_if_fits': _bool,
       'keep_first_call_on_receiver_line': _bool,
+      'break_after_prefix': _bool,
+      'indent_from': _indentFrom,
     },
   ),
   ListConstruct('cascades', indent: 'indent.size', align: false),

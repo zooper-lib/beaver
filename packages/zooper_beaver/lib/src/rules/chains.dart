@@ -7,6 +7,7 @@ import 'package:analyzer/dart/ast/token.dart';
 import '../config/config.dart';
 import '../ir/doc.dart';
 import 'builder.dart';
+import 'expressions.dart';
 
 /// One `.call(...)`, `.property`, `[index]`, `!` or `(args)` after a target.
 final class _Selector {
@@ -141,25 +142,41 @@ extension ChainRules on DocBuilder {
       return concat(parts);
     }
 
-    final continued = align(
-      settings.indent,
-      separated(lines, kept, first: true),
-    );
+    // A chain moved after a prefix (`break_after_prefix`) was already
+    // indented by the move, so its calls stay in the target's column.
+    final step = config.chainBreakAfterPrefix && followsPrefix(expression)
+        ? 0
+        : settings.indent;
+    final continued = align(step, separated(lines, kept, first: true));
     if (!settings.align) {
-      if (config.flag('wrap.chained_calls.keep_first_call_on_receiver_line')) {
-        return group(
-          concat([
-            target,
-            ...head,
-            lines.first,
-            align(
-              settings.indent,
-              separated(lines.sublist(1), kept.sublist(1), first: true),
-            ),
-          ]),
-        );
+      // The calls, offset by [offset] from the enclosing indentation.
+      Doc calls(int offset) =>
+          config.flag('wrap.chained_calls.keep_first_call_on_receiver_line')
+          ? concat([
+              lines.first,
+              align(
+                offset,
+                separated(lines.sublist(1), kept.sublist(1), first: true),
+              ),
+            ])
+          : align(offset, separated(lines, kept, first: true));
+      final fromLine = concat([target, ...head, calls(step)]);
+      final receiver = concat([target, ...head]);
+      if (!config.chainIndentFromTarget || hasHardLine(receiver)) {
+        return group(fromLine);
       }
-      return group(concat([target, ...head, continued]));
+      // `indent_from: target`: offset from the target's column when the
+      // target fits on one line, from the line otherwise.
+      return ConditionalGroup(
+        [
+          fromLine,
+          alignToColumn(
+            concat([printedFlat(receiver), calls(settings.indent)]),
+          ),
+          fromLine,
+        ],
+        firstLineOnly: const {1},
+      );
     }
     // Alignment: aligned under the first call's `.` while the target printed flat,
     // continuation indent otherwise.

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-31T05:56:45.238Z
-> Files: 1197 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-31T13:57:00.030Z
+> Files: 1218 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -15,6 +15,7 @@
 - `DRAFT.md` — Beaver — a configurable Dart formatter (~11634 tok)
 - `LICENSE` — Project license (~284 tok)
 - `README.md` — Project documentation (~2432 tok)
+- `SETTINGS_AUDIT.md` — Settings audit: duplicates, dead fields and interferences (~6001 tok)
 
 ## .github/workflows/
 
@@ -23,7 +24,7 @@
 
 ## docs/
 
-- `beaver.template.yaml` — Every Beaver setting with its `dart` preset value and, in the comment, (~2392 tok)
+- `beaver.template.yaml` — Every Beaver setting with its `dart` preset value and, in the comment, (~2440 tok)
 - `cli.md` — Command line (~1326 tok)
 - `directives.md` — Ignore directives (~606 tok)
 - `install.md` — Installing Beaver (~789 tok)
@@ -47,10 +48,10 @@
 
 - `blank_lines.md` — Blank line rules (~1489 tok)
 - `braces.md` — Brace rules (~449 tok)
-- `indent.md` — Indentation rules (~1307 tok)
+- `indent.md` — Indentation rules (~1369 tok)
 - `spaces.md` — Space rules (~912 tok)
 - `strings.md` — String rules (~388 tok)
-- `wrap.md` — Wrapping rules (~7219 tok)
+- `wrap.md` — Wrapping rules (~8452 tok)
 
 ## editors/intellij/
 
@@ -146,7 +147,7 @@
 
 - `.beaver.yaml` — Inputs stay as written; every <key>/<value>/ folder has its own config. (~30 tok)
 - `analysis_options.yaml` — Formatter input and output, not a program: the names in these files are (~48 tok)
-- `README.md` — Project documentation (~6517 tok)
+- `README.md` — Project documentation (~6784 tok)
 
 ## example/blank_lines.after_imports/
 
@@ -1023,6 +1024,29 @@
 - `.beaver.yaml` (~13 tok)
 - `after.dart` (~81 tok)
 
+## example/wrap.binary_expressions.break_after_prefix/
+
+- `before.dart` (~87 tok)
+
+## example/wrap.binary_expressions.break_after_prefix/false/
+
+- `.beaver.yaml` (~17 tok)
+- `after.dart` (~110 tok)
+
+## example/wrap.binary_expressions.break_after_prefix/true/
+
+- `.beaver.yaml` (~17 tok)
+- `after.dart` (~114 tok)
+
+## example/wrap.binary_expressions.indent_from/
+
+- `before.dart` (~87 tok)
+
+## example/wrap.binary_expressions.indent_from/line/
+
+- `.beaver.yaml` (~15 tok)
+- `after.dart` (~114 tok)
+
 ## example/wrap.binary_expressions/
 
 - `before.dart` (~41 tok)
@@ -1160,6 +1184,25 @@
 - `.beaver.yaml` (~12 tok)
 - `after.dart` (~47 tok)
 
+## example/wrap.chained_calls.align/type_names/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~90 tok)
+
+## example/wrap.chained_calls.break_after_prefix/
+
+- `before.dart` (~84 tok)
+
+## example/wrap.chained_calls.break_after_prefix/false/
+
+- `.beaver.yaml` (~16 tok)
+- `after.dart` (~106 tok)
+
+## example/wrap.chained_calls.break_after_prefix/true/
+
+- `.beaver.yaml` (~15 tok)
+- `after.dart` (~110 tok)
+
 ## example/wrap.chained_calls.chop_from/
 
 - `before.dart` (~36 tok)
@@ -1173,6 +1216,15 @@
 
 - `.beaver.yaml` (~12 tok)
 - `after.dart` (~42 tok)
+
+## example/wrap.chained_calls.indent_from/
+
+- `before.dart` (~84 tok)
+
+## example/wrap.chained_calls.indent_from/line/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~106 tok)
 
 ## example/wrap.chained_calls.keep_first_call_on_receiver_line/
 
@@ -1644,7 +1696,7 @@
 
 ## openspec/changes/chain-and-binary-continuation-indent/
 
-- `design.md` — Design (~1461 tok)
+- `design.md` — Design (~1558 tok)
 - `proposal.md` — Proposal (~805 tok)
 - `tasks.md` — Tasks (~1006 tok)
 
@@ -1816,7 +1868,7 @@
 
 - `cli_test.dart` — _Capture: toString, main (~2999 tok)
 - `comments_test.dart` — A: main, init, f (~846 tok)
-- `config_resolve_test.dart` — Declares values (~4903 tok)
+- `config_resolve_test.dart` — Declares values (~6288 tok)
 - `config_schema_test.dart` — Declares is (~962 tok)
 - `config_template_test.dart` (~413 tok)
 - `dart_style_corpus_test.dart` — / Scores Beaver against dart_style's tall corpus. Mismatches are reported, (~383 tok)
@@ -2368,6 +2420,11 @@
 - `0869.stmt` (~48 tok)
 - `0881.unit` (~3503 tok)
 - `0888.unit` (~747 tok)
+
+## packages/zooper_beaver/test/golden/wrap/
+
+- `prefix_placement_chains.stmt` (~880 tok)
+- `prefix_placement.stmt` (~652 tok)
 
 ## packages/zooper_beaver/test/src/
 

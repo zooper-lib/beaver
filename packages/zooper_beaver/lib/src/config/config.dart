@@ -196,6 +196,14 @@ final class BeaverConfig {
       _flag('wrap.break_before.binary_operator');
   bool get chainKeepSingleLineIfFits =>
       _flag('wrap.chained_calls.keep_single_line_if_fits');
+  bool get chainBreakAfterPrefix =>
+      _flag('wrap.chained_calls.break_after_prefix');
+  bool get chainIndentFromTarget =>
+      values['wrap.chained_calls.indent_from'] == 'target';
+  bool get binaryBreakAfterPrefix =>
+      _flag('wrap.binary_expressions.break_after_prefix');
+  bool get binaryIndentFromTarget =>
+      values['wrap.binary_expressions.indent_from'] == 'target';
   bool get simpleBlocksOnOneLine => _flag('wrap.simple_blocks_on_one_line');
   bool get simpleLambdasOnOneLine => _flag('wrap.simple_lambdas_on_one_line');
   List<String> get chopOnNamedArguments =>

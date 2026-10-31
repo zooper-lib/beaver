@@ -1029,9 +1029,90 @@ final names = users.where((u) => u.active)
     .toList();
 ```
 
+## `wrap.chained_calls.break_after_prefix`
+
+Where a wrapped chain starts when it follows a prefix: `=`, `=>`, a named argument's `:` or a parameter default's `=`. With `false`, the target stays on the prefix line and the calls are offset from there. With `true`, a chain that does not fit on the prefix line moves to its own line at the continuation indent, like a binary expression does, and then chops only if it still does not fit. A chain that fits on the prefix line stays there either way. Preset `dart`: `false`. Examples at 40 columns.
+
+Before:
+
+```dart
+call(date: formatterFactory.create().format(value.toLocal()));
+```
+
+After (the preset):
+
+```dart
+call(
+  date: formatterFactory
+      .create()
+      .format(value.toLocal()),
+);
+```
+
+After with `wrap.chained_calls.break_after_prefix=true`:
+
+```dart
+call(
+  date:
+      formatterFactory
+      .create()
+      .format(value.toLocal()),
+);
+```
+
+## `wrap.chained_calls.indent_from`
+
+What the calls of a chopped chain are offset from. `line`: the indentation of the line the chain starts on, so after a prefix wider than the offset (`date: `, `final names = `) the calls can start left of the target; a chain moved by `break_after_prefix` keeps its calls in the target's column. `target`: the column where the target starts, so a call never starts left of what it continues. While the target itself does not fit on one line, `line` applies. The offset is `wrap.chained_calls.indent` under both (`inherit`: `indent.continuation`). `align: true` takes precedence. Preset `dart`: `line`. After a long prefix, `target` nests deeply; combined with `break_after_prefix: true` the target starts its own line and the calls sit one step past it. Examples at 40 columns.
+
+Before:
+
+```dart
+call(date: formatterFactory.create().format(value.toLocal()));
+```
+
+After with `wrap.chained_calls.indent_from=target`:
+
+```dart
+call(
+  date: formatterFactory
+            .create()
+            .format(value.toLocal()),
+);
+```
+
+After with `wrap.chained_calls.break_after_prefix=true wrap.chained_calls.indent_from=target`:
+
+```dart
+call(
+  date:
+      formatterFactory
+          .create()
+          .format(value.toLocal()),
+);
+```
+
+Before:
+
+```dart
+call(date: Factory(firstArgument, secondArgument).create().format(value));
+```
+
+After with `wrap.chained_calls.indent_from=target` (the target breaks, so `line` applies):
+
+```dart
+call(
+  date: Factory(
+    firstArgument,
+    secondArgument,
+  )
+      .create()
+      .format(value),
+);
+```
+
 ## `wrap.binary_expressions.align`
 
-Continuation lines of a wrapped binary expression align under its first operand, wherever the expression occurs, instead of being indented by `wrap.binary_expressions.indent` (`inherit`: `indent.continuation`). Preset `dart`: `false`. The column is wherever the first operand landed: after `=` the whole right-hand side moves to its own line first, so there the operands line up at the continuation indent and the output is the same as with `false`; the difference shows in a `return`, a condition or an argument, where the first operand shares a line with what precedes it. Examples at 30 columns.
+Continuation lines of a wrapped binary expression align under its first operand, wherever the expression occurs, instead of being indented by `wrap.binary_expressions.indent` (`inherit`: `indent.continuation`). Preset `dart`: `false`. The column is wherever the first operand landed: after `=` the whole right-hand side moves to its own line first (under the preset `break_after_prefix: true`), so there the operands line up at the continuation indent and the output is the same as with `false`; the difference shows in a `return`, a condition or an argument, where the first operand shares a line with what precedes it. Examples at 30 columns.
 
 Before:
 
@@ -1045,6 +1126,77 @@ After with `wrap.binary_expressions.align=true`:
 return subtotal +
        shipping +
        tax;
+```
+
+## `wrap.binary_expressions.break_after_prefix`
+
+Where a wrapped binary expression starts when it follows a prefix: `=`, `=>`, a named argument's `:` or a parameter default's `=`. With `true`, an expression that does not fit on the prefix line moves to its own line at the continuation indent, and its operands then share that column. With `false`, the first operand stays on the prefix line and the later lines are offset by `wrap.binary_expressions.indent` from the line's indentation (or from the first operand, see `indent_from`). An expression that fits on the prefix line stays there either way. Preset `dart`: `true`. A very long first operand is not moved under `false`, so it can overflow. Examples at 30 columns.
+
+Before:
+
+```dart
+final total = subtotal + shipping + tax - discount;
+```
+
+After with `wrap.break_before.binary_operator=true`, `break_after_prefix` at its preset:
+
+```dart
+final total =
+    subtotal
+    + shipping
+    + tax
+    - discount;
+```
+
+After with `wrap.break_before.binary_operator=true wrap.binary_expressions.break_after_prefix=false`:
+
+```dart
+final total = subtotal
+    + shipping
+    + tax
+    - discount;
+```
+
+## `wrap.binary_expressions.indent_from`
+
+What the continuation lines of a wrapped binary expression are offset from. `line`: the indentation of the line the expression starts on; an expression moved after a prefix keeps its operands in the first operand's column, because the move already indented it. `target`: the column where the first operand starts, so a continuation line never starts left of it. The offset is `wrap.binary_expressions.indent` under both (`inherit`: `indent.continuation`). `align: true` takes precedence. Preset `dart`: `line`. Examples at 30 columns.
+
+Before:
+
+```dart
+final total = subtotal + shipping + tax - discount;
+```
+
+After with `wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target`:
+
+```dart
+final total =
+    subtotal
+        + shipping
+        + tax
+        - discount;
+```
+
+Before:
+
+```dart
+return subtotal + shipping + tax;
+```
+
+After with `wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target`:
+
+```dart
+return subtotal
+           + shipping
+           + tax;
+```
+
+After with `wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target wrap.binary_expressions.indent=2`:
+
+```dart
+return subtotal
+         + shipping
+         + tax;
 ```
 
 ## `wrap.annotations`

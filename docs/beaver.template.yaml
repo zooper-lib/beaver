@@ -71,6 +71,8 @@ wrap:
     chop_on_trailing_comma: inherit  # inherit | true | false
     align: false  # true | false
     indent: inherit  # inherit | an integer >= 0
+    break_after_prefix: true  # true | false
+    indent_from: line  # line | target
   conditional_expressions:  # or the shorthand conditional_expressions: <policy>
     policy: chop_if_long  # never | if_long | chop_if_long | chop_always
     chop_from: 0  # an integer >= 0
@@ -85,6 +87,8 @@ wrap:
     indent: inherit  # inherit | an integer >= 0
     keep_single_line_if_fits: true  # true | false
     keep_first_call_on_receiver_line: false  # true | false
+    break_after_prefix: false  # true | false
+    indent_from: line  # line | target
   cascades:  # or the shorthand cascades: <policy>
     policy: chop_if_long  # never | if_long | chop_if_long | chop_always
     chop_from: 2  # an integer >= 0

@@ -88,6 +88,40 @@ void main() {
       }
     });
 
+    test('continuation placement fields', () {
+      final values = parseConfigFile(
+        'wrap: {chained_calls: {break_after_prefix: true, indent_from: target}}',
+        'f',
+      ).values;
+      expect(values['wrap.chained_calls.break_after_prefix'], true);
+      expect(values['wrap.chained_calls.indent_from'], 'target');
+      expect(
+        () => parseConfigFile(
+          'wrap: {binary_expressions: {indent_from: statement}}',
+          'f',
+        ),
+        configError(
+          '`wrap.binary_expressions.indent_from`; allowed: line | target',
+        ),
+      );
+      expect(
+        () => parseConfigFile('wrap: {arguments: {indent_from: target}}', 'f'),
+        configError('`wrap.arguments.indent_from`'),
+      );
+      expect(
+        () => parseConfigFile(
+          'wrap: {chained_calls: {break_after_prefix: inherit}}',
+          'f',
+        ),
+        configError('`wrap.chained_calls.break_after_prefix`'),
+      );
+      final dart = BeaverConfig.dart;
+      expect(dart.chainBreakAfterPrefix, false);
+      expect(dart.binaryBreakAfterPrefix, true);
+      expect(dart.chainIndentFromTarget, false);
+      expect(dart.binaryIndentFromTarget, false);
+    });
+
     test('chop_on_calls entries are dotted names', () {
       expect(
         () => parseConfigFile("wrap: {chop_on_calls: ['Row*']}", 'f'),

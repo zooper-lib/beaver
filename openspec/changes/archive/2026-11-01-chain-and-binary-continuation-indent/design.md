@@ -35,7 +35,7 @@ The predicate for "moved" stays `_parentIndents`, extended to chains. Inside a p
 ### `target` via `Align.toColumn`
 
 - Binary: `alignToColumn(align(indent, body))`. The first segment prints where the expression starts, and each later line starts at that column plus `indent`. A first operand that itself breaks indents its inner lines from the column too, exactly as `align: true` does today. Binary keeps that without a fallback.
-- Chains: `alignToColumn(concat([target, ...head, align(indent, calls)]))`, guarded like the `align: true` branch: when the target group breaks, the `line` layout is used. A target such as `foo(\n  args,\n)` would otherwise indent its arguments from the target's column.
+- Chains: a `ConditionalGroup` of the `line` layout (flat), `alignToColumn(concat([printedFlat(receiver), align(indent, calls)]))` (with `firstLineOnly`, so it is chosen when the flat receiver fits on the line), and the `line` layout. A receiver holding a hard line (a block body, a comment) skips the target state entirely (`hasHardLine` in `ir/doc.dart`). The `IfBreak` guard of the `align: true` branch cannot do this: `Align.toColumn` has to wrap the target to know its start column, and nothing inside it can return to the line's indentation. Without the fallback, a target such as `foo(\n  args,\n)` would indent its arguments from the target's column.
 - Under `target` the moved case needs no special handling, because the target starts the line, so its column is the line's indentation.
 
 ### `break_after_prefix` lives in `assignmentRhs`

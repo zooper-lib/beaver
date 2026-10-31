@@ -1,0 +1,3 @@
+wrap:
+  binary_expressions:
+    break_after_prefix: false

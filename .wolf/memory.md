@@ -181,3 +181,26 @@ description: chronological action log per session, consolidated weekly
 | 13:55 | Created openspec/changes/chain-and-binary-continuation-indent/specs/config-resolution/spec.md | — | ~496 |
 | 13:56 | Created openspec/changes/chain-and-binary-continuation-indent/design.md | — | ~1558 |
 | 13:56 | Created openspec/changes/chain-and-binary-continuation-indent/tasks.md | — | ~1074 |
+| 14:00 | Edited packages/zooper_beaver/test/config_resolve_test.dart | modified test() | ~328 |
+| 14:02 | Created packages/zooper_beaver/test/golden/wrap/prefix_placement.stmt | — | ~652 |
+| 14:08 | Created packages/zooper_beaver/test/golden/wrap/prefix_placement_chains.stmt | — | ~880 |
+<!-- session:OTUyMDIxYWUtZTY2MC00MTU5LTljNTQtYmY4OGY4ZjhkM2Vi -->
+| 2026-10-31T06:11:00.826Z | Implemented OpenSpec change chain-and-binary-continuation-indent: wrap.chained_calls/binary_expressions gain break_after_prefix and indent_from (line target); dart preset unchanged. Chain target base uses a ConditionalGroup with a flat receiver state (firstLineOnly) and falls back to line when the receiver breaks or holds a hard line (new hasHardLine in ir/doc.dart). | packages/zooper_beaver/lib/src/config/{schema,dart_preset,config}.dart,packages/zooper_beaver/lib/src/rules/{chains,expressions}.dart,packages/zooper_beaver/lib/src/ir/doc.dart,docs/rules/{wrap,indent}.md,example/*,test/golden/wrap/prefix_placement* | 950 tests pass, analyze clean, --check clean, dart_style corpus 1692/3126 unchanged, safety corpus 1506 files x4 new configs 0 failures |
+| 14:11 | Edited openspec/changes/chain-and-binary-continuation-indent/design.md | "alignToColumn(concat([tar" → "ConditionalGroup" | ~176 |
+<!-- session:OTUyMDIxYWUtZTY2MC00MTU5LTljNTQtYmY4OGY4ZjhkM2Vi -->
+| 2026-10-31T06:30:11.846Z | Added wrap.chained_calls.align: type_names to the open change chain-and-binary-continuation-indent: only UpperCamelCase targets (direct or import-prefixed) keep the first call and align under it, per dart format's rule; property heads (Colors.red, _Cache.instance) and SCREAMING constants excluded. BoolOrWord schema type; _unwind now returns the target node. Specs, design, tasks, docs, example and goldens updated. | packages/zooper_beaver/lib/src/config/{schema,config}.dart,packages/zooper_beaver/lib/src/rules/chains.dart,packages/zooper_beaver/test/golden/wrap/align_type_names.stmt,docs/rules/{indent,wrap}.md,example/wrap.chained_calls.align,openspec/changes/chain-and-binary-continuation-indent | 961 tests pass, analyze clean, --check clean, dart_style corpus 1692/3126 unchanged, openspec validate --strict passes |
+
+## Session: 2026-10-31 17:52
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:05 | Created SETTINGS_AUDIT.md | — | ~3189 |
+| 21:56 | Edited SETTINGS_AUDIT.md | expanded (+156 lines) | ~1972 |
+| 21:57 | Edited SETTINGS_AUDIT.md | expanded (+9 lines) | ~215 |
+
+## Session: 2026-10-31 23:52
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+<!-- session:OTUyMDIxYWUtZTY2MC00MTU5LTljNTQtYmY4OGY4ZjhkM2Vi -->
+| 2026-10-31T16:00:08.845Z | Grill session on SETTINGS_AUDIT.md settled D2-D12 (fill rename, chop_always/keep_single_line_if_fits removal, sub-option rule, bracket fields break_after_open_bracket/break_before_close_bracket, indent: first_item replacing align, keep_first_call_on_receiver_line as a list of receiver kinds, removal errors). Stripped align: type_names from the open change chain-and-binary-continuation-indent since D8/D9 supersede it. | SETTINGS_AUDIT.md,packages/zooper_beaver/lib/src/config/{schema,config}.dart,packages/zooper_beaver/lib/src/rules/chains.dart,docs/rules/{indent,wrap}.md,example/README.md,openspec/changes/chain-and-binary-continuation-indent | 950 tests pass, analyze clean, --check clean, openspec validate --strict passes |
