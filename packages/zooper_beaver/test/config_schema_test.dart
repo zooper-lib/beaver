@@ -13,8 +13,15 @@ void main() {
     expect(dart.lineLength, 80);
     expect(dart.indentSize, 2);
     expect(
-      dart.arguments.align || dart.parameters.align || dart.chainedCalls.align,
-      isFalse,
+      [dart.arguments, dart.parameters, dart.chainedCalls].map((l) => l.indent),
+      everyElement(isA<Inherit>()),
+    );
+    expect(dart.initializerLists.indent, isA<FirstItem>());
+    expect(dart.switchExpressions.policy, WrapPolicy.chopIfLong);
+    expect(dart.switchExpressions.chopFrom, 1);
+    expect(
+      dart.arguments.breakAfterOpen && dart.arguments.breakBeforeClose,
+      isTrue,
     );
     expect(dart.chopOnNamedArguments, isEmpty);
     expect(dart.arguments.trailingCommas, TrailingCommas.addWhenWrapped);
@@ -62,7 +69,34 @@ void main() {
     expect(BeaverConfig.dart.values.values, isNot(contains('inherit')));
   });
 
+  test('no align, close_bracket or keep_single_line_if_fits key', () {
+    expect(
+      schema.keys.where(
+        (k) =>
+            k.endsWith('.align') ||
+            k.contains('close_bracket') && !k.contains('break_before') ||
+            k.endsWith('keep_single_line_if_fits'),
+      ),
+      isEmpty,
+    );
+  });
+
   group('value types', () {
+    test('IndentType', () {
+      const type = InheritOr(IndentType());
+      expect(type.accepts('first_item'), isTrue);
+      expect(type.accepts(4), isTrue);
+      expect(type.accepts(-1), isFalse);
+      expect(type.describe(), 'inherit | an integer >= 0 | first_item');
+    });
+
+    test('ReceiverKindListType', () {
+      const type = ReceiverKindListType();
+      expect(type.accepts(['type_names', 'calls']), isTrue);
+      expect(type.accepts(true), isTrue);
+      expect(type.accepts(['classes']), isFalse);
+    });
+
     test('InheritOr', () {
       const type = InheritOr(BoolType());
       expect(type.accepts('inherit'), isTrue);

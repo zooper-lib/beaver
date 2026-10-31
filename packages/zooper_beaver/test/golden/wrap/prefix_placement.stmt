@@ -1,0 +1,67 @@
+30 columns                    |
+>>> (wrap.break_before.binary_operator=true) The preset moves a binary right side to its own line; operands share its column.
+final total = subtotal + shipping + tax - discount;
+<<<
+final total =
+    subtotal
+    + shipping
+    + tax
+    - discount;
+>>> (wrap.break_before.binary_operator=true wrap.binary_expressions.break_after_prefix=false) The first operand stays on the prefix line.
+final total = subtotal + shipping + tax - discount;
+<<<
+final total = subtotal
+    + shipping
+    + tax
+    - discount;
+>>> (wrap.break_before.binary_operator=true wrap.binary_expressions.break_after_prefix=false) After a named argument, offset from the argument's line.
+g(total: subtotal + shipping + tax);
+<<<
+g(
+  total: subtotal
+      + shipping
+      + tax,
+);
+>>> (wrap.break_before.binary_operator=true wrap.binary_expressions.break_after_prefix=false) After `=>`.
+int h() => subtotal + shippingCost + taxAmount;
+<<<
+int h() => subtotal
+    + shippingCost
+    + taxAmount;
+>>> (wrap.binary_expressions.break_after_prefix=true) A short expression stays on the prefix line.
+final t = a + b;
+<<<
+final t = a + b;
+>>> (wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target) Moved, the operators go one step past the first operand.
+final total = subtotal + shipping + tax - discount;
+<<<
+final total =
+    subtotal
+        + shipping
+        + tax
+        - discount;
+>>> (wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target) After `return`, offset from the first operand.
+return subtotal + shipping + tax;
+<<<
+return subtotal
+           + shipping
+           + tax;
+>>> (wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target wrap.binary_expressions.indent=2) The step is the list's indent.
+return subtotal + shipping + tax;
+<<<
+return subtotal
+         + shipping
+         + tax;
+>>> (wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target wrap.binary_expressions.break_after_prefix=false) Kept on the prefix line, offset from the first operand.
+final total = subtotal + shipping + tax - discount;
+<<<
+final total = subtotal
+                  + shipping
+                  + tax
+                  - discount;
+>>> (wrap.binary_expressions.indent=first_item wrap.binary_expressions.indent_from=target) indent_from is ignored under first_item.
+return subtotal + shipping + tax;
+<<<
+return subtotal +
+       shipping +
+       tax;

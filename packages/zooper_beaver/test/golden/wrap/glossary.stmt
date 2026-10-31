@@ -1,0 +1,69 @@
+40 columns                              |
+>>> Too long: a call that fits is untouched.
+function(first, second, third);
+<<<
+function(first, second, third);
+>>> Too long: a call past line_length breaks.
+function(firstArgument, secondArgument, thirdArgument, fourth);
+<<<
+function(
+  firstArgument,
+  secondArgument,
+  thirdArgument,
+  fourth,
+);
+>>> (wrap.arguments=never) never ignores the width.
+function(firstArgument, secondArgument, thirdArgument, fourth);
+<<<
+function(firstArgument, secondArgument, thirdArgument, fourth);
+>>> (wrap.arguments=fill) fill puts as many items per line as fit.
+function(firstArgument, secondArgument, thirdArgument, fourth);
+<<<
+function(
+  firstArgument, secondArgument,
+  thirdArgument, fourth,
+);
+>>> (wrap.arguments.chop_from=3) Below the threshold.
+function(a, b);
+<<<
+function(a, b);
+>>> (wrap.arguments.chop_from=3) At the threshold, chopped although it fits.
+function(a, b, c);
+<<<
+function(
+  a,
+  b,
+  c,
+);
+>>> A kept break groups items under chop_if_long.
+function(first,
+    second, third);
+<<<
+function(
+  first,
+  second, third,
+);
+>>> (wrap.arguments=fill) fill flows in runs after a kept break.
+function(first,
+    second, third, fourth, fifth);
+<<<
+function(
+  first,
+  second, third, fourth, fifth,
+);
+>>> (wrap.keep_existing_line_breaks=false) Without kept breaks the list is laid out from scratch.
+function(first,
+    second, third);
+<<<
+function(first, second, third);
+>>> (wrap.arguments=fill) fill gives an item that is itself too long a line of its own, broken inside.
+function(first, inner(argumentNumberOne, argumentNumberTwo, three), last);
+<<<
+function(
+  first,
+  inner(
+    argumentNumberOne,
+    argumentNumberTwo, three,
+  ),
+  last,
+);

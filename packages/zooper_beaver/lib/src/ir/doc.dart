@@ -183,6 +183,21 @@ Doc printedFlat(Doc doc) => switch (doc) {
   Line() || Text() || BreakParent() || Marker() => doc,
 };
 
+/// Whether [doc] holds a hard line or [BreakParent] anywhere, so it can
+/// never print on one line.
+bool hasHardLine(Doc doc) => switch (doc) {
+  Line(:final isHard) => isHard,
+  BreakParent() => true,
+  Group(:final contents) ||
+  Indent(:final contents) ||
+  Align(:final contents) ||
+  LineSuffix(:final contents) => hasHardLine(contents),
+  ConditionalGroup(:final states) => hasHardLine(states.first),
+  IfBreak(:final flat) => hasHardLine(flat),
+  Fill(:final parts) || Concat(:final parts) => parts.any(hasHardLine),
+  Text() || Marker() => false,
+};
+
 /// [docs] separated by [separator].
 Doc join(Doc separator, Iterable<Doc> docs) {
   final parts = <Doc>[];

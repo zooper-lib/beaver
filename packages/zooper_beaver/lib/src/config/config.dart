@@ -6,11 +6,32 @@ import 'package:yaml/yaml.dart';
 import 'dart_preset.dart';
 import 'schema.dart';
 
-enum WrapPolicy { never, ifLong, chopIfLong, chopAlways }
+enum WrapPolicy { never, fill, chopIfLong }
 
 enum TrailingCommas { preserve, remove, addWhenWrapped, addWhenChopped }
 
-enum CloseBracket { ownLine, afterLastItem }
+/// What precedes a chain's first call (`keep_first_call_on_receiver_line`).
+enum ReceiverKind { typeNames, identifiers, thisOrSuper, calls, properties }
+
+/// A list's `indent`. [columns] is the offset of the broken items from the
+/// list's baseline; for [FirstItem] it is the `inherit` offset, used when
+/// the first item does not share a line with what precedes it.
+sealed class ListIndent {
+  const ListIndent(this.columns);
+  final int columns;
+}
+
+final class Inherit extends ListIndent {
+  const Inherit(super.columns);
+}
+
+final class Columns extends ListIndent {
+  const Columns(super.columns);
+}
+
+final class FirstItem extends ListIndent {
+  const FirstItem(super.columns);
+}
 
 enum Quotes { preserve, single, double }
 
@@ -47,9 +68,9 @@ final class ListSettings {
     required this.chopFrom,
     required this.keepExistingLineBreaks,
     required this.chopOnTrailingComma,
-    required this.align,
     required this.indent,
-    required this.closeBracket,
+    required this.breakAfterOpen,
+    required this.breakBeforeClose,
     required this.trailingCommas,
   });
 
@@ -59,11 +80,11 @@ final class ListSettings {
   final int chopFrom;
   final bool keepExistingLineBreaks;
   final bool chopOnTrailingComma;
-  final bool align;
+  final ListIndent indent;
 
-  /// Offset of the broken items from the list's baseline.
-  final int indent;
-  final CloseBracket closeBracket;
+  /// `break_after_open_bracket` and `break_before_close_bracket`.
+  final bool breakAfterOpen;
+  final bool breakBeforeClose;
   final TrailingCommas trailingCommas;
 
   /// Whether a list of [count] items reaches `chop_from`, which chops it
@@ -77,9 +98,9 @@ final class ListSettings {
     chopFrom: chopFrom,
     keepExistingLineBreaks: keepExistingLineBreaks,
     chopOnTrailingComma: chopOnTrailingComma,
-    align: false,
-    indent: indent,
-    closeBracket: closeBracket,
+    indent: Inherit(indent.columns),
+    breakAfterOpen: breakAfterOpen,
+    breakBeforeClose: breakBeforeClose,
     trailingCommas: trailingCommas,
   );
 }
@@ -120,8 +141,7 @@ final class BeaverConfig {
 
   static WrapPolicy _policy(Object? value) => switch (value) {
     'never' => WrapPolicy.never,
-    'if_long' => WrapPolicy.ifLong,
-    'chop_always' => WrapPolicy.chopAlways,
+    'fill' => WrapPolicy.fill,
     _ => WrapPolicy.chopIfLong,
   };
 
@@ -132,22 +152,35 @@ final class BeaverConfig {
     _ => TrailingCommas.addWhenWrapped,
   };
 
-  static CloseBracket _closeBracket(Object? value) => value == 'after_last_item'
-      ? CloseBracket.afterLastItem
-      : CloseBracket.ownLine;
+  /// `wrap.<list>.indent`; lists without the field use `indent.size`.
+  ListIndent _indent(String key) {
+    final value = values[key];
+    if (value == null) return Inherit(indentSize);
+    if (value is int) {
+      return settings[key] == 'inherit' ? Inherit(value) : Columns(value);
+    }
+    // `first_item`: the inherit offset is the first integer down the chain.
+    var fallback = fallbacks[key]!;
+    while (values[fallback] is! int) {
+      fallback = fallbacks[fallback]!;
+    }
+    return FirstItem(_int(fallback));
+  }
 
   ListSettings _list(String name) {
     final prefix = 'wrap.$name.';
+    // Lists without bracket or comma fields read the global keys.
+    bool flagOr(String field) =>
+        values['$prefix$field'] as bool? ?? _flag('wrap.$field');
     return ListSettings(
       policy: _policy(values['${prefix}policy']),
       chopFrom: _int('${prefix}chop_from'),
       keepExistingLineBreaks: _flag('${prefix}keep_existing_line_breaks'),
-      chopOnTrailingComma: _flag('${prefix}chop_on_trailing_comma'),
-      align: values['${prefix}align'] as bool? ?? false,
-      indent: values['${prefix}indent'] as int? ?? indentSize,
-      closeBracket: _closeBracket(
-        values['${prefix}close_bracket'] ?? values['wrap.close_bracket'],
-      ),
+      chopOnTrailingComma:
+          values['${prefix}chop_on_trailing_comma'] as bool? ?? false,
+      indent: _indent('${prefix}indent'),
+      breakAfterOpen: flagOr('break_after_open_bracket'),
+      breakBeforeClose: flagOr('break_before_close_bracket'),
       trailingCommas: _trailingCommas(
         values['${prefix}trailing_commas'] ?? values['trailing_commas'],
       ),
@@ -161,9 +194,9 @@ final class BeaverConfig {
     chopFrom: 0,
     keepExistingLineBreaks: _flag('wrap.keep_existing_line_breaks'),
     chopOnTrailingComma: _flag('wrap.chop_on_trailing_comma'),
-    align: false,
-    indent: indentSize,
-    closeBracket: _closeBracket(values['wrap.close_bracket']),
+    indent: Inherit(indentSize),
+    breakAfterOpen: _flag('wrap.break_after_open_bracket'),
+    breakBeforeClose: _flag('wrap.break_before_close_bracket'),
     trailingCommas: _trailingCommas(values['trailing_commas']),
   );
 
@@ -194,8 +227,28 @@ final class BeaverConfig {
 
   bool get breakBeforeBinaryOperator =>
       _flag('wrap.break_before.binary_operator');
-  bool get chainKeepSingleLineIfFits =>
-      _flag('wrap.chained_calls.keep_single_line_if_fits');
+
+  /// `wrap.chained_calls.keep_first_call_on_receiver_line`.
+  late final Set<
+    ReceiverKind
+  > chainKeepFirstCallKinds = switch (values['wrap.chained_calls.keep_first_call_on_receiver_line']) {
+    true => ReceiverKind.values.toSet(),
+    final List<Object?> kinds => {
+      for (final kind in kinds)
+        ReceiverKind.values[ReceiverKindListType.kinds.indexOf(
+          kind! as String,
+        )],
+    },
+    _ => const {},
+  };
+  bool get chainBreakAfterPrefix =>
+      _flag('wrap.chained_calls.break_after_prefix');
+  bool get chainIndentFromTarget =>
+      values['wrap.chained_calls.indent_from'] == 'target';
+  bool get binaryBreakAfterPrefix =>
+      _flag('wrap.binary_expressions.break_after_prefix');
+  bool get binaryIndentFromTarget =>
+      values['wrap.binary_expressions.indent_from'] == 'target';
   bool get simpleBlocksOnOneLine => _flag('wrap.simple_blocks_on_one_line');
   bool get simpleLambdasOnOneLine => _flag('wrap.simple_lambdas_on_one_line');
   List<String> get chopOnNamedArguments =>

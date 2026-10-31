@@ -1,0 +1,30 @@
+60 columns                                                  |
+>>> chop_if_long: a short chain that fits stays.
+final a = x.b().c();
+<<<
+final a = x.b().c();
+>>> chop_if_long: a chain that does not fit chops.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .toList();
+>>> (wrap.chained_calls=fill) fill on a chain.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users.where((u) => u.active)
+    .map((u) => u.name).toList();
+>>> (wrap.chained_calls.chop_from=2) chop_from 2 chops a short chain.
+final a = x.b().c();
+<<<
+final a = x
+    .b()
+    .c();
+>>> (wrap.chained_calls.chop_from=2) chop_from 2 chops a long chain.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .toList();

@@ -46,8 +46,8 @@ void main() {
       expect(
         () => parseConfigFile('wrap:\n  arguments: sometimes', 'f'),
         configError(
-          '`wrap.arguments` (`wrap.arguments.policy`); allowed: never | if_long | '
-          'chop_if_long | chop_always',
+          '`wrap.arguments` (`wrap.arguments.policy`); allowed: never | fill | '
+          'chop_if_long',
         ),
       );
     });
@@ -57,8 +57,7 @@ void main() {
         () =>
             parseConfigFile('wrap:\n  arguments:\n    policy: sometimes', 'f'),
         configError(
-          '`wrap.arguments.policy`; allowed: never | if_long | chop_if_long | '
-          'chop_always',
+          '`wrap.arguments.policy`; allowed: never | fill | chop_if_long',
         ),
       );
     });
@@ -71,6 +70,94 @@ void main() {
         ),
         configError('`wrap.chained_calls.trailing_commas`'),
       );
+    });
+
+    test('a dead trailing-comma trigger is refused', () {
+      for (final list in [
+        'binary_expressions',
+        'conditional_expressions',
+        'chained_calls',
+        'cascades',
+        'initializer_lists',
+        'switch_expressions',
+        'class_header',
+      ]) {
+        expect(
+          () => parseConfigFile(
+            'wrap:\n  $list:\n    chop_on_trailing_comma: true',
+            'f',
+          ),
+          configError('unknown key `wrap.$list.chop_on_trailing_comma`'),
+          reason: list,
+        );
+      }
+    });
+
+    test('first_item is refused where nothing precedes the first item', () {
+      expect(
+        () => parseConfigFile('wrap: {cascades: {indent: first_item}}', 'f'),
+        configError(
+          '`wrap.cascades.indent`; allowed: inherit | an integer >= 0.',
+        ),
+      );
+    });
+
+    test('bracket fields only on the delimited lists', () {
+      final config = BeaverConfig.dart.merge(
+        parseConfigFile(
+          'wrap: {break_after_open_bracket: false, '
+              'arguments: {break_before_close_bracket: false}}',
+          'f',
+        ).values,
+      );
+      expect(config.values['wrap.break_after_open_bracket'], false);
+      expect(config.values['wrap.arguments.break_after_open_bracket'], false);
+      expect(config.values['wrap.arguments.break_before_close_bracket'], false);
+      expect(config.arguments.breakAfterOpen, isFalse);
+      expect(config.parameters.breakBeforeClose, isTrue);
+      expect(
+        () => parseConfigFile(
+          'wrap: {chained_calls: {break_after_open_bracket: false}}',
+          'f',
+        ),
+        configError(
+          'unknown key `wrap.chained_calls.break_after_open_bracket`',
+        ),
+      );
+    });
+
+    test('receiver kinds', () {
+      Object? kinds(String value) =>
+          parseConfigFile(
+            'wrap: {chained_calls: {keep_first_call_on_receiver_line: $value}}',
+            'f',
+          ).values['wrap.chained_calls.keep_first_call_on_receiver_line'];
+      expect(kinds('[type_names, this]'), ['type_names', 'this']);
+      expect(kinds('true'), [
+        'type_names',
+        'identifiers',
+        'this',
+        'calls',
+        'properties',
+      ]);
+      expect(kinds('false'), isEmpty);
+      expect(
+        () => kinds('[classes]'),
+        allOf(
+          configError('classes'),
+          configError('type_names, identifiers, this, calls, properties'),
+        ),
+      );
+      final config = BeaverConfig.dart.merge({
+        'wrap.chained_calls.keep_first_call_on_receiver_line': kinds(
+          '[type_names, this]',
+        ),
+      });
+      expect(config.chainKeepFirstCallKinds, {
+        ReceiverKind.typeNames,
+        ReceiverKind.thisOrSuper,
+      });
+      expect(BeaverConfig.dart.chainKeepFirstCallKinds, isEmpty);
     });
 
     test('align is refused where it has no effect', () {
@@ -86,6 +173,40 @@ void main() {
           reason: list,
         );
       }
+    });
+
+    test('continuation placement fields', () {
+      final values = parseConfigFile(
+        'wrap: {chained_calls: {break_after_prefix: true, indent_from: target}}',
+        'f',
+      ).values;
+      expect(values['wrap.chained_calls.break_after_prefix'], true);
+      expect(values['wrap.chained_calls.indent_from'], 'target');
+      expect(
+        () => parseConfigFile(
+          'wrap: {binary_expressions: {indent_from: statement}}',
+          'f',
+        ),
+        configError(
+          '`wrap.binary_expressions.indent_from`; allowed: line | target',
+        ),
+      );
+      expect(
+        () => parseConfigFile('wrap: {arguments: {indent_from: target}}', 'f'),
+        configError('`wrap.arguments.indent_from`'),
+      );
+      expect(
+        () => parseConfigFile(
+          'wrap: {chained_calls: {break_after_prefix: inherit}}',
+          'f',
+        ),
+        configError('`wrap.chained_calls.break_after_prefix`'),
+      );
+      final dart = BeaverConfig.dart;
+      expect(dart.chainBreakAfterPrefix, false);
+      expect(dart.binaryBreakAfterPrefix, true);
+      expect(dart.chainIndentFromTarget, false);
+      expect(dart.binaryIndentFromTarget, false);
     });
 
     test('chop_on_calls entries are dotted names', () {
@@ -159,12 +280,33 @@ void main() {
     });
 
     test('every alias maps to its canonical key', () {
-      expect(parse('wrap: {arguments: chop_always}'), {
-        'wrap.arguments.policy': 'chop_always',
+      expect(parse('wrap: {arguments: chop_if_long}'), {
+        'wrap.arguments.policy': 'chop_if_long',
+      });
+      expect(parse('wrap: {arguments: if_long}'), {
+        'wrap.arguments.policy': 'fill',
       });
       expect(parse('indent: {align: {parameters: true}}'), {
-        'wrap.parameters.align': true,
+        'wrap.parameters.indent': 'first_item',
       });
+      expect(parse('wrap: {chained_calls: {align: true}}'), {
+        'wrap.chained_calls.indent': 'first_item',
+      });
+      expect(parse('wrap: {arguments: {align: false, indent: 4}}'), {
+        'wrap.arguments.indent': 4,
+      });
+      expect(
+        parse(
+          'wrap: {close_bracket: after_last_item, '
+          'arguments: {close_bracket: own_line}, '
+          'parameters: {close_bracket: inherit}}',
+        ),
+        {
+          'wrap.break_before_close_bracket': false,
+          'wrap.arguments.break_before_close_bracket': true,
+          'wrap.parameters.break_before_close_bracket': 'inherit',
+        },
+      );
       expect(parse('wrap: {chained_calls: {min_calls: 3}}'), {
         'wrap.chained_calls.chop_from': 3,
       });
@@ -177,12 +319,51 @@ void main() {
       expect(
         () => parse(
           'indent: {align: {arguments: true}}\n'
-          'wrap: {arguments: {align: false}}',
+          'wrap: {arguments: {indent: 4}}',
         ),
         allOf(
           configError('`indent.align.arguments`'),
-          configError('`wrap.arguments.align`'),
+          configError('`wrap.arguments.indent`'),
         ),
+      );
+      expect(
+        () => parse('wrap: {arguments: {align: true, indent: 4}}'),
+        configError(
+          '`wrap.arguments.align` and `wrap.arguments.indent` both set '
+          '`wrap.arguments.indent`',
+        ),
+      );
+    });
+
+    test('removed spellings name their replacement', () {
+      expect(
+        () => parse('wrap: {arguments: chop_always}'),
+        allOf(
+          configError('`wrap.arguments.policy: chop_always` was removed'),
+          configError('`chop_from: 1`'),
+        ),
+      );
+      expect(
+        () => parse('wrap: {chained_calls: {policy: chop_always}}'),
+        allOf(
+          configError('`chop_from: 1`'),
+          configError(
+            '`keep_single_line_if_fits: false` corresponds to `chop_from: 2`',
+          ),
+        ),
+      );
+      expect(
+        () => parse('wrap: {chained_calls: {keep_single_line_if_fits: true}}'),
+        allOf(
+          configError(
+            '`wrap.chained_calls.keep_single_line_if_fits` was removed',
+          ),
+          configError('`chop_from`'),
+        ),
+      );
+      expect(
+        () => parse('wrap: {arguments: {policy: chop_always, chop_from: 3}}'),
+        configError('chop_always'),
       );
     });
 
@@ -199,9 +380,29 @@ void main() {
       write('team.yaml', 'wrap: {arguments: {align: true}}');
       write(
         '.beaver.yaml',
-        'extends: team.yaml\nindent: {align: {arguments: false}}',
+        'extends: team.yaml\nwrap: {arguments: {indent: inherit}}',
       );
-      expect(resolve('a.dart').config.arguments.align, isFalse);
+      expect(resolve('a.dart').config.arguments.indent, isA<Inherit>());
+    });
+
+    test('a child switches off an inherited threshold with never', () {
+      write(
+        'team.yaml',
+        'wrap: {arguments: {policy: chop_if_long, chop_from: 3}}',
+      );
+      write('.beaver.yaml', 'extends: team.yaml\nwrap: {arguments: never}');
+      final config = resolve('a.dart').config;
+      expect(config.arguments.policy, WrapPolicy.never);
+      expect(config.arguments.chopFrom, 3);
+    });
+
+    test('trailing commas without a closing-bracket line', () {
+      write(
+        '.beaver.yaml',
+        'trailing_commas: add_when_wrapped\n'
+            'wrap: {arguments: {break_before_close_bracket: false}}',
+      );
+      expect(resolve('a.dart').warnings, isEmpty);
     });
 
     test('a shorthand child keeps an inherited field', () {
@@ -215,11 +416,11 @@ void main() {
     test('a shorthand replaces only the policy', () {
       write(
         'team.yaml',
-        'wrap: {parameters: {policy: chop_always, chop_from: 3}}',
+        'wrap: {parameters: {policy: chop_if_long, chop_from: 3}}',
       );
-      write('.beaver.yaml', 'extends: team.yaml\nwrap: {parameters: if_long}');
+      write('.beaver.yaml', 'extends: team.yaml\nwrap: {parameters: fill}');
       final values = resolve('a.dart').config.values;
-      expect(values['wrap.parameters.policy'], 'if_long');
+      expect(values['wrap.parameters.policy'], 'fill');
       expect(values['wrap.parameters.chop_from'], 3);
     });
   });
@@ -276,21 +477,28 @@ void main() {
     });
 
     test('enum values follow a customised collection policy', () {
-      write('.beaver.yaml', 'wrap: {collection_literals: chop_always}');
-      expect(
-        resolve('a.dart').config.enumValues.policy,
-        WrapPolicy.chopAlways,
+      write('.beaver.yaml', 'wrap: {collection_literals: fill}');
+      expect(resolve('a.dart').config.enumValues.policy, WrapPolicy.fill);
+    });
+
+    test('enum values inherit first_item with the inherit offset', () {
+      write(
+        '.beaver.yaml',
+        'indent: {size: 3}\nwrap: {collection_literals: {indent: first_item}}',
       );
+      final indent = resolve('a.dart').config.enumValues.indent;
+      expect(indent, isA<FirstItem>());
+      expect(indent.columns, 3);
     });
 
     test('enum values set independently', () {
       write(
         '.beaver.yaml',
-        'wrap: {collection_literals: chop_always, enum_values: chop_if_long}',
+        'wrap: {collection_literals: fill, enum_values: chop_if_long}',
       );
       final config = resolve('a.dart').config;
       expect(config.enumValues.policy, WrapPolicy.chopIfLong);
-      expect(config.collectionLiterals.policy, WrapPolicy.chopAlways);
+      expect(config.collectionLiterals.policy, WrapPolicy.fill);
     });
 
     test('catch follows else', () {
@@ -371,27 +579,45 @@ void main() {
     });
 
     test('suppression by close-bracket placement', () {
+      for (final spelling in [
+        'break_before_close_bracket: false',
+        'close_bracket: after_last_item',
+      ]) {
+        write(
+          '.beaver.yaml',
+          'wrap:\n  keep_existing_line_breaks: false\n'
+              '  arguments: {$spelling}',
+        );
+        expect(
+          () => resolve('a.dart'),
+          allOf(
+            configError(
+              'wrap.arguments.break_before_close_bracket: false (${tmp.path}/'
+              '.beaver.yaml), which suppresses the optional trailing comma',
+            ),
+            configError('set chop_from to 1'),
+          ),
+          reason: spelling,
+        );
+      }
+    });
+
+    test('always chopped is exempt', () {
       write(
         '.beaver.yaml',
         'wrap:\n  keep_existing_line_breaks: false\n'
-            '  arguments: {close_bracket: after_last_item}',
+            '  arguments: {break_before_close_bracket: false, chop_from: 1}',
       );
-      expect(
-        () => resolve('a.dart'),
-        configError(
-          'wrap.arguments.close_bracket: after_last_item',
-        ),
-      );
-      expect(() => resolve('a.dart'), configError('suppresses the optional'));
+      expect(resolve('a.dart').config.arguments.chopFrom, 1);
     });
 
     test('policy never is exempt, a threshold alone is not', () {
       const conflict =
           'wrap:\n  keep_existing_line_breaks: false\n'
-          '  parameters: {close_bracket: after_last_item}\n'
-          '  collection_literals: {close_bracket: after_last_item}\n'
-          '  enum_values: {close_bracket: own_line}\n'
-          '  arguments:\n    close_bracket: after_last_item\n';
+          '  parameters: {break_before_close_bracket: false}\n'
+          '  collection_literals: {break_before_close_bracket: false}\n'
+          '  enum_values: {break_before_close_bracket: true}\n'
+          '  arguments:\n    break_before_close_bracket: false\n';
       write('.beaver.yaml', '${conflict}    policy: never\n');
       expect(
         () => resolve('a.dart'),

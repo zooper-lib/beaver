@@ -1,3 +1,36 @@
+## Unreleased
+
+Settings cleanup: each layout question has one key, and every term is defined with real output in `docs/rules/wrap.md`. Output under the `dart` preset is unchanged.
+
+Needs a minor version bump on release.
+
+### Breaking (configuration)
+
+These spellings now fail with exit code 78 and a message naming the replacement:
+
+- `policy: chop_always` on any list: write `policy: chop_if_long` with `chop_from: 1`. On a chain, `chop_always` with `keep_single_line_if_fits: false` is `chop_from: 2`.
+- `wrap.chained_calls.keep_single_line_if_fits`: use `chop_from`. A chain below the threshold that fits already stays on one line under `fill` and `chop_if_long`.
+- `chop_on_trailing_comma` on `binary_expressions`, `conditional_expressions`, `chained_calls`, `cascades`, `initializer_lists`, `switch_expressions` and `class_header`, which never read it. It stays on `arguments`, `parameters`, `collection_literals`, `enum_values` and as the global `wrap.chop_on_trailing_comma`.
+
+### Breaking (formatted output)
+
+- `align: true` (and `indent.align.*: true`) is now an alias of `indent: first_item`, which only aligns; it no longer moves the brackets. A configuration that relied on it to keep the first item on the `(` line and the `)` after the last item needs `break_after_open_bracket: false` and `break_before_close_bracket: false` on that list to keep its look. On a chain, alignment applies only when the first call stays on the receiver line, so add `keep_first_call_on_receiver_line` (for example `true`).
+- `align: false` is accepted and dropped. On `wrap.initializer_lists`, whose preset is `first_item`, write `indent: inherit` to turn alignment off.
+- With both `break_after_open_bracket: false` and `break_before_close_bracket: false` (the layout `align: true` used to produce), a source trailing comma is dropped and no longer chops the list, since nothing would keep the chop on the next run. `align: true` used to keep that comma.
+
+### Renamed (old spellings stay valid as aliases)
+
+- Policy value `if_long` is `fill`.
+- `close_bracket: own_line | after_last_item` is `break_before_close_bracket: true | false`, on `wrap` and on the four bracketed lists.
+- `align: true` is `indent: first_item`; `indent` takes `inherit | <integer> | first_item` (not `first_item` on `cascades`).
+
+### Added
+
+- `wrap.break_after_open_bracket` (preset `true`, plus `inherit` fields on the four bracketed lists): `false` keeps the first item on the bracket's line. A source break right after the opening bracket now follows this field instead of `keep_existing_line_breaks`.
+- `wrap.chained_calls.keep_first_call_on_receiver_line` takes a list of receiver kinds: `type_names`, `identifiers`, `this`, `calls`, `properties`. `true` means every kind, `false` means `[]` (the preset).
+- `wrap.switch_expressions` preset is `policy: chop_if_long` with `chop_from: 1` (the same output as before).
+- A glossary at the top of `docs/rules/wrap.md`, and the sub-option rule: a sub-option whose parent is not in effect (`chop_from` under `never`, `indent_from` under `first_item`, `trailing_commas` under `break_before_close_bracket: false`) is ignored.
+
 ## 0.2.0
 
 ### Breaking (formatted output)

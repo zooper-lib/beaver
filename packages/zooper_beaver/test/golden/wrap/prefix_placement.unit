@@ -1,0 +1,15 @@
+30 columns                    |
+>>> A field initializer is not a prefix that already indents: its moved operands get one more step (preset output, kept as is).
+class C {
+  C() : total = subtotal + shipping + tax;
+  int total;
+}
+<<<
+class C {
+  C()
+    : total =
+          subtotal +
+              shipping +
+              tax;
+  int total;
+}

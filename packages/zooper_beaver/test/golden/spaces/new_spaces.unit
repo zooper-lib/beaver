@@ -7,7 +7,7 @@ class Point {
 class Point {
   Point(this.x): y = 0;
 }
->>> (spaces.before_colon_in_initializer_list=false wrap.initializer_lists=chop_always) And when the list breaks.
+>>> (spaces.before_colon_in_initializer_list=false wrap.initializer_lists.chop_from=1) And when the list breaks.
 class Point {
   Point(this.x) : y = 0, z = 1;
 }

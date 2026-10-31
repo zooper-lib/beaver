@@ -12,7 +12,8 @@ indent:
 wrap:
   keep_existing_line_breaks: true
   chop_on_trailing_comma: true
-  close_bracket: own_line
+  break_after_open_bracket: true
+  break_before_close_bracket: true
   break_before:
     binary_operator: false
     conditional_operator: true
@@ -32,9 +33,9 @@ wrap:
     chop_from: 0
     keep_existing_line_breaks: inherit
     chop_on_trailing_comma: inherit
-    align: false
     indent: inherit
-    close_bracket: inherit
+    break_after_open_bracket: inherit
+    break_before_close_bracket: inherit
     trailing_commas: inherit
     hug_block_argument: true
   parameters:
@@ -42,73 +43,66 @@ wrap:
     chop_from: 0
     keep_existing_line_breaks: inherit
     chop_on_trailing_comma: inherit
-    align: false
     indent: inherit
-    close_bracket: inherit
+    break_after_open_bracket: inherit
+    break_before_close_bracket: inherit
     trailing_commas: inherit
   collection_literals:
     policy: chop_if_long
     chop_from: 0
     keep_existing_line_breaks: inherit
     chop_on_trailing_comma: inherit
-    align: false
     indent: inherit
-    close_bracket: inherit
+    break_after_open_bracket: inherit
+    break_before_close_bracket: inherit
     trailing_commas: inherit
   enum_values:
     policy: inherit
     chop_from: inherit
     keep_existing_line_breaks: inherit
     chop_on_trailing_comma: inherit
-    align: inherit
     indent: inherit
-    close_bracket: inherit
+    break_after_open_bracket: inherit
+    break_before_close_bracket: inherit
     trailing_commas: inherit
   binary_expressions:
     policy: chop_if_long
     chop_from: 0
     keep_existing_line_breaks: inherit
-    chop_on_trailing_comma: inherit
-    align: false
     indent: inherit
+    break_after_prefix: true
+    indent_from: line
   conditional_expressions:
     policy: chop_if_long
     chop_from: 0
     keep_existing_line_breaks: inherit
-    chop_on_trailing_comma: inherit
   chained_calls:
     policy: chop_if_long
     chop_from: 0
     keep_existing_line_breaks: inherit
-    chop_on_trailing_comma: inherit
-    align: false
     indent: inherit
-    keep_single_line_if_fits: true
-    keep_first_call_on_receiver_line: false
+    keep_first_call_on_receiver_line: []
+    break_after_prefix: false
+    indent_from: line
   cascades:
     policy: chop_if_long
     chop_from: 2
     keep_existing_line_breaks: inherit
-    chop_on_trailing_comma: inherit
     indent: inherit
   initializer_lists:
     policy: chop_if_long
     chop_from: 0
     keep_existing_line_breaks: false
-    chop_on_trailing_comma: inherit
-    align: true
-    indent: inherit
+    indent: first_item
     colon: auto
   switch_expressions:
-    policy: chop_always
-    chop_from: 0
+    policy: chop_if_long
+    chop_from: 1
     keep_existing_line_breaks: inherit
-    chop_on_trailing_comma: inherit
   class_header:
     policy: chop_if_long
     chop_from: 0
     keep_existing_line_breaks: false
-    chop_on_trailing_comma: inherit
     clauses_on_new_line: true
 trailing_commas: add_when_wrapped
 spaces:

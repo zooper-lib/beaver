@@ -2,18 +2,169 @@
 
 Keys under `wrap:` and the top-level `trailing_commas`. Examples are taken verbatim from the golden tests in `packages/zooper_beaver/test/golden/wrap/` and are formatted at 40 columns.
 
+## Glossary
+
+Every section below uses these terms. Examples are formatted at 40 columns (arguments) and 60 columns (chains); the input is always the single-line form unless shown otherwise.
+
+**Too long.** The construct printed on one line would exceed `line_length`. This is the only width condition, and it is never about the number of items.
+
+Before:
+
+```dart
+function(first, second, third);
+```
+
+After (fits, untouched):
+
+```dart
+function(first, second, third);
+```
+
+Before:
+
+```dart
+function(firstArgument, secondArgument, thirdArgument, fourth);
+```
+
+After (too long, so it breaks):
+
+```dart
+function(
+  firstArgument,
+  secondArgument,
+  thirdArgument,
+  fourth,
+);
+```
+
+**`never`.** Ignore "too long"; the construct stays as written, past the width.
+
+After with `wrap.arguments=never`:
+
+```dart
+function(firstArgument, secondArgument, thirdArgument, fourth);
+```
+
+**Fill (`fill`).** When too long, items follow one another, as many per line as fit. An item that does not fit starts a new line; an item that is itself too long gets a line of its own and breaks inside if it can. Alias: `if_long`.
+
+After with `wrap.arguments=fill`:
+
+```dart
+function(
+  firstArgument, secondArgument,
+  thirdArgument, fourth,
+);
+```
+
+**Chop (`chop_if_long`).** When too long, one item per line. This is the output above under "too long", since `chop_if_long` is the preset.
+
+**`chop_from: N`.** One item per line from N items, even when the line fits. It is the only count-based trigger; `0` disables it.
+
+After with `wrap.arguments.chop_from=3`:
+
+```dart
+function(a, b);
+```
+
+```dart
+function(
+  a,
+  b,
+  c,
+);
+```
+
+**Kept line break (`keep_existing_line_breaks: true`, the preset).** The formatter adds line breaks where a line is too long but never removes a break the developer typed between items. A kept break makes the list break; it is not a chop request, and items still share lines where they fit.
+
+Before:
+
+```dart
+function(first,
+    second, third);
+```
+
+After (the preset, `chop_if_long` keeps the grouping):
+
+```dart
+function(
+  first,
+  second, third,
+);
+```
+
+After with `wrap.keep_existing_line_breaks=false`:
+
+```dart
+function(first, second, third);
+```
+
+Under `fill` the items flow in runs between kept breaks:
+
+Before:
+
+```dart
+function(first,
+    second, third, fourth, fifth);
+```
+
+After with `wrap.arguments=fill`:
+
+```dart
+function(
+  first,
+  second, third, fourth, fifth,
+);
+```
+
+**Bracket placement.** Independent of all of the above: `break_after_open_bracket` (does the first item start a new line) and `break_before_close_bracket` (does the closing bracket start a new line). See [`wrap.break_after_open_bracket` and `wrap.break_before_close_bracket`](#wrapbreak_after_open_bracket-and-wrapbreak_before_close_bracket).
+
+**The same on chains.** The items are the calls. Before:
+
+```dart
+final a = x.b().c();
+```
+
+```dart
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+```
+
+After (the preset, `chop_if_long`): the short chain fits and stays, the long one chops:
+
+```dart
+final names = users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .toList();
+```
+
+After with `wrap.chained_calls=fill`:
+
+```dart
+final names = users.where((u) => u.active)
+    .map((u) => u.name).toList();
+```
+
+After with `wrap.chained_calls.chop_from=2`, every chain of two or more calls chops:
+
+```dart
+final a = x
+    .b()
+    .c();
+```
+
+**Sub-options.** Some fields only refine another setting, their parent: `chop_from` (parent: policy `fill` or `chop_if_long`), `indent_from` (parent: an integer or `inherit` `indent`) and `trailing_commas` (parent: `break_before_close_bracket: true`). A sub-option whose parent is not in effect is ignored without a diagnostic, so a child file can switch off an inherited behavior with one key: `wrap.arguments: never` disables an inherited `chop_from: 3`. Peer settings that contradict each other are a configuration error instead (see the trailing-comma check under [`wrap.chop_on_trailing_comma`](#wrapchop_on_trailing_comma)).
+
 ## Policies
 
-The `policy` field of every list map (see [List maps](#list-maps)) takes one of four values:
+The `policy` field of every list map (see [List maps](#list-maps)) takes one of three values:
 
 | Value | Effect |
 |---|---|
 | `never` | All items on one line, even past `line_length`. Developer line breaks are removed. |
-| `if_long` | As many items per line as fit (paragraph fill). |
-| `chop_if_long` | Every item on its own line, only when the construct does not fit. |
-| `chop_always` | Every item on its own line, always. |
+| `fill` | When too long, as many items per line as fit (paragraph fill). Alias: `if_long`. |
+| `chop_if_long` | When too long, every item on its own line. |
 
-Preset `dart`: `chop_if_long` everywhere except `wrap.switch_expressions` (`chop_always`).
+Chopping regardless of width is `chop_from: 1` (see [`chop_from`](#chop_from)). Preset `dart`: `chop_if_long` everywhere; `wrap.switch_expressions` adds `chop_from: 1`.
 
 ## List maps
 
@@ -32,13 +183,13 @@ Each configuration file is normalised to the long form before it is merged with 
 
 | Field | Values | Preset `dart` | On |
 |---|---|---|---|
-| `policy` | `never` \| `if_long` \| `chop_if_long` \| `chop_always` | `chop_if_long` | every list |
-| `chop_from` | integer, `0` disables | `0` | every list |
+| `policy` | `never` \| `fill` \| `chop_if_long` | `chop_if_long` | every list |
+| `chop_from` | integer, `0` disables | `0` (`cascades` 2, `switch_expressions` 1) | every list |
 | `keep_existing_line_breaks` | `true` \| `false` \| `inherit` | `inherit` | every list |
-| `chop_on_trailing_comma` | `true` \| `false` \| `inherit` | `inherit` | every list |
-| `align` | `true` \| `false` | `false` | `arguments`, `parameters`, `collection_literals`, `enum_values`, `binary_expressions`, `chained_calls`, `initializer_lists` |
-| `indent` | integer \| `inherit` | `inherit` | `arguments`, `parameters`, `collection_literals`, `enum_values`, `binary_expressions`, `chained_calls`, `cascades`, `initializer_lists` |
-| `close_bracket` | `own_line` \| `after_last_item` \| `inherit` | `inherit` | `arguments`, `parameters`, `collection_literals`, `enum_values` |
+| `chop_on_trailing_comma` | `true` \| `false` \| `inherit` | `inherit` | `arguments`, `parameters`, `collection_literals`, `enum_values` |
+| `indent` | `inherit` \| integer \| `first_item` | `inherit` (`initializer_lists`: `first_item`) | `arguments`, `parameters`, `collection_literals`, `enum_values`, `binary_expressions`, `chained_calls`, `initializer_lists`; `cascades` without `first_item` |
+| `break_after_open_bracket` | `true` \| `false` \| `inherit` | `inherit` | `arguments`, `parameters`, `collection_literals`, `enum_values` |
+| `break_before_close_bracket` | `true` \| `false` \| `inherit` | `inherit` | `arguments`, `parameters`, `collection_literals`, `enum_values` |
 | `trailing_commas` | `preserve` \| `remove` \| `add_when_wrapped` \| `add_when_chopped` \| `inherit` | `inherit` | `arguments`, `parameters`, `collection_literals`, `enum_values` |
 
 The lists are `arguments`, `parameters`, `collection_literals`, `enum_values`, `binary_expressions`, `conditional_expressions`, `chained_calls`, `cascades`, `initializer_lists`, `switch_expressions` and `class_header`. A field a list does not offer is a configuration error. `beaver config --template` prints every list with every field.
@@ -49,14 +200,15 @@ The lists are `arguments`, `parameters`, `collection_literals`, `enum_values`, `
 |---|---|
 | `keep_existing_line_breaks` | `wrap.keep_existing_line_breaks` |
 | `chop_on_trailing_comma` | `wrap.chop_on_trailing_comma` |
-| `close_bracket` | `wrap.close_bracket` |
+| `break_after_open_bracket` | `wrap.break_after_open_bracket` |
+| `break_before_close_bracket` | `wrap.break_before_close_bracket` |
 | `trailing_commas` | `trailing_commas` |
 | `indent` | `indent.continuation` for `chained_calls` and `binary_expressions`, `indent.size` for the others |
 | every field of `enum_values` | the same field of `collection_literals` |
 
-`policy`, `chop_from` and `align` have no global key and do not accept `inherit`, except on `enum_values`, whose fields all follow `collection_literals` so that a configuration customising collection literals keeps its enum layout. `beaver config --print` shows, for an inherited value, both where `inherit` was set and where the value came from.
+`policy` and `chop_from` have no global key and do not accept `inherit`, except on `enum_values`, whose fields all follow `collection_literals` so that a configuration customising collection literals keeps its enum layout. `beaver config --print` shows, for an inherited value, both where `inherit` was set and where the value came from.
 
-Record literals, record patterns and record types use the `arguments` (literals, patterns) or `parameters` (types) policy, but always the global `keep_existing_line_breaks`, `chop_on_trailing_comma`, `close_bracket` and `trailing_commas`, never a per-list override.
+Record literals, record patterns and record types use the `arguments` (literals, patterns) or `parameters` (types) policy, but always the global `keep_existing_line_breaks`, `chop_on_trailing_comma`, `break_after_open_bracket`, `break_before_close_bracket` and `trailing_commas`, never a per-list override.
 
 Every key added after 0.1.0 has a preset value that reproduces the 0.1.0 output, with two deliberate exceptions: `blank_lines.between_comment_and_declaration` is `preserve` ([blank lines](blank_lines.md)) and `wrap.cascades.keep_existing_line_breaks` is `inherit`, which keeps a break typed before a cascade section. `0` and `false` restore the old output.
 
@@ -65,9 +217,23 @@ Aliases, accepted without deprecation and identical to their canonical key:
 | Alias | Canonical key |
 |---|---|
 | `wrap.<list>: <policy>` | `wrap.<list>.policy` |
-| `indent.align.arguments`, `indent.align.parameters`, `indent.align.chained_calls` | `wrap.arguments.align`, `wrap.parameters.align`, `wrap.chained_calls.align` |
+| policy value `if_long` | `fill` |
+| `wrap.<list>.align: true`, `indent.align.arguments`, `indent.align.parameters`, `indent.align.chained_calls` set to `true` | `wrap.<list>.indent: first_item` |
+| `wrap.close_bracket`, `wrap.<list>.close_bracket`: `own_line` \| `after_last_item` | `break_before_close_bracket`: `true` \| `false` (`inherit` unchanged) |
 | `wrap.chained_calls.min_calls` | `wrap.chained_calls.chop_from` |
 | `wrap.before_operator` | `wrap.break_before.binary_operator` |
+
+`align: false` and `indent.align.*: false` are accepted and dropped: they only ever meant "use `indent`". `align: true` next to an `indent` value in one file sets `indent` twice and is a configuration error.
+
+Removed spellings fail with exit code 78 and a message naming the replacement:
+
+| Removed | Replacement |
+|---|---|
+| `policy: chop_always` | `policy: chop_if_long` with `chop_from: 1`; on a chain, `chop_always` with `keep_single_line_if_fits: false` is `chop_from: 2` |
+| `wrap.chained_calls.keep_single_line_if_fits` | `chop_from`: a chain below the threshold that fits stays on one line under `fill` and `chop_if_long` |
+| `chop_on_trailing_comma` on `binary_expressions`, `conditional_expressions`, `chained_calls`, `cascades`, `initializer_lists`, `switch_expressions`, `class_header` | none: those lists never read it; it is an unknown key there |
+
+A configuration that used `align: true` on `arguments`, `parameters` or `collection_literals` to put the first item on the bracket line and the closing bracket after the last item needs `break_after_open_bracket: false` and `break_before_close_bracket: false` to keep that look; on a chain, alignment needs `keep_first_call_on_receiver_line` too.
 
 ### `never`
 
@@ -83,7 +249,7 @@ After with `wrap.arguments=never`:
 function(firstArgument, secondArgument, third);
 ```
 
-### `if_long`
+### `fill`
 
 Before:
 
@@ -91,7 +257,7 @@ Before:
 function(firstArgument, secondArgument, third);
 ```
 
-After with `wrap.arguments=if_long trailing_commas=remove`:
+After with `wrap.arguments=fill trailing_commas=remove`:
 
 ```dart
 function(
@@ -107,7 +273,7 @@ Before:
 function(firstArgument, secondArgument, third);
 ```
 
-After with `wrap.arguments=if_long`:
+After with `wrap.arguments=fill`:
 
 ```dart
 function(
@@ -123,7 +289,7 @@ Before:
 value = operandOne + operandTwo + operandThree + four;
 ```
 
-After with `wrap.binary_expressions=if_long`:
+After with `wrap.binary_expressions=fill`:
 
 ```dart
 value =
@@ -177,23 +343,6 @@ value = condition
     : whenFalseResult;
 ```
 
-### `chop_always`
-
-Before:
-
-```dart
-void f(int a, int b) {}
-```
-
-After with `wrap.parameters=chop_always`:
-
-```dart
-void f(
-  int a,
-  int b,
-) {}
-```
-
 ## `wrap.break_before.binary_operator`
 
 Whether a wrapped binary expression puts the operator at the start of the continuation line (`true`) or the end of the previous one (`false`). Preset `dart`: `false`.
@@ -230,7 +379,7 @@ value =
 
 ## `wrap.chained_calls`
 
-`policy` applies to method chains (two or more calls after a target). A chain with at least `chop_from` calls is chopped regardless of width, unless the policy is `never`; `0` disables this. `keep_single_line_if_fits` keeps a chain with fewer calls on one line when it fits, even under `chop_always`. Preset `dart`: `chop_if_long`, `chop_from: 0`, `keep_single_line_if_fits: true`.
+`policy` applies to method chains (two or more calls after a target). A chain with at least `chop_from` calls is chopped regardless of width, unless the policy is `never`; `0` disables this. Below the threshold, a chain that fits stays on one line under `fill` and `chop_if_long`; `chop_from: 2` chops every chain. Preset `dart`: `chop_if_long`, `chop_from: 0`.
 
 Before:
 
@@ -262,18 +411,22 @@ a.b().c();
 Before:
 
 ```dart
-a.b().c();
+final a = x.b().c();
 ```
 
-After with `wrap.chained_calls.policy=chop_always`:
+After with `wrap.chained_calls.chop_from=2`:
 
 ```dart
-a.b().c();
+final a = x
+    .b()
+    .c();
 ```
 
 ## `wrap.keep_existing_line_breaks`
 
-A line break the developer placed between items of a wrappable construct, or right after its opening bracket, is kept. Kept breaks never expand their siblings: the items between two kept breaks stay together while they fit. Only `never` removes them. Newlines between statements and members are not affected by this key; see [blank lines](blank_lines.md). Preset `dart`: `true`.
+The formatter adds line breaks where a line is too long but never removes a break the developer typed between items of a wrappable construct. Kept breaks never expand their siblings: the items between two kept breaks stay together while they fit. Only `never` removes them. A break directly after the opening bracket or before the closing bracket is not an item gap: it follows [`break_after_open_bracket` and `break_before_close_bracket`](#wrapbreak_after_open_bracket-and-wrapbreak_before_close_bracket), so under the preset (`true`) a break typed after `(` stays, and under `false` it is removed. Newlines between statements and members are not affected by this key; see [blank lines](blank_lines.md). Preset `dart`: `true`.
+
+The trade-off: `true` lets two developers get different, equally stable layouts from the same code, because each keeps the breaks they typed; `false` makes the formatter own the layout and rewrites hand-chosen breaks, so the same code always formats the same way.
 
 This is the global value. Each list map has its own `keep_existing_line_breaks`, preset `inherit`, so a team can keep breaks in collections and normalise argument lists:
 
@@ -380,7 +533,7 @@ x =
 
 ## `trailing_commas`
 
-`preserve` keeps the source's choice, `remove` never prints an optional trailing comma, `add_when_wrapped` prints one exactly when the last item is followed by a line break, `add_when_chopped` only when the list is chopped (every item starts its own line; a filled list, or one whose kept breaks group several items, gets none). Each of `arguments`, `parameters`, `collection_literals` and `enum_values` has its own `trailing_commas` field, preset `inherit`; records always follow this global key. Required commas, such as a single-field record `(42,)`, are never removed. Preset `dart`: `add_when_wrapped`.
+`preserve` keeps the source's choice, `remove` never prints an optional trailing comma, `add_when_wrapped` prints one exactly when the last item is followed by a line break, `add_when_chopped` only when the list is chopped (every item starts its own line; a filled list, or one whose kept breaks group several items, gets none). Each of `arguments`, `parameters`, `collection_literals` and `enum_values` has its own `trailing_commas` field, preset `inherit`; records always follow this global key. Required commas, such as a single-field record `(42,)`, are never removed. `trailing_commas` is a sub-option of `break_before_close_bracket: true`: with `false`, no optional comma is added and one in the source is dropped, under every value including `preserve`. Preset `dart`: `add_when_wrapped`.
 
 Before:
 
@@ -444,9 +597,9 @@ A trailing comma in the source chops the construct fully, the Flutter "add a com
 
 The exception is a list the source already splits with some items sharing a line: there the existing breaks decide (`keep_existing_line_breaks`) and the comma chops nothing, so adding a comma to such a list does not expand it. Only the list's own line breaks count (after the opening bracket, between items, before the closing bracket), never those inside an item such as a function body. This keeps Beaver's own wrapped output, which gets a trailing comma, stable on the next run.
 
-This is the global value; each list map has its own `chop_on_trailing_comma`, preset `inherit`.
+This is the global value; `arguments`, `parameters`, `collection_literals` and `enum_values` each have their own `chop_on_trailing_comma`, preset `inherit`. Records follow the global key. No other list has a trailing comma to act on, so the field is an unknown key there. With both `break_after_open_bracket: false` and `break_before_close_bracket: false`, a source comma is dropped and is not a chop request: nothing would keep the chop on the next run.
 
-For any list with an optional trailing comma (and for records, on the global keys), `trailing_commas: remove` with `chop_on_trailing_comma: true` and `keep_existing_line_breaks: false` in effect for that list is a configuration error: the chop deletes the comma that requested it, and nothing would keep the chopped layout on the next run. The check runs on the effective values after `inherit` is resolved, so a global value can complete a conflict on one list. A list whose policy is `never` or `chop_always` is exempt. Set one of the three differently for that list.
+For any list with an optional trailing comma (and for records, on the global keys), `trailing_commas: remove` (or a comma suppressed by `break_before_close_bracket: false`) with `chop_on_trailing_comma: true` and `keep_existing_line_breaks: false` in effect for that list is a configuration error: the chop deletes the comma that requested it, and nothing would keep the chopped layout on the next run. The check runs on the effective values after `inherit` is resolved, so a global value can complete a conflict on one list. A list whose policy is `never` or whose `chop_from` is 1 is exempt; a larger threshold alone is not. Set one of the three differently for that list.
 
 Before:
 
@@ -589,7 +742,7 @@ list.map((e) { return e + 1; });
 
 ## `chop_from`
 
-A field of every list map. With `chop_from: N`, a list of at least N items puts every item on its own line, whatever its width; `0` disables this and is the preset everywhere (except `wrap.cascades`, `2`). Policy `never` suppresses it. Otherwise it defeats filling, kept groups of items sharing a line, block-argument hugging and `keep_single_line_if_fits`. Items are counted syntactically per list: a named argument, a closure, a spread or a collection `if`/`for` counts once, and a nested list is counted on its own. Binary operands are counted within one run of operators of the same precedence; a parenthesized expression or one at another precedence is one operand. `wrap.chained_calls.chop_from` counts calls (alias `min_calls`). Examples at 40 columns.
+A field of every list map. With `chop_from: N`, a list of at least N items puts every item on its own line, whatever its width; `0` disables this and is the preset everywhere except `wrap.cascades` (`2`) and `wrap.switch_expressions` (`1`). It is the only count-based trigger, and `chop_from: 1` is how "always chop" is written. It is a sub-option of `fill` and `chop_if_long`: under `never` it is ignored. Otherwise it defeats filling, kept groups of items sharing a line and block-argument hugging. Items are counted syntactically per list: a named argument, a closure, a spread or a collection `if`/`for` counts once, and a nested list is counted on its own. Binary operands are counted within one run of operators of the same precedence; a parenthesized expression or one at another precedence is one operand. `wrap.chained_calls.chop_from` counts calls (alias `min_calls`). Examples at 40 columns.
 
 Before:
 
@@ -722,7 +875,7 @@ class Point {
 }
 ```
 
-After with `wrap.initializer_lists.policy=chop_always`:
+After with `wrap.initializer_lists.chop_from=1`:
 
 ```dart
 class Point {
@@ -732,7 +885,7 @@ class Point {
 }
 ```
 
-After with `wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.align=false`:
+After with `wrap.initializer_lists.chop_from=1 wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.indent=inherit`:
 
 ```dart
 class Point {
@@ -742,7 +895,7 @@ class Point {
 }
 ```
 
-After with `wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.align=true`:
+After with `wrap.initializer_lists.chop_from=1 wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.indent=first_item`:
 
 ```dart
 class Point {
@@ -775,7 +928,7 @@ class Point {
 
 ## `wrap.switch_expressions`
 
-A list map over switch expression arms. Preset `dart`: `policy: chop_always`. Arm commas print exactly as in the source under every policy: none is added or removed. Examples at 80 columns.
+A list map over switch expression arms. Preset `dart`: `policy: chop_if_long` with `chop_from: 1`, which chops every switch expression. Arm commas print exactly as in the source under every policy: none is added or removed. Examples at 80 columns.
 
 Before:
 
@@ -783,7 +936,7 @@ Before:
 final label = switch (side) { Side.left => 'L', Side.right => 'R' };
 ```
 
-After with `wrap.switch_expressions=chop_if_long`:
+After with `wrap.switch_expressions=chop_if_long wrap.switch_expressions.chop_from=0`:
 
 ```dart
 final label = switch (side) { Side.left => 'L', Side.right => 'R' };
@@ -825,7 +978,7 @@ class HomeScreen extends StatefulWidget
     implements PreferredSizeWidget {}
 ```
 
-After with `wrap.class_header=if_long`:
+After with `wrap.class_header=fill`:
 
 ```dart
 class HomeScreen extends StatefulWidget with RouteAware
@@ -834,7 +987,7 @@ class HomeScreen extends StatefulWidget with RouteAware
 
 ## `wrap.arguments.hug_block_argument`
 
-Whether one block argument may hug the call's parentheses (`f(a, () {` … `})`). Preset `dart`: `true`; no global key and no `inherit`. Eligible: a block-bodied function literal, a non-empty list, set or map literal, or a record with more than one field when it is the sole argument; a named argument is judged by its expression. An `=>` lambda and an empty collection are not eligible. A source trailing comma prevents hugging. `never`, `chop_always`, alignment, a named-argument or call-name match and a reached `chop_from` take precedence. With `false`, the list is laid out by its ordinary settings and is not forced to chop. Examples at 80 columns.
+Whether one block argument may hug the call's parentheses (`f(a, () {` … `})`). Preset `dart`: `true`; no global key and no `inherit`. Eligible: a block-bodied function literal, a non-empty list, set or map literal, or a record with more than one field when it is the sole argument; a named argument is judged by its expression. An `=>` lambda and an empty collection are not eligible. A source trailing comma prevents hugging. `never`, `indent: first_item`, a named-argument or call-name match and a reached `chop_from` take precedence. With `false`, the list is laid out by its ordinary settings and is not forced to chop. Examples at 80 columns.
 
 Before:
 
@@ -867,7 +1020,7 @@ Before:
 someFunction(firstArgumentName, secondArgumentName, [elementOne, elementTwo, three]);
 ```
 
-After with `wrap.arguments.hug_block_argument=false wrap.arguments=if_long`:
+After with `wrap.arguments.hug_block_argument=false wrap.arguments=fill`:
 
 ```dart
 someFunction(
@@ -919,9 +1072,46 @@ After with `wrap.chop_on_calls=[Row]`:
 x = RowFactory(a) + Row.center.extra(b);
 ```
 
-## `wrap.close_bracket`
+## `wrap.break_after_open_bracket` and `wrap.break_before_close_bracket`
 
-Where the closing `)`, `]` or `}` of a broken list goes: `own_line` (preset) or `after_last_item`. `after_last_item` also suppresses the optional trailing comma; a required comma (a one-field positional record) is kept. A global key plus a `close_bracket` field, preset `inherit`, on `arguments`, `parameters`, `collection_literals` and `enum_values`; records follow the global key. Because it suppresses the comma, it takes part in the trailing-comma conflict check. Examples at 40 columns.
+Where the brackets of a broken list sit relative to its items, independent of the policy and of `indent`. `break_after_open_bracket`: `true` starts the first item on a new line after `(`, `[` or `{`; `false` keeps it on the bracket's line. `break_before_close_bracket`: `true` puts the closing bracket on a line of its own; `false` places it after the last item. Each is a global key, preset `true`, plus a field, preset `inherit`, on `arguments`, `parameters`, `collection_literals` and `enum_values`; records follow the global keys. Alias: `close_bracket: own_line | after_last_item` for `break_before_close_bracket: true | false`.
+
+[`trailing_commas`](#trailing_commas) is a sub-option of `break_before_close_bracket: true`: with `false` no optional trailing comma is added and one in the source is dropped, under every `trailing_commas` value including `preserve`. A required comma (a one-field positional record) is kept. Because it suppresses the comma, `break_before_close_bracket: false` takes part in the trailing-comma conflict check. A line comment after the last item still puts the closer on its own line.
+
+A source line break directly after the opening bracket or before the closing bracket follows these fields; [`keep_existing_line_breaks`](#wrapkeep_existing_line_breaks) governs only the gaps between items. Examples at 40 columns.
+
+Before:
+
+```dart
+print(firstArgument, secondArgument, third);
+```
+
+After (the preset):
+
+```dart
+print(
+  firstArgument,
+  secondArgument,
+  third,
+);
+```
+
+After with `wrap.arguments.break_after_open_bracket=false`:
+
+```dart
+print(firstArgument,
+  secondArgument,
+  third,
+);
+```
+
+After with `wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false`:
+
+```dart
+print(firstArgument,
+  secondArgument,
+  third);
+```
 
 Before:
 
@@ -929,7 +1119,7 @@ Before:
 canvas.drawLine(startPoint, endPoint, paint);
 ```
 
-After with `wrap.arguments.close_bracket=after_last_item`:
+After with `wrap.arguments.break_before_close_bracket=false`:
 
 ```dart
 canvas.drawLine(
@@ -944,7 +1134,7 @@ Before:
 f([firstElement, secondElement, thirdOne]);
 ```
 
-After with `wrap.arguments.close_bracket=after_last_item`:
+After with `wrap.arguments.break_before_close_bracket=false` (the list literal keeps the preset):
 
 ```dart
 f([
@@ -960,11 +1150,51 @@ Before:
 final r = (someVeryLongValueThatBreaksHere,);
 ```
 
-After with `wrap.close_bracket=after_last_item`:
+After with `wrap.break_before_close_bracket=false`:
 
 ```dart
 final r = (
   someVeryLongValueThatBreaksHere,);
+```
+
+Before:
+
+```dart
+g(
+  aaaaaaaaaaaa,
+  bbbbbbbbbbbb,
+  cccccccccccc,
+);
+```
+
+After with `trailing_commas=preserve wrap.arguments.break_before_close_bracket=false`:
+
+```dart
+g(
+  aaaaaaaaaaaa,
+  bbbbbbbbbbbb,
+  cccccccccccc);
+```
+
+A source break next to a bracket. Before:
+
+```dart
+print(
+    first, second, third);
+```
+
+After (the preset keeps it):
+
+```dart
+print(
+  first, second, third,
+);
+```
+
+After with `wrap.arguments.break_after_open_bracket=false`:
+
+```dart
+print(first, second, third);
 ```
 
 ## `wrap.break_before`
@@ -1013,7 +1243,45 @@ final value = someCondition ?
 
 ## `wrap.chained_calls.keep_first_call_on_receiver_line`
 
-When a chain chops, keep its first call on the receiver's line and break before each later call. Preset `dart`: `false`. Example at 50 columns.
+When a chain breaks, whether its first call stays on the receiver's line, decided by what the receiver is. A list of receiver kinds; `true` means every kind and `false` means `[]`. When the receiver's kind is listed, the first call stays and the chain breaks before each later call; otherwise the first call breaks too. Arguments are never involved. Preset `dart`: `[]`.
+
+| Kind | Receiver looks like | Example |
+|---|---|---|
+| `type_names` | an UpperCamelCase identifier, possibly import-prefixed | `DateFormat.yMMMMd().format(x)`, `intl.DateFormat.yMMMMd()` |
+| `identifiers` | any other plain identifier | `users.where(f).toList()` |
+| `this` | `this` or `super` | `this.copyWith(a: 1).save()` |
+| `calls` | a call result | `fetch().then(f).catchError(g)` |
+| `properties` | a property path | `theme.textTheme.labelMedium.copyWith(c).merge(o)` |
+
+Beaver formats without type information, so a type name is recognised by its capital letter: a constant such as `MAX.toString()` counts as `type_names`. A receiver of no listed kind, such as a literal, always breaks before its first call. With [`indent: first_item`](indent.md#wraplistindent), the calls after a kept first call align under its `.`; a chain whose first call broke has nothing beside it and uses the continuation indent. Examples at 60 columns.
+
+Before:
+
+```dart
+final d = DateFormat.yMMMMd().format(invitation.invitedAt.toLocal());
+```
+
+After (the preset):
+
+```dart
+final d = DateFormat
+    .yMMMMd()
+    .format(invitation.invitedAt.toLocal());
+```
+
+After with `wrap.chained_calls.keep_first_call_on_receiver_line=[type_names]`:
+
+```dart
+final d = DateFormat.yMMMMd()
+    .format(invitation.invitedAt.toLocal());
+```
+
+After with `wrap.chained_calls.keep_first_call_on_receiver_line=[type_names] wrap.chained_calls.indent=first_item`:
+
+```dart
+final d = DateFormat.yMMMMd()
+                    .format(invitation.invitedAt.toLocal());
+```
 
 Before:
 
@@ -1021,7 +1289,16 @@ Before:
 final names = users.where((u) => u.active).map((u) => u.name).toList();
 ```
 
-After with `wrap.chained_calls.keep_first_call_on_receiver_line=true`:
+After with `wrap.chained_calls.keep_first_call_on_receiver_line=[type_names]` (an identifier, so the first call breaks):
+
+```dart
+final names = users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .toList();
+```
+
+After with `wrap.chained_calls.keep_first_call_on_receiver_line=[identifiers]`:
 
 ```dart
 final names = users.where((u) => u.active)
@@ -1029,9 +1306,90 @@ final names = users.where((u) => u.active)
     .toList();
 ```
 
-## `wrap.binary_expressions.align`
+## `wrap.chained_calls.break_after_prefix`
 
-Continuation lines of a wrapped binary expression align under its first operand, wherever the expression occurs, instead of being indented by `wrap.binary_expressions.indent` (`inherit`: `indent.continuation`). Preset `dart`: `false`. The column is wherever the first operand landed: after `=` the whole right-hand side moves to its own line first, so there the operands line up at the continuation indent and the output is the same as with `false`; the difference shows in a `return`, a condition or an argument, where the first operand shares a line with what precedes it. Examples at 30 columns.
+Where a wrapped chain starts when it follows a prefix: `=`, `=>`, a named argument's `:` or a parameter default's `=`. With `false`, the target stays on the prefix line and the calls are offset from there. With `true`, a chain that does not fit on the prefix line moves to its own line at the continuation indent, like a binary expression does, and then chops only if it still does not fit. A chain that fits on the prefix line stays there either way. Preset `dart`: `false`. Examples at 40 columns.
+
+Before:
+
+```dart
+call(date: formatterFactory.create().format(value.toLocal()));
+```
+
+After (the preset):
+
+```dart
+call(
+  date: formatterFactory
+      .create()
+      .format(value.toLocal()),
+);
+```
+
+After with `wrap.chained_calls.break_after_prefix=true`:
+
+```dart
+call(
+  date:
+      formatterFactory
+      .create()
+      .format(value.toLocal()),
+);
+```
+
+## `wrap.chained_calls.indent_from`
+
+What the calls of a chopped chain are offset from. `line`: the indentation of the line the chain starts on, so after a prefix wider than the offset (`date: `, `final names = `) the calls can start left of the target; a chain moved by `break_after_prefix` keeps its calls in the target's column. `target`: the column where the target starts, so a call never starts left of what it continues. While the target itself does not fit on one line, `line` applies. The offset is `wrap.chained_calls.indent` under both (`inherit`: `indent.continuation`). `indent: first_item` ignores it: `indent_from` is a sub-option of an integer or `inherit` `indent`. Preset `dart`: `line`. After a long prefix, `target` nests deeply; combined with `break_after_prefix: true` the target starts its own line and the calls sit one step past it. Examples at 40 columns.
+
+Before:
+
+```dart
+call(date: formatterFactory.create().format(value.toLocal()));
+```
+
+After with `wrap.chained_calls.indent_from=target`:
+
+```dart
+call(
+  date: formatterFactory
+            .create()
+            .format(value.toLocal()),
+);
+```
+
+After with `wrap.chained_calls.break_after_prefix=true wrap.chained_calls.indent_from=target`:
+
+```dart
+call(
+  date:
+      formatterFactory
+          .create()
+          .format(value.toLocal()),
+);
+```
+
+Before:
+
+```dart
+call(date: Factory(firstArgument, secondArgument).create().format(value));
+```
+
+After with `wrap.chained_calls.indent_from=target` (the target breaks, so `line` applies):
+
+```dart
+call(
+  date: Factory(
+    firstArgument,
+    secondArgument,
+  )
+      .create()
+      .format(value),
+);
+```
+
+## `wrap.binary_expressions.indent`
+
+With `first_item`, continuation lines of a wrapped binary expression align under its first operand, wherever the expression occurs; with `inherit` (`indent.continuation`) or an integer they are offset by that many columns from the base `indent_from` names. Preset `dart`: `inherit`. The column is wherever the first operand landed: after `=` the whole right-hand side moves to its own line first (under the preset `break_after_prefix: true`), so there the operands line up at the continuation indent and the output is the same as with `inherit`; the difference shows in a `return`, a condition or an argument, where the first operand shares a line with what precedes it. Alias: `wrap.binary_expressions.align: true`. Examples at 30 columns.
 
 Before:
 
@@ -1039,12 +1397,83 @@ Before:
 return subtotal + shipping + tax;
 ```
 
-After with `wrap.binary_expressions.align=true`:
+After with `wrap.binary_expressions.indent=first_item`:
 
 ```dart
 return subtotal +
        shipping +
        tax;
+```
+
+## `wrap.binary_expressions.break_after_prefix`
+
+Where a wrapped binary expression starts when it follows a prefix: `=`, `=>`, a named argument's `:` or a parameter default's `=`. With `true`, an expression that does not fit on the prefix line moves to its own line at the continuation indent, and its operands then share that column. With `false`, the first operand stays on the prefix line and the later lines are offset by `wrap.binary_expressions.indent` from the line's indentation (or from the first operand, see `indent_from`). An expression that fits on the prefix line stays there either way. Preset `dart`: `true`. A very long first operand is not moved under `false`, so it can overflow. Examples at 30 columns.
+
+Before:
+
+```dart
+final total = subtotal + shipping + tax - discount;
+```
+
+After with `wrap.break_before.binary_operator=true`, `break_after_prefix` at its preset:
+
+```dart
+final total =
+    subtotal
+    + shipping
+    + tax
+    - discount;
+```
+
+After with `wrap.break_before.binary_operator=true wrap.binary_expressions.break_after_prefix=false`:
+
+```dart
+final total = subtotal
+    + shipping
+    + tax
+    - discount;
+```
+
+## `wrap.binary_expressions.indent_from`
+
+What the continuation lines of a wrapped binary expression are offset from. `line`: the indentation of the line the expression starts on; an expression moved after a prefix keeps its operands in the first operand's column, because the move already indented it. `target`: the column where the first operand starts, so a continuation line never starts left of it. The offset is `wrap.binary_expressions.indent` under both (`inherit`: `indent.continuation`). `indent: first_item` ignores it: `indent_from` is a sub-option of an integer or `inherit` `indent`. Preset `dart`: `line`. Examples at 30 columns.
+
+Before:
+
+```dart
+final total = subtotal + shipping + tax - discount;
+```
+
+After with `wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target`:
+
+```dart
+final total =
+    subtotal
+        + shipping
+        + tax
+        - discount;
+```
+
+Before:
+
+```dart
+return subtotal + shipping + tax;
+```
+
+After with `wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target`:
+
+```dart
+return subtotal
+           + shipping
+           + tax;
+```
+
+After with `wrap.break_before.binary_operator=true wrap.binary_expressions.indent_from=target wrap.binary_expressions.indent=2`:
+
+```dart
+return subtotal
+         + shipping
+         + tax;
 ```
 
 ## `wrap.annotations`

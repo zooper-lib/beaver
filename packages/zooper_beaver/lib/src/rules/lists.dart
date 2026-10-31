@@ -20,8 +20,9 @@ extension ListRules on DocBuilder {
   /// trailing comma under `chop_on_trailing_comma`, or a named-argument
   /// match) breaks every separator.
   ///
-  /// With the list's `align`, items after the first align to its column
-  /// instead of being indented.
+  /// `break_after_open_bracket: false` keeps the first item on the bracket's
+  /// line; with `indent: first_item` the later items then align to its
+  /// column instead of being indented.
   ///
   /// [optionalTrailingComma] is false for constructs whose trailing comma
   /// the verifier compares exactly; the source's comma is kept.
@@ -56,14 +57,16 @@ extension ListRules on DocBuilder {
     final never = policy == WrapPolicy.never;
 
     // Whether the source has a newline in each list-level gap: before item i,
-    // then before the closing delimiter. Newlines inside items don't count.
+    // then before the closing delimiter. Newlines inside items don't count,
+    // nor one after [open] that `break_after_open_bracket: false` removes.
     final gaps = [
       for (final (i, item) in items.indexed)
-        newlinesBetween(
-              i == 0 ? open.end : items[i - 1].endToken.next!.end,
-              startWithComments(item),
-            ) >
-            0,
+        (i > 0 || settings.breakAfterOpen) &&
+            newlinesBetween(
+                  i == 0 ? open.end : items[i - 1].endToken.next!.end,
+                  startWithComments(item),
+                ) >
+                0,
       newlinesBetween(
             items.last.endToken.end,
             (rightDelimiter ?? close).offset,
@@ -78,13 +81,15 @@ extension ListRules on DocBuilder {
     final chop =
         !never &&
         (forceChop ||
-            policy == WrapPolicy.chopAlways ||
             settings.reachesThreshold(items.length) ||
             (sourceTrailingComma &&
                 !requiredTrailingComma &&
                 settings.chopOnTrailingComma &&
+                // A comma the closer's placement drops keeps the chop only
+                // through the kept break after the opening bracket.
+                (settings.breakBeforeClose || settings.breakAfterOpen) &&
                 !mixed));
-    final fill = policy == WrapPolicy.ifLong && !chop;
+    final fill = policy == WrapPolicy.fill && !chop;
     final outer = GroupId('list');
 
     final comma = concat([if (config.spaceBeforeComma) space, Text(',')]);
@@ -123,11 +128,11 @@ extension ListRules on DocBuilder {
       ]);
     }
 
-    // `close_bracket: after_last_item` hugs the closer to the last item and
-    // suppresses the optional comma; a comment ending that line still
+    // `break_before_close_bracket: false` hugs the closer to the last item
+    // and suppresses the optional comma; a comment ending that line still
     // needs the closer on a line of its own.
     final afterLastItem =
-        settings.closeBracket == CloseBracket.afterLastItem &&
+        !settings.breakBeforeClose &&
         !hasLineCommentIn(startWithComments(items.last), close.offset);
     final Doc trailing;
     if (requiredTrailingComma) {
@@ -185,45 +190,12 @@ extension ListRules on DocBuilder {
       ]);
     }
 
-    if (settings.align) {
-      // Alignment: items after the first line up under it; the brackets hug the
-      // first and last item.
-      final docs = [for (var i = 0; i < items.length; i++) itemDoc(i)];
-      return group(
-        concat([
-          tok(open),
-          if (optionalStart == 0) optionalOpen,
-          Text(insideFlat),
-          alignToColumn(
-            concat([
-              runs(docs, kept, separator: chop ? hardline : separatorFlat),
-              // The bracket hugs the last item, so no comma is ever
-              // "wrapped"; the source's comma stays (it may be the chop
-              // request that keeps this layout stable).
-              if (requiredTrailingComma ||
-                  (sourceTrailingComma &&
-                      settings.trailingCommas != TrailingCommas.remove &&
-                      !afterLastItem) ||
-                  (sourceTrailingComma && !optionalTrailingComma))
-                comma,
-              closeComments,
-            ]),
-          ),
-          // The bracket hugs the last item, unless a comment there must
-          // end its line.
-          if (hasLineCommentIn(startWithComments(items.last), close.offset))
-            hardline
-          else
-            Text(insideFlat),
-          closing,
-        ]),
-        shouldBreak: chop,
-        id: outer,
-      );
-    }
-
     final hasRuns = !chop && kept.contains(true);
-    final first = chop || kept[0] ? hardline : Line.soft(insideFlat);
+    final first = !settings.breakAfterOpen
+        ? Text(insideFlat)
+        : chop || kept[0]
+        ? hardline
+        : Line.soft(insideFlat);
 
     // Blank lines between items survive, up to the cap, where the list
     // breaks; a soft separator gets them only when its group breaks.
@@ -276,10 +248,17 @@ extension ListRules on DocBuilder {
       concat([
         tok(open),
         if (optionalStart == 0) optionalOpen,
-        indentBy(
-          settings.indent,
-          concat([first, body, trailing, closeComments]),
-        ),
+        // `first_item` has a column to align to only beside the bracket.
+        if (settings.indent is FirstItem && !settings.breakAfterOpen)
+          concat([
+            first,
+            alignToColumn(concat([body, trailing, closeComments])),
+          ])
+        else
+          indentBy(
+            settings.indent.columns,
+            concat([first, body, trailing, closeComments]),
+          ),
         if (afterLastItem)
           IfBreak(empty, Text(insideFlat), outer)
         else

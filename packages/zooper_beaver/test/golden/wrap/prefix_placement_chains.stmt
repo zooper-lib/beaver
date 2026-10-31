@@ -1,0 +1,106 @@
+40 columns                              |
+>>> The preset keeps the target on the prefix line and indents the calls from the line.
+call(date: formatterFactory.create().format(value.toLocal()));
+<<<
+call(
+  date: formatterFactory
+      .create()
+      .format(value.toLocal()),
+);
+>>> (wrap.chained_calls.break_after_prefix=true) Moved, the calls stay in the target's column.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names =
+    users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .toList();
+>>> (wrap.chained_calls.break_after_prefix=true) After a named argument.
+call(date: formatterFactory.create().format(value.toLocal()));
+<<<
+call(
+  date:
+      formatterFactory
+      .create()
+      .format(value.toLocal()),
+);
+>>> (wrap.chained_calls.break_after_prefix=true) After `=>`.
+int g() => users.where((u) => u.active).map((u) => u.name).length;
+<<<
+int g() =>
+    users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .length;
+>>> (wrap.chained_calls.break_after_prefix=true) A moved chain that fits on its own line stays on it.
+final middle = items.where(isOk).toList();
+<<<
+final middle =
+    items.where(isOk).toList();
+>>> (wrap.chained_calls.break_after_prefix=true) A short chain stays on the prefix line.
+final short = a.b().c();
+<<<
+final short = a.b().c();
+>>> (wrap.chained_calls.indent_from=target) The calls start one step right of the target.
+call(date: formatterFactory.create().format(value.toLocal()));
+<<<
+call(
+  date: formatterFactory
+            .create()
+            .format(value.toLocal()),
+);
+>>> (wrap.chained_calls.break_after_prefix=true wrap.chained_calls.indent_from=target) Moved, one step right of the target.
+call(date: formatterFactory.create().format(value.toLocal()));
+<<<
+call(
+  date:
+      formatterFactory
+          .create()
+          .format(value.toLocal()),
+);
+>>> (wrap.chained_calls.break_after_prefix=true wrap.chained_calls.indent_from=target wrap.chained_calls.indent=2) The step is the list's indent.
+call(date: formatterFactory.create().format(value.toLocal()));
+<<<
+call(
+  date:
+      formatterFactory
+        .create()
+        .format(value.toLocal()),
+);
+>>> (wrap.chained_calls.indent_from=target) A target that breaks falls back to the line.
+call(date: Factory(firstArgument, secondArgument).create().format(value));
+<<<
+call(
+  date: Factory(
+    firstArgument,
+    secondArgument,
+  )
+      .create()
+      .format(value),
+);
+>>> (wrap.chained_calls.indent_from=target) So does a target with a block body.
+call(date: Builder(builder: (c) { return c; }).create().format(value));
+<<<
+call(
+  date: Builder(builder: (c) {
+    return c;
+  })
+      .create()
+      .format(value),
+);
+>>> (wrap.chained_calls.indent_from=target wrap.chained_calls.keep_first_call_on_receiver_line=true) The first call stays on the receiver line.
+call(date: formatterFactory.create().format(value.toLocal()));
+<<<
+call(
+  date: formatterFactory.create()
+            .format(value.toLocal()),
+);
+>>> (wrap.chained_calls.indent=first_item wrap.chained_calls.keep_first_call_on_receiver_line=true wrap.chained_calls.indent_from=target) indent_from is ignored under first_item.
+call(date: formatterFactory.create().format(value.toLocal()));
+<<<
+call(
+  date: formatterFactory.create()
+                        .format(
+                          value.toLocal(),
+                        ),
+);

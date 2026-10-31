@@ -54,7 +54,7 @@ x =
     a +
     b +
     c;
->>> (wrap.arguments.policy=if_long wrap.arguments.chop_from=3) if_long at the threshold chops.
+>>> (wrap.arguments.policy=fill wrap.arguments.chop_from=3) fill at the threshold chops.
 foo(a, b, c);
 <<<
 foo(
@@ -85,7 +85,7 @@ a
     .b()
     .c()
     .d();
->>> (wrap.chained_calls.chop_from=3 wrap.chained_calls.keep_single_line_if_fits=true) The threshold defeats keep_single_line_if_fits.
+>>> (wrap.chained_calls.chop_from=3) The threshold chops a chain that fits.
 a.b().c().d();
 <<<
 a

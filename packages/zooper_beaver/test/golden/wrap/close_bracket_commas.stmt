@@ -1,12 +1,12 @@
 40 columns                              |
->>> (wrap.arguments.close_bracket=after_last_item) The closer follows the last item.
+>>> (wrap.arguments.break_before_close_bracket=false) The closer follows the last item.
 canvas.drawLine(startPoint, endPoint, paint);
 <<<
 canvas.drawLine(
   startPoint,
   endPoint,
   paint);
->>> (wrap.arguments.close_bracket=after_last_item) Collections keep their own line.
+>>> (wrap.arguments.break_before_close_bracket=false) Collections keep their own line.
 f([firstElement, secondElement, thirdOne]);
 <<<
 f([
@@ -14,23 +14,23 @@ f([
   secondElement,
   thirdOne,
 ]);
->>> (wrap.close_bracket=after_last_item) The global key applies to every list.
+>>> (wrap.break_before_close_bracket=false) The global key applies to every list.
 x = [firstElement, secondElement, thirdOne];
 <<<
 x = [
   firstElement,
   secondElement,
   thirdOne];
->>> (wrap.close_bracket=after_last_item) A required record comma is kept.
+>>> (wrap.break_before_close_bracket=false) A required record comma is kept.
 final r = (someVeryLongValueThatBreaksHere,);
 <<<
 final r = (
   someVeryLongValueThatBreaksHere,);
->>> (wrap.close_bracket=after_last_item) A flat list is unchanged.
+>>> (wrap.break_before_close_bracket=false) A flat list is unchanged.
 foo(a, b);
 <<<
 foo(a, b);
->>> (wrap.close_bracket=after_last_item) A line comment keeps the closer on its own line.
+>>> (wrap.break_before_close_bracket=false) A line comment keeps the closer on its own line.
 foo(
   a,
   b, // last
@@ -40,7 +40,7 @@ foo(
   a,
   b, // last
 );
->>> (trailing_commas=add_when_chopped wrap.arguments=if_long) A filled list loses its comma.
+>>> (trailing_commas=add_when_chopped wrap.arguments=fill) A filled list loses its comma.
 function(firstArgument, secondArgument, third, fourth);
 <<<
 function(

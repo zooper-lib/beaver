@@ -432,8 +432,7 @@ extension DeclarationRules on DocBuilder {
     final never = policy == WrapPolicy.never;
     final forced =
         !never &&
-        (policy == WrapPolicy.chopAlways ||
-            settings.reachesThreshold(initializers.length));
+        settings.reachesThreshold(initializers.length);
     final kept = [
       for (final (i, initializer) in initializers.indexed)
         i > 0 &&
@@ -468,14 +467,14 @@ extension DeclarationRules on DocBuilder {
           : forced
           ? hardline
           : Line.soft(afterComma),
-      fill: policy == WrapPolicy.ifLong && !forced,
+      fill: policy == WrapPolicy.fill && !forced,
     );
     if (never) return concat([beforeColon, colonDoc, space, list]);
 
-    final width = settings.indent;
+    final width = settings.indent.columns;
     // Later initializers under the first, or [width] past the baseline.
     Doc afterColon(Doc list) =>
-        settings.align ? align(2, list) : indentBy(width, list);
+        settings.indent is FirstItem ? align(2, list) : indentBy(width, list);
     final newLine = group(
       indentBy(
         width,
@@ -498,7 +497,7 @@ extension DeclarationRules on DocBuilder {
             colonDoc,
             indentBy(
               width,
-              settings.align ? broken : indentBy(width, broken),
+              settings.indent is FirstItem ? broken : indentBy(width, broken),
             ),
           ]),
         );
@@ -513,7 +512,7 @@ extension DeclarationRules on DocBuilder {
         beforeColon,
         colonDoc,
         space,
-        settings.align
+        settings.indent is FirstItem
             ? alignToColumn(afterHeader)
             : indentBy(width, indentBy(width, afterHeader)),
       ]),
@@ -561,8 +560,7 @@ extension DeclarationRules on DocBuilder {
     final never = policy == WrapPolicy.never;
     final forced =
         !never &&
-        (policy == WrapPolicy.chopAlways ||
-            settings.reachesThreshold(clauses.length));
+        settings.reachesThreshold(clauses.length);
     final kept = [
       for (final (entity, _, _) in clauses)
         !never &&
@@ -589,7 +587,7 @@ extension DeclarationRules on DocBuilder {
     return group(
       concat([
         head,
-        if (policy == WrapPolicy.ifLong && !broken)
+        if (policy == WrapPolicy.fill && !broken)
           cont(
             Fill([
               empty,

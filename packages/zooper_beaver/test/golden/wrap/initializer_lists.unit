@@ -1,5 +1,5 @@
 80 columns                                                                      |
->>> (wrap.initializer_lists.policy=chop_always) Chop always with the preset.
+>>> (wrap.initializer_lists.chop_from=1) Chop always with the preset.
 class Point {
   Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
 }
@@ -17,7 +17,7 @@ class Point {
 class Point {
   Point(this.x) : y = 0;
 }
->>> (wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=new_line wrap.initializer_lists.align=true) New line, aligned.
+>>> (wrap.initializer_lists.chop_from=1 wrap.initializer_lists.colon=new_line wrap.initializer_lists.indent=first_item) New line, aligned.
 class Point {
   Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
 }
@@ -27,7 +27,7 @@ class Point {
     : _len = sqrt(x * x + y * y),
       _label = '$x,$y';
 }
->>> (wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=new_line wrap.initializer_lists.align=false wrap.initializer_lists.indent=4) New line, not aligned: later initializers indent from the baseline.
+>>> (wrap.initializer_lists.chop_from=1 wrap.initializer_lists.colon=new_line wrap.initializer_lists.indent=4) New line, not aligned: later initializers indent from the baseline.
 class Point {
   Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
 }
@@ -37,7 +37,7 @@ class Point {
       : _len = sqrt(x * x + y * y),
           _label = '$x,$y';
 }
->>> (wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.align=false) End of header without alignment.
+>>> (wrap.initializer_lists.chop_from=1 wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.indent=inherit) End of header without alignment.
 class Point {
   Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
 }
@@ -47,7 +47,7 @@ class Point {
       _len = sqrt(x * x + y * y),
       _label = '$x,$y';
 }
->>> (wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.align=true) End of header, aligned under the first.
+>>> (wrap.initializer_lists.chop_from=1 wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.indent=first_item) End of header, aligned under the first.
 class Point {
   Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
 }

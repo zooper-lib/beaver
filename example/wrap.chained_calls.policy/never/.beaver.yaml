@@ -1,4 +1,3 @@
 wrap:
   chained_calls:
     policy: never
-    keep_single_line_if_fits: false

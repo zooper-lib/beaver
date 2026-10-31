@@ -1,12 +1,18 @@
 indent:
   style: tabs
-  align:
-    arguments: true
-    parameters: true
-    chained_calls: true
 wrap:
+  arguments:
+    indent: first_item
+    break_after_open_bracket: false
+    break_before_close_bracket: false
+  parameters:
+    indent: first_item
+    break_after_open_bracket: false
+    break_before_close_bracket: false
   chop_on_named_arguments: [child, children]
   simple_blocks_on_one_line: true
   simple_lambdas_on_one_line: true
   chained_calls:
     min_calls: 3
+    indent: first_item
+    keep_first_call_on_receiver_line: true

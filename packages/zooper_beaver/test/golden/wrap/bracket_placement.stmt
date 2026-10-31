@@ -1,0 +1,84 @@
+40 columns                              |
+>>> The preset starts the first item on a new line.
+print(firstArgument, secondArgument, third);
+<<<
+print(
+  firstArgument,
+  secondArgument,
+  third,
+);
+>>> (wrap.arguments.break_after_open_bracket=false) The first item stays on the bracket line.
+print(firstArgument, secondArgument, third);
+<<<
+print(firstArgument,
+  secondArgument,
+  third,
+);
+>>> (wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false) indent inherit.
+print(firstArgument, secondArgument, third);
+<<<
+print(firstArgument,
+  secondArgument,
+  third);
+>>> (wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false wrap.arguments.indent=4) indent 4.
+print(firstArgument, secondArgument, third);
+<<<
+print(firstArgument,
+    secondArgument,
+    third);
+>>> (wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false wrap.arguments.indent=first_item) indent first_item.
+print(firstArgument, secondArgument, third);
+<<<
+print(firstArgument,
+      secondArgument,
+      third);
+>>> (wrap.arguments.indent=first_item) Alignment does not move the brackets.
+print(firstArgument, secondArgument, third);
+<<<
+print(
+  firstArgument,
+  secondArgument,
+  third,
+);
+>>> (wrap.arguments.break_after_open_bracket=false) A break after the bracket is not kept.
+print(
+    first, second, third);
+<<<
+print(first, second, third);
+>>> (wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false) A break between items is kept.
+print(first,
+    second, third);
+<<<
+print(first,
+  second, third);
+>>> (wrap.arguments.break_after_open_bracket=false) With the closer on its own line, the comma follows trailing_commas.
+print(first,
+    second, third);
+<<<
+print(first,
+  second, third,
+);
+>>> (wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false) A dropped comma is not a chop request.
+f(
+  value,
+);
+<<<
+f(value);
+>>> The preset keeps a break after the bracket.
+print(
+    first, second, third);
+<<<
+print(
+  first, second, third,
+);
+>>> (trailing_commas=preserve wrap.arguments.break_before_close_bracket=false) A source comma is dropped under preserve.
+g(
+  aaaaaaaaaaaa,
+  bbbbbbbbbbbb,
+  cccccccccccc,
+);
+<<<
+g(
+  aaaaaaaaaaaa,
+  bbbbbbbbbbbb,
+  cccccccccccc);

@@ -7,6 +7,7 @@ import 'package:analyzer/dart/ast/token.dart';
 import '../config/config.dart';
 import '../ir/doc.dart';
 import 'builder.dart';
+import 'expressions.dart';
 
 /// One `.call(...)`, `.property`, `[index]`, `!` or `(args)` after a target.
 final class _Selector {
@@ -59,10 +60,12 @@ extension ChainRules on DocBuilder {
   /// A target followed by selectors. With fewer than two calls the selectors
   /// print attached; otherwise, from the first call on, each `.member` (with
   /// the indexes, `!` and arguments after it) may move to its own line with
-  /// continuation indent, per `wrap.chained_calls`, or aligned under the
-  /// first `.` with `wrap.chained_calls.align` while the target is flat.
+  /// continuation indent, per `wrap.chained_calls`. When the receiver's kind
+  /// is in `keep_first_call_on_receiver_line`, the first call stays on its
+  /// line; `indent: first_item` then aligns the rest under its `.` while
+  /// the target is flat.
   Doc chain(Expression expression) {
-    final (target, selectors) = _unwind(expression);
+    final (target, leaf, selectors) = _unwind(expression);
     final calls = selectors.where((s) => s.isCall).length;
     if (calls < 2) {
       return concat([target, for (final s in selectors) s.doc]);
@@ -98,9 +101,7 @@ extension ChainRules on DocBuilder {
       policy = WrapPolicy.chopIfLong;
     }
     final minCalls = settings.chopFrom;
-    final forced =
-        (minCalls > 0 && calls >= minCalls) ||
-        (policy == WrapPolicy.chopAlways && !config.chainKeepSingleLineIfFits);
+    final forced = minCalls > 0 && calls >= minCalls;
 
     // Lines separated as configured; kept source breaks are hard and split
     // the rest into runs that break on their own.
@@ -116,7 +117,7 @@ extension ChainRules on DocBuilder {
           if (k > from || leading) parts.add(forced ? hardline : softline);
           parts.add(items[k]);
         }
-        return policy == WrapPolicy.ifLong
+        return policy == WrapPolicy.fill
             ? Fill(_fillParts(parts))
             : concat(parts);
       }
@@ -141,25 +142,46 @@ extension ChainRules on DocBuilder {
       return concat(parts);
     }
 
-    final continued = align(
-      settings.indent,
-      separated(lines, kept, first: true),
+    // A chain moved after a prefix (`break_after_prefix`) was already
+    // indented by the move, so its calls stay in the target's column.
+    final step = config.chainBreakAfterPrefix && followsPrefix(expression)
+        ? 0
+        : settings.indent.columns;
+    final continued = align(step, separated(lines, kept, first: true));
+    final keepFirst = config.chainKeepFirstCallKinds.contains(
+      _receiverKind(leaf, head.isNotEmpty),
     );
-    if (!settings.align) {
-      if (config.flag('wrap.chained_calls.keep_first_call_on_receiver_line')) {
-        return group(
-          concat([
-            target,
-            ...head,
-            lines.first,
-            align(
-              settings.indent,
-              separated(lines.sublist(1), kept.sublist(1), first: true),
-            ),
-          ]),
-        );
+    if (settings.indent is! FirstItem || !keepFirst) {
+      // The calls, offset by [offset] from the enclosing indentation.
+      Doc calls(int offset) => keepFirst
+          ? concat([
+              lines.first,
+              align(
+                offset,
+                separated(lines.sublist(1), kept.sublist(1), first: true),
+              ),
+            ])
+          : align(offset, separated(lines, kept, first: true));
+      final fromLine = concat([target, ...head, calls(step)]);
+      final receiver = concat([target, ...head]);
+      // `indent_from` has no parent under `first_item`.
+      if (!config.chainIndentFromTarget ||
+          settings.indent is FirstItem ||
+          hasHardLine(receiver)) {
+        return group(fromLine);
       }
-      return group(concat([target, ...head, continued]));
+      // `indent_from: target`: offset from the target's column when the
+      // target fits on one line, from the line otherwise.
+      return ConditionalGroup(
+        [
+          fromLine,
+          alignToColumn(
+            concat([printedFlat(receiver), calls(settings.indent.columns)]),
+          ),
+          fromLine,
+        ],
+        firstLineOnly: const {1},
+      );
     }
     // Alignment: aligned under the first call's `.` while the target printed flat,
     // continuation indent otherwise.
@@ -183,7 +205,28 @@ extension ChainRules on DocBuilder {
   List<Doc> _fillParts(List<Doc> parts) =>
       parts.isNotEmpty && parts.first is Line ? [empty, ...parts] : parts;
 
-  (Doc, List<_Selector>) _unwind(Expression expression) {
+  /// The kind of the receiver [leaf] (followed by properties when
+  /// [hasProperties]), or `null` when it is none of them.
+  ReceiverKind? _receiverKind(Expression leaf, bool hasProperties) {
+    bool upper(String name) =>
+        name.replaceFirst(RegExp(r'^[_$]+'), '').startsWith(RegExp('[A-Z]'));
+    if (hasProperties) return ReceiverKind.properties;
+    return switch (leaf) {
+      SimpleIdentifier(:final name) when upper(name) => ReceiverKind.typeNames,
+      SimpleIdentifier() => ReceiverKind.identifiers,
+      PrefixedIdentifier(:final identifier) when upper(identifier.name) =>
+        ReceiverKind.typeNames,
+      PrefixedIdentifier() || PropertyAccess() => ReceiverKind.properties,
+      ThisExpression() || SuperExpression() => ReceiverKind.thisOrSuper,
+      MethodInvocation() || FunctionExpressionInvocation() =>
+        ReceiverKind.calls,
+      _ => null,
+    };
+  }
+
+  /// The chain's innermost target (printed, and its node) and the
+  /// selectors after it.
+  (Doc, Expression, List<_Selector>) _unwind(Expression expression) {
     final selectors = <_Selector>[];
     var current = expression;
     bool hasComments(AstNode node) =>
@@ -238,10 +281,14 @@ extension ChainRules on DocBuilder {
           );
           current = function;
         default:
-          return (_leaf(current, expression), selectors.reversed.toList());
+          return (
+            _leaf(current, expression),
+            current,
+            selectors.reversed.toList(),
+          );
       }
     }
-    return (visit(current), selectors.reversed.toList());
+    return (visit(current), current, selectors.reversed.toList());
   }
 
   /// The innermost target: printed through [visit] unless it is the chain's
@@ -284,10 +331,7 @@ extension ChainRules on DocBuilder {
       policy = WrapPolicy.chopIfLong;
     }
     final never = policy == WrapPolicy.never;
-    final forced =
-        !never &&
-        (policy == WrapPolicy.chopAlways ||
-            settings.reachesThreshold(sections.length));
+    final forced = !never && settings.reachesThreshold(sections.length);
     final kept = [
       for (final (i, section) in sections.indexed)
         !never &&
@@ -308,7 +352,7 @@ extension ChainRules on DocBuilder {
         visit(target),
         group(
           indentBy(
-            settings.indent,
+            settings.indent.columns,
             concat([never ? empty : softline, visit(sections.single)]),
           ),
         ),
@@ -319,7 +363,7 @@ extension ChainRules on DocBuilder {
       final parts = [
         for (final section in run) ...[separator, visit(section)],
       ];
-      return policy == WrapPolicy.ifLong && !forced
+      return policy == WrapPolicy.fill && !forced
           ? Fill(_fillParts(parts))
           : concat(parts);
     }
@@ -351,7 +395,9 @@ extension ChainRules on DocBuilder {
       }
       body = concat(parts);
     }
-    return group(concat([visit(target), indentBy(settings.indent, body)]));
+    return group(
+      concat([visit(target), indentBy(settings.indent.columns, body)]),
+    );
   }
 
   /// A cascade section (`..a()`, `..b = c`, `?..[i]`): the cascade operator

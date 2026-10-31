@@ -1,5 +1,5 @@
 80 columns                                                                      |
->>> (wrap.switch_expressions=chop_if_long) A short switch stays on one line.
+>>> (wrap.switch_expressions=chop_if_long wrap.switch_expressions.chop_from=0) A short switch stays on one line.
 final label = switch (side) { Side.left => 'L', Side.right => 'R' };
 <<<
 final label = switch (side) { Side.left => 'L', Side.right => 'R' };
@@ -10,11 +10,11 @@ final label = switch (side) {
   Side.left => 'L',
   Side.right => 'R'
 };
->>> (wrap.switch_expressions=chop_if_long) Commas print exactly as in the source.
+>>> (wrap.switch_expressions=chop_if_long wrap.switch_expressions.chop_from=0) Commas print exactly as in the source.
 final label = switch (side) { Side.left => 'L', Side.right => 'R', };
 <<<
 final label = switch (side) { Side.left => 'L', Side.right => 'R', };
->>> (wrap.switch_expressions=chop_if_long) A long switch chops and keeps its commas.
+>>> (wrap.switch_expressions=chop_if_long wrap.switch_expressions.chop_from=0) A long switch chops and keeps its commas.
 final label = switch (side) { Side.left => 'the left side of it', Side.right => 'the right side' };
 <<<
 final label = switch (side) {
@@ -46,7 +46,7 @@ class HomeScreen extends StatefulWidget with RouteAware implements PreferredSize
 class HomeScreen extends StatefulWidget
     with RouteAware
     implements PreferredSizeWidget {}
->>> (wrap.class_header=chop_always) chop_always splits a short header.
+>>> (wrap.class_header.chop_from=1) chop_from=1 splits a short header.
 class A extends B with C {}
 <<<
 class A
@@ -56,7 +56,7 @@ class A
 class HomeScreen extends StatefulWidget with RouteAware implements PreferredSizeWidget {}
 <<<
 class HomeScreen extends StatefulWidget with RouteAware implements PreferredSizeWidget {}
->>> (wrap.class_header=if_long) if_long fills the clauses.
+>>> (wrap.class_header=fill) fill fills the clauses.
 class HomeScreen extends StatefulWidget with RouteAware implements PreferredSizeWidget {}
 <<<
 class HomeScreen extends StatefulWidget with RouteAware

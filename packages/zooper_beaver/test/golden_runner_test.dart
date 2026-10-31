@@ -59,7 +59,7 @@ a = b;
 
     test('case-level override', () {
       const contents = '''
->>> (wrap.arguments=chop_always)
+>>> (wrap.arguments.chop_from=1)
 f(a, b);
 <<<
 x
@@ -79,8 +79,8 @@ x
 
     test('file options apply to every case and cases are isolated', () {
       const contents = '''
-(wrap.arguments=chop_always)
->>> (wrap.arguments=chop_if_long)
+(wrap.arguments.chop_from=1)
+>>> (wrap.arguments.chop_from=0)
 f(a, b);
 <<<
 x
@@ -96,14 +96,14 @@ x
     test('a shorthand case option keeps a file-level field', () {
       const contents = '''
 (wrap.arguments.chop_from=3)
->>> (wrap.arguments=if_long)
+>>> (wrap.arguments=fill)
 f(a, b, c);
 <<<
 x
 ''';
       final file = loadGoldenFile('t.stmt', contents);
       final values = caseConfig(file, file.cases[0]).values;
-      expect(values['wrap.arguments.policy'], 'if_long');
+      expect(values['wrap.arguments.policy'], 'fill');
       expect(values['wrap.arguments.chop_from'], 3);
     });
 
@@ -111,7 +111,7 @@ x
       expect(
         () => loadGoldenFile(
           't.stmt',
-          '>>> (indent.align.arguments=true wrap.arguments.align=false) Desc.\n'
+          '>>> (indent.align.arguments=true wrap.arguments.indent=4) Desc.\n'
               'f();\n<<<\nf();\n',
         ),
         throwsA(
@@ -122,7 +122,7 @@ x
               contains('t.stmt'),
               contains('Desc.'),
               contains('indent.align.arguments'),
-              contains('wrap.arguments.align'),
+              contains('wrap.arguments.indent'),
             ),
           ),
         ),

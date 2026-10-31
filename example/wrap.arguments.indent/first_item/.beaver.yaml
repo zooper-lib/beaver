@@ -1,0 +1,5 @@
+wrap:
+  arguments:
+    indent: first_item
+    break_after_open_bracket: false
+    break_before_close_bracket: false
