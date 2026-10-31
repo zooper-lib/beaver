@@ -1,0 +1,79 @@
+80 columns                                                                      |
+>>> Two sections chop under the preset.
+final p = Paint()..color = Colors.red..strokeWidth = 2;
+<<<
+final p = Paint()
+  ..color = Colors.red
+  ..strokeWidth = 2;
+>>> (wrap.cascades.chop_from=0) Threshold disabled.
+final p = Paint()..color = Colors.red..strokeWidth = 2;
+<<<
+final p = Paint()..color = Colors.red..strokeWidth = 2;
+>>> (wrap.cascades.keep_existing_line_breaks=false) Normalisation: a one-section break is joined.
+final p = Paint()
+  ..color = Colors.red;
+<<<
+final p = Paint()..color = Colors.red;
+>>> A multi-line collection receiver keeps its section on the closing line.
+final list = [
+  firstElementWithLongName,
+  secondElementWithLongName,
+  thirdElement,
+]..sort();
+<<<
+final list = [
+  firstElementWithLongName,
+  secondElementWithLongName,
+  thirdElement,
+]..sort();
+>>> (indent.size=4) Sections indent by indent.size.
+final p = Paint()..color = Colors.red..strokeWidth = 2;
+<<<
+final p = Paint()
+    ..color = Colors.red
+    ..strokeWidth = 2;
+>>> (wrap.cascades.indent=4) Sections indent by wrap.cascades.indent.
+final p = Paint()..color = Colors.red..strokeWidth = 2;
+<<<
+final p = Paint()
+    ..color = Colors.red
+    ..strokeWidth = 2;
+>>> (wrap.cascades=never) never keeps every section on one line.
+final p = Paint()..color = Colors.red..strokeWidth = 2;
+<<<
+final p = Paint()..color = Colors.red..strokeWidth = 2;
+>>> (wrap.cascades=chop_always) chop_always chops one section.
+final p = Paint()..color = Colors.red;
+<<<
+final p = Paint()
+  ..color = Colors.red;
+>>> (wrap.cascades.chop_from=0 wrap.cascades.keep_existing_line_breaks=true) A kept break between sections keeps its siblings together.
+final p = Paint()..color = Colors.red
+  ..strokeWidth = 2..style = PaintingStyle.fill;
+<<<
+final p = Paint()..color = Colors.red
+  ..strokeWidth = 2..style = PaintingStyle.fill;
+>>> (wrap.cascades.keep_existing_line_breaks=true) A developer break in a one-section cascade is kept.
+final p = Paint()
+  ..color = Colors.red;
+<<<
+final p = Paint()
+  ..color = Colors.red;
+>>> (wrap.cascades.keep_existing_line_breaks=true) A multi-line collection has no cascade-level break.
+final list = [
+  firstElementWithLongName,
+  secondElementWithLongName,
+  thirdElement,
+]..sort();
+<<<
+final list = [
+  firstElementWithLongName,
+  secondElementWithLongName,
+  thirdElement,
+]..sort();
+>>> The preset keeps a developer break in a one-section cascade.
+final p = Paint()
+  ..color = Colors.red;
+<<<
+final p = Paint()
+  ..color = Colors.red;

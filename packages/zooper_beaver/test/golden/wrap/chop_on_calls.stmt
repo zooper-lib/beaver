@@ -1,0 +1,59 @@
+80 columns                                                                      |
+>>> (wrap.chop_on_calls=[Row]) A matching callee chops.
+return Row(children: [a, b]);
+<<<
+return Row(
+  children: [a, b],
+);
+>>> (wrap.chop_on_calls=[Row]) A named constructor with an import prefix.
+x = m.Row.center(a);
+<<<
+x = m.Row.center(
+  a,
+);
+>>> (wrap.chop_on_calls=[Row]) new with a type argument and a named constructor.
+x = new m.Row<int>.center(a);
+<<<
+x = new m.Row<int>.center(
+  a,
+);
+>>> (wrap.chop_on_calls=[Row]) Another identifier does not match.
+x = RowFactory(a) + Row.center.extra(b);
+<<<
+x = RowFactory(a) + Row.center.extra(b);
+>>> (wrap.chop_on_calls=[Row.center]) A multi-segment entry matches the full suffix only.
+x = Row(a) + Other.center(b) + m.Row.center(c);
+<<<
+x =
+    Row(a) +
+    Other.center(b) +
+    m.Row.center(
+      c,
+    );
+>>> (wrap.chop_on_calls=[getBuilder]) The outer call of a computed target has no name.
+getBuilder()(x);
+<<<
+getBuilder()(x);
+>>> (wrap.chop_on_calls=[callbacks]) An indexed target has no name.
+callbacks[index](x);
+<<<
+callbacks[index](x);
+>>> (wrap.chop_on_calls=[Row] wrap.arguments=never) never suppresses the trigger.
+return Row(children: [a, b]);
+<<<
+return Row(children: [a, b]);
+>>> (wrap.chop_on_calls=[test]) A match defeats block-argument hugging.
+test('adds', () { x(); });
+<<<
+test(
+  'adds',
+  () {
+    x();
+  },
+);
+>>> (wrap.chop_on_calls=[Row]) Only the matched invocation's own list chops.
+Row(children: [Text('a')]);
+<<<
+Row(
+  children: [Text('a')],
+);

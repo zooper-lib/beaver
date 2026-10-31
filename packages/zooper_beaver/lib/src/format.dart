@@ -165,7 +165,11 @@ String formatUnits(
     commands,
     style: config.indentStyle,
     indentSize: config.indentSize,
-    lineEnding: detectLineEnding(source),
+    lineEnding: switch (config.values['line_ending']) {
+      'lf' => '\n',
+      'crlf' => '\r\n',
+      _ => detectLineEnding(source),
+    },
     source: source,
   );
   return (output, directives.regions);

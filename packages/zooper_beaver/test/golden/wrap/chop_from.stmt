@@ -1,0 +1,94 @@
+40 columns                              |
+>>> (wrap.arguments.chop_from=3) A short call reaches the threshold.
+canvas.drawLine(start, end, paint);
+<<<
+canvas.drawLine(
+  start,
+  end,
+  paint,
+);
+>>> (wrap.arguments.chop_from=4) Below the threshold.
+foo(a, b, c);
+<<<
+foo(a, b, c);
+>>> (wrap.arguments.policy=never wrap.arguments.chop_from=2) never suppresses the threshold.
+foo(a, b, c);
+<<<
+foo(a, b, c);
+>>> (wrap.arguments.chop_from=3 wrap.arguments.keep_existing_line_breaks=true) The threshold defeats kept groups.
+foo(a,
+    b, c);
+<<<
+foo(
+  a,
+  b,
+  c,
+);
+>>> (wrap.collection_literals.chop_from=3) A collection if counts once.
+x = [a, if (x) ...more];
+<<<
+x = [a, if (x) ...more];
+>>> (wrap.arguments.chop_from=3) A nested list is judged on its own.
+f(a, g(b, c, d));
+<<<
+f(
+  a,
+  g(
+    b,
+    c,
+    d,
+  ),
+);
+>>> (wrap.arguments.chop_from=3) A named argument and a closure count once each.
+f(a, onTap: () {});
+<<<
+f(a, onTap: () {});
+>>> (wrap.binary_expressions.chop_from=3) Mixed precedence: the `+` run has two operands.
+x = a + b * c;
+<<<
+x = a + b * c;
+>>> (wrap.binary_expressions.chop_from=3) Three operands of one run chop.
+x = a + b + c;
+<<<
+x =
+    a +
+    b +
+    c;
+>>> (wrap.arguments.policy=if_long wrap.arguments.chop_from=3) if_long at the threshold chops.
+foo(a, b, c);
+<<<
+foo(
+  a,
+  b,
+  c,
+);
+>>> (wrap.arguments.chop_from=2) The threshold defeats block-argument hugging.
+test('adds', () { x(); });
+<<<
+test(
+  'adds',
+  () {
+    x();
+  },
+);
+>>> (wrap.parameters.chop_from=2) Parameters.
+void f(int a, int b) {}
+<<<
+void f(
+  int a,
+  int b,
+) {}
+>>> (wrap.chained_calls.chop_from=3) Canonical chain threshold.
+a.b().c().d();
+<<<
+a
+    .b()
+    .c()
+    .d();
+>>> (wrap.chained_calls.chop_from=3 wrap.chained_calls.keep_single_line_if_fits=true) The threshold defeats keep_single_line_if_fits.
+a.b().c().d();
+<<<
+a
+    .b()
+    .c()
+    .d();

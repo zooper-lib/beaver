@@ -1,0 +1,110 @@
+80 columns                                                                      |
+>>> (wrap.initializer_lists.policy=chop_always) Chop always with the preset.
+class Point {
+  Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
+}
+<<<
+class Point {
+  Point(this.x, this.y)
+    : _len = sqrt(x * x + y * y),
+      _label = '$x,$y';
+}
+>>> A short list stays inline.
+class Point {
+  Point(this.x) : y = 0;
+}
+<<<
+class Point {
+  Point(this.x) : y = 0;
+}
+>>> (wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=new_line wrap.initializer_lists.align=true) New line, aligned.
+class Point {
+  Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
+}
+<<<
+class Point {
+  Point(this.x, this.y)
+    : _len = sqrt(x * x + y * y),
+      _label = '$x,$y';
+}
+>>> (wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=new_line wrap.initializer_lists.align=false wrap.initializer_lists.indent=4) New line, not aligned: later initializers indent from the baseline.
+class Point {
+  Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
+}
+<<<
+class Point {
+  Point(this.x, this.y)
+      : _len = sqrt(x * x + y * y),
+          _label = '$x,$y';
+}
+>>> (wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.align=false) End of header without alignment.
+class Point {
+  Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
+}
+<<<
+class Point {
+  Point(this.x, this.y) :
+      _len = sqrt(x * x + y * y),
+      _label = '$x,$y';
+}
+>>> (wrap.initializer_lists.policy=chop_always wrap.initializer_lists.colon=end_of_header wrap.initializer_lists.align=true) End of header, aligned under the first.
+class Point {
+  Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y';
+}
+<<<
+class Point {
+  Point(this.x, this.y) :
+    _len = sqrt(x * x + y * y),
+    _label = '$x,$y';
+}
+>>> (wrap.initializer_lists.colon=end_of_header) An unbroken list stays inline under end_of_header.
+class Point {
+  Point(this.x) : y = 0;
+}
+<<<
+class Point {
+  Point(this.x) : y = 0;
+}
+>>> Auto after a split parameter list: the colon follows the parenthesis.
+class Point {
+  Point(this.someVeryLongParameterName, this.anotherVeryLongParameterName, this.third) : first = 1, second = 2;
+}
+<<<
+class Point {
+  Point(
+    this.someVeryLongParameterName,
+    this.anotherVeryLongParameterName,
+    this.third,
+  ) : first = 1,
+      second = 2;
+}
+>>> (wrap.initializer_lists.colon=new_line) new_line after a split parameter list: an unbroken list stays inline.
+class Point {
+  Point(this.someVeryLongParameterName, this.anotherVeryLongParameterName, this.third) : first = 1, second = 2;
+}
+<<<
+class Point {
+  Point(
+    this.someVeryLongParameterName,
+    this.anotherVeryLongParameterName,
+    this.third,
+  ) : first = 1, second = 2;
+}
+>>> (wrap.initializer_lists.chop_from=2) The threshold chops a short list.
+class Point {
+  Point(this.x) : y = 0, z = 1;
+}
+<<<
+class Point {
+  Point(this.x)
+    : y = 0,
+      z = 1;
+}
+>>> (wrap.initializer_lists=never) never keeps the list on the header line.
+class Point {
+  Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y', _z = 0;
+}
+<<<
+class Point {
+  Point(this.x, this.y) : _len = sqrt(x * x + y * y), _label = '$x,$y', _z = 0;
+}

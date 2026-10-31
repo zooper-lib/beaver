@@ -25,7 +25,7 @@ final class ConfigFile {
   /// The raw `extends:` value, if any.
   final String? extendsValue;
 
-  /// Dotted key → validated value, as set in this file only.
+  /// Canonical dotted key → validated value, as set in this file only.
   final Map<String, Object?> values;
 }
 
@@ -47,27 +47,68 @@ ConfigFile parseConfigFile(String text, String path) {
   if (extendsValue != null && extendsValue is! String) {
     throw ConfigException('$path: `extends` must be a preset name or a path.');
   }
-  validateValues(values, path);
-  return ConfigFile(path, extendsValue as String?, values);
+  return ConfigFile(
+    path,
+    extendsValue as String?,
+    normalizeAndValidateValues(values, path),
+  );
 }
 
-/// Checks dotted [values] against the schema; [origin] names the source in
-/// diagnostics.
-void validateValues(Map<String, Object?> values, String origin) {
+/// One-to-one alternative spellings → canonical key. Besides these, the
+/// shorthand `wrap.<list>: <policy>` stands for `wrap.<list>.policy`.
+const _aliases = {
+  'indent.align.arguments': 'wrap.arguments.align',
+  'indent.align.parameters': 'wrap.parameters.align',
+  'indent.align.chained_calls': 'wrap.chained_calls.align',
+  'wrap.chained_calls.min_calls': 'wrap.chained_calls.chop_from',
+  'wrap.before_operator': 'wrap.break_before.binary_operator',
+};
+
+final _shorthands = {
+  for (final list in listConstructs)
+    'wrap.${list.name}': 'wrap.${list.name}.policy',
+};
+
+/// Rewrites dotted [values] (one configuration source) to canonical keys
+/// and checks them against the schema; [origin] names the source in
+/// diagnostics. Two spellings of one key with different values are an
+/// error; identical ones are accepted.
+Map<String, Object?> normalizeAndValidateValues(
+  Map<String, Object?> values,
+  String origin,
+) {
+  final result = <String, Object?>{};
+  final spelling = <String, String>{};
   for (final MapEntry(:key, :value) in values.entries) {
-    final type = schema[key];
+    final canonical = _aliases[key] ?? _shorthands[key] ?? key;
+    final type = schema[canonical];
     if (type == null) {
       throw ConfigException(
         '$origin: unknown key `$key`; known keys here: ${_siblings(key)}.',
       );
     }
+    final name = canonical == key ? '`$key`' : '`$key` (`$canonical`)';
     if (!type.accepts(value)) {
       throw ConfigException(
-        '$origin: invalid value `$value` for `$key`; allowed: ${type.describe()}.',
+        '$origin: invalid value `$value` for $name; allowed: ${type.describe()}.',
       );
     }
+    if (spelling[canonical] case final other?
+        when !_equal(result[canonical], value)) {
+      throw ConfigException(
+        '$origin: `$other` and `$key` both set `$canonical`, to '
+        '`${result[canonical]}` and `$value`; keep one of them.',
+      );
+    }
+    spelling[canonical] = key;
+    result[canonical] = value;
   }
+  return result;
 }
+
+bool _equal(Object? a, Object? b) => a is List && b is List
+    ? a.length == b.length && a.indexed.every((e) => e.$2 == b[e.$1])
+    : a == b;
 
 /// Schema keys at the same nesting level as [key] (top-level names for a
 /// top-level key, `wrap.*` names for a key under `wrap`).

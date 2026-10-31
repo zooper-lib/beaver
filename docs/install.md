@@ -51,6 +51,10 @@ The release binaries are not code-signed: no Apple Developer ID or notarization 
 
 `dart install zooper_beaver` compiles Beaver on your machine and is not affected. The IntelliJ plugin downloads the binary itself, without quarantine, and checks it against `beaver-manifest.json`.
 
+## Configuration
+
+A project needs no configuration: without a `.beaver.yaml`, Beaver uses the `dart` preset. To start one, copy [`beaver.template.yaml`](beaver.template.yaml) (also printed by `beaver config --template`) to `.beaver.yaml` next to your `pubspec.yaml` and delete the lines you do not want to pin. It lists every setting with its preset value and the allowed values.
+
 ## Editors
 
 See [VS Code](editors/vscode.md), [IntelliJ / Android Studio](editors/intellij.md), and the external-formatter setups for [Helix](editors/helix.md), [Zed](editors/zed.md), [Neovim](editors/neovim.md), [Emacs](editors/emacs.md) and [Sublime Text](editors/sublime.md).

@@ -16,7 +16,29 @@
 
 Produced by `dart test test/dart_style_corpus_test.dart` under the `dart` preset. A mismatch is any byte difference from dart_style's expected output; safety failures (structural verification or idempotence) must be zero. "Skipped" counts cases with selection markers and cases whose newest output section is marked unsupported at the latest language version.
 
-### Current (2026-10-28, after formatting Beaver's own sources)
+### Current (2026-10-30, the settings after 0.1.0)
+
+| Area | Eligible | Match | Mismatch | Safety failures | Skipped | Match % |
+|---|---:|---:|---:|---:|---:|---:|
+| declaration | 466 | 264 | 202 | 0 | 2 | 56.7% |
+| expression | 628 | 370 | 258 | 0 | 0 | 58.9% |
+| function | 76 | 57 | 19 | 0 | 1 | 75.0% |
+| invocation | 394 | 234 | 160 | 0 | 0 | 59.4% |
+| other | 54 | 29 | 25 | 0 | 45 | 53.7% |
+| pattern | 159 | 65 | 94 | 0 | 0 | 40.9% |
+| preserve_trailing_commas | 85 | 55 | 30 | 0 | 0 | 64.7% |
+| regression | 622 | 260 | 362 | 0 | 4 | 41.8% |
+| statement | 305 | 179 | 126 | 0 | 0 | 58.7% |
+| top_level | 100 | 75 | 25 | 0 | 0 | 75.0% |
+| type | 143 | 41 | 102 | 0 | 0 | 28.7% |
+| variable | 94 | 63 | 31 | 0 | 0 | 67.0% |
+| **total** | 3126 | 1692 | 1434 | 0 | 52 | 54.1% |
+
+Comment files (all areas): 253/578 (43.8%)
+
+Two more matches than 0.1.0, both from the two preset changes: `blank_lines.between_comment_and_declaration: preserve` keeps a blank line after a comment, as dart_style does (three more matches), and `wrap.cascades.keep_existing_line_breaks: inherit` keeps a typed break before a one-section cascade, which dart_style joins (one fewer, `regression/0300/0379.stmt`).
+
+### 0.1.0 (2026-10-28, after formatting Beaver's own sources)
 
 | Area | Eligible | Match | Mismatch | Safety failures | Skipped | Match % |
 |---|---:|---:|---:|---:|---:|---:|

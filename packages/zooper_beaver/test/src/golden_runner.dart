@@ -27,12 +27,16 @@ typedef CaseFormatter = String Function(
   String input,
 );
 
+/// The preset, then [file]'s options, then [c]'s. Each layer is canonical
+/// on its own (see [loadGoldenFile]), so a shorthand case option replaces
+/// only the key it stands for.
+BeaverConfig caseConfig(GoldenFile file, GoldenCase c) => BeaverConfig.dart
+    .merge({if (file.pageWidth != null) 'line_length': file.pageWidth})
+    .merge(file.options.config)
+    .merge(c.options.config);
+
 String formatCase(GoldenFile file, GoldenCase c, String input) {
-  final config = BeaverConfig.dart.merge({
-    if (file.pageWidth != null) 'line_length': file.pageWidth,
-    ...file.options.config,
-    ...c.options.config,
-  });
+  final config = caseConfig(file, c);
   final indent = c.options.leadingIndent ?? file.options.leadingIndent ?? 0;
   final experiments = [...file.options.experiments, ...c.options.experiments];
   if (file.isUnit) {
@@ -102,13 +106,21 @@ List<GoldenFile> loadGoldenFiles(String directory, {String? exclude}) {
   return [for (final f in files) loadGoldenFile(f.path, f.readAsStringSync())];
 }
 
-/// Parses a golden file and validates every option against the real
-/// configuration schema, so a bad option fails the suite at load time.
+/// Parses a golden file and normalises the file options and each case's
+/// options on their own, exactly as a configuration file, so a bad option
+/// fails the suite at load time.
 GoldenFile loadGoldenFile(String path, String contents) {
   final file = parseGoldenFile(path, contents);
-  validateValues(file.options.config, '$path (file options)');
+  void normalize(Map<String, Object?> options, String origin) {
+    final canonical = normalizeAndValidateValues(options, origin);
+    options
+      ..clear()
+      ..addAll(canonical);
+  }
+
+  normalize(file.options.config, '$path (file options)');
   for (final c in file.cases) {
-    validateValues(c.options.config, '$path ${c.label}');
+    normalize(c.options.config, '$path ${c.label}');
   }
   return file;
 }

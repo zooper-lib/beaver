@@ -58,7 +58,9 @@ extension StatementRules on DocBuilder {
     DoStatement() => concat([
       tok(node.doKeyword),
       controlBody(node.body),
-      node.body is Block ? space : hardline,
+      node.body is Block && !config.flag('braces.while_on_new_line')
+          ? space
+          : hardline,
       controlHead(node.whileKeyword, node.leftParenthesis, [
         visit(node.condition),
       ], node.rightParenthesis),
@@ -133,10 +135,30 @@ extension StatementRules on DocBuilder {
         );
       }
     }
+    if (statements.isEmpty) {
+      return braces(node.leftBracket, null, node.rightBracket);
+    }
+    // `blank_lines.at_block_edges` caps the source blank lines kept after
+    // `{` and before `}`.
+    int edge(int from, int to) {
+      final lines = blankLinesIn(from, to);
+      final cap = config.blankLinesAtBlockEdges;
+      return lines > cap ? cap : lines;
+    }
+
+    final dangling = comments.danglingBefore[node.rightBracket];
     return braces(
       node.leftBracket,
-      statements.isEmpty ? null : sequence(statements),
+      sequence(
+        statements,
+        blankLines: (_, _, sourceBlank) => capBlankInCode(sourceBlank),
+      ),
       node.rightBracket,
+      before: edge(node.leftBracket.end, startWithComments(statements.first)),
+      after: edge(
+        dangling == null ? endWithComments(statements.last) : dangling.last.end,
+        node.rightBracket.offset,
+      ),
     );
   }
 
@@ -145,6 +167,11 @@ extension StatementRules on DocBuilder {
   /// that are not declaration bodies under `simple_blocks_on_one_line`.
   bool _oneLineAllowed(Block block) {
     final parent = block.parent;
+    if (parent is BlockFunctionBody &&
+        (parent.parent is MethodDeclaration ||
+            parent.parent?.parent is FunctionDeclaration)) {
+      return config.flag('wrap.simple_methods_on_one_line');
+    }
     if (parent is BlockFunctionBody) {
       return parent.parent is FunctionExpression &&
           parent.parent!.parent is! FunctionDeclaration &&
@@ -161,24 +188,49 @@ extension StatementRules on DocBuilder {
         tok(semicolon),
       ]);
 
-  /// `if (` parts `)`.
-  Doc controlHead(Token keyword, Token open, List<Doc> parts, Token close) =>
-      concat([
-        tok(keyword),
-        if (config.spaceBeforeControlParens) space,
+  /// `if (` parts `)`. Under `wrap.control_conditions: block`, a condition
+  /// that does not fit moves into an indented block, `)` on its own line.
+  Doc controlHead(Token keyword, Token open, List<Doc> parts, Token close) {
+    final inside = config.spaceInsideParens ? ' ' : '';
+    return concat([
+      tok(keyword),
+      if (config.spaceBeforeControlParens) space,
+      if (config.values['wrap.control_conditions'] == 'block')
+        group(
+          concat([
+            tok(open),
+            indent(concat([Line.soft(inside), ...parts])),
+            Line.soft(inside),
+            tok(close),
+          ]),
+        )
+      else ...[
         tok(open),
         if (config.spaceInsideParens) space,
         ...parts,
         if (config.spaceInsideParens) space,
         tok(close),
-      ]);
+      ],
+    ]);
+  }
 
-  /// A block after ` `, `;` glued, any other statement on the next line
-  /// unless it fits.
+  /// A block after ` `, `;` glued, any other statement placed per
+  /// `wrap.braceless_bodies`: on the next line unless it fits, always on the
+  /// next line, or where the source put it.
   Doc controlBody(Statement body, {bool forceBreak = false}) => switch (body) {
     Block() => concat([space, visit(body)]),
     EmptyStatement() => visit(body),
-    _ => group(indent(concat([line, visit(body)])), shouldBreak: forceBreak),
+    _ => group(
+      indent(concat([line, visit(body)])),
+      shouldBreak:
+          forceBreak ||
+          switch (config.values['wrap.braceless_bodies']) {
+            'new_line' => true,
+            'preserve' =>
+              newlinesBetween(body.beginToken.previous!.end, body.offset) > 0,
+            _ => false,
+          },
+    ),
   };
 
   Doc ifStatement(IfStatement node) {
@@ -287,24 +339,56 @@ extension StatementRules on DocBuilder {
 
   Doc switchMember(SwitchMember node, List<Doc> head) {
     final statements = node.statements;
+    // `wrap.simple_case_bodies_on_one_line`: one statement on the label's
+    // line when it fits.
+    if (statements.length == 1 &&
+        config.flag('wrap.simple_case_bodies_on_one_line') &&
+        statements.single is! Block &&
+        comments.leading[statements.single] == null) {
+      return concat([
+        for (final label in node.labels) ...[visit(label), hardline],
+        group(
+          concat([
+            ...head,
+            if (config.flag('spaces.before_colon_in_switch_case')) space,
+            tok(node.colon),
+            indent(concat([line, visit(statements.single)])),
+          ]),
+        ),
+      ]);
+    }
     return concat([
       for (final label in node.labels) ...[visit(label), hardline],
       ...head,
+      if (config.flag('spaces.before_colon_in_switch_case')) space,
       tok(node.colon),
       if (statements.isNotEmpty)
-        indent(concat([hardline, sequence(statements)])),
+        indent(
+          concat([
+            hardline,
+            sequence(
+              statements,
+              blankLines: (_, _, sourceBlank) => capBlankInCode(sourceBlank),
+            ),
+          ]),
+        ),
     ]);
   }
 
+  /// `try` with its handlers; `on`/`catch` and `finally` start a new line
+  /// per `braces.catch_on_new_line` and `finally_on_new_line`.
   Doc tryStatement(TryStatement node) {
-    final separator = config.elseOnNewLine ? hardline : space;
+    Doc separator(String key) => config.flag(key) ? hardline : space;
     return concat([
       tok(node.tryKeyword),
       space,
       visit(node.body),
-      for (final clause in node.catchClauses) ...[separator, visit(clause)],
+      for (final clause in node.catchClauses) ...[
+        separator('braces.catch_on_new_line'),
+        visit(clause),
+      ],
       if (node.finallyBlock != null) ...[
-        separator,
+        separator('braces.finally_on_new_line'),
         tok(node.finallyKeyword),
         space,
         visit(node.finallyBlock),
@@ -344,7 +428,7 @@ extension StatementRules on DocBuilder {
       open: node.leftParenthesis,
       items: [node.condition, ?node.message],
       close: node.rightParenthesis,
-      policy: config.wrapArguments,
+      settings: config.arguments.unaligned,
       spaceInside: config.spaceInsideParens,
       optionalTrailingComma: false,
     ),

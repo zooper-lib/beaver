@@ -1,0 +1,91 @@
+40 columns                              |
+>>> (wrap.arguments.close_bracket=after_last_item) The closer follows the last item.
+canvas.drawLine(startPoint, endPoint, paint);
+<<<
+canvas.drawLine(
+  startPoint,
+  endPoint,
+  paint);
+>>> (wrap.arguments.close_bracket=after_last_item) Collections keep their own line.
+f([firstElement, secondElement, thirdOne]);
+<<<
+f([
+  firstElement,
+  secondElement,
+  thirdOne,
+]);
+>>> (wrap.close_bracket=after_last_item) The global key applies to every list.
+x = [firstElement, secondElement, thirdOne];
+<<<
+x = [
+  firstElement,
+  secondElement,
+  thirdOne];
+>>> (wrap.close_bracket=after_last_item) A required record comma is kept.
+final r = (someVeryLongValueThatBreaksHere,);
+<<<
+final r = (
+  someVeryLongValueThatBreaksHere,);
+>>> (wrap.close_bracket=after_last_item) A flat list is unchanged.
+foo(a, b);
+<<<
+foo(a, b);
+>>> (wrap.close_bracket=after_last_item) A line comment keeps the closer on its own line.
+foo(
+  a,
+  b, // last
+);
+<<<
+foo(
+  a,
+  b, // last
+);
+>>> (trailing_commas=add_when_chopped wrap.arguments=if_long) A filled list loses its comma.
+function(firstArgument, secondArgument, third, fourth);
+<<<
+function(
+  firstArgument, secondArgument, third,
+  fourth
+);
+>>> (trailing_commas=add_when_chopped) A chopped list gets a comma.
+function(firstArgument, secondArgument, third);
+<<<
+function(
+  firstArgument,
+  secondArgument,
+  third,
+);
+>>> (trailing_commas=add_when_chopped) A source comma still chops, and the chopped list keeps a comma.
+foo(a, b,);
+<<<
+foo(
+  a,
+  b,
+);
+>>> (trailing_commas=add_when_chopped) Kept breaks grouping several items do not count as chopped.
+foo(a,
+    b, c);
+<<<
+foo(
+  a,
+  b, c
+);
+>>> (wrap.collection_literals.trailing_commas=remove wrap.collection_literals.chop_on_trailing_comma=false wrap.collection_literals.keep_existing_line_breaks=false) Collections remove, arguments inherit.
+const sizes = [
+  8,
+  16,
+  24,
+];
+<<<
+const sizes = [8, 16, 24];
+>>> (trailing_commas=add_when_wrapped wrap.arguments.trailing_commas=remove) A record follows the global key.
+final r = (firstLongField, secondLongField);
+<<<
+final r = (
+  firstLongField,
+  secondLongField,
+);
+>>> (trailing_commas=add_when_chopped wrap.chop_on_trailing_comma=false) A flat list has none.
+foo(a, b,);
+<<<
+foo(a, b);

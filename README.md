@@ -144,7 +144,7 @@ exclude:
 
 Beaver uses the nearest `.beaver.yaml` above each file. A file can build on another one with `extends:`, so a monorepo can share one base. Unknown keys and invalid values are errors, never silently ignored.
 
-Every setting, with examples: [wrapping](docs/rules/wrap.md) · [indentation](docs/rules/indent.md) · [spaces](docs/rules/spaces.md) · [blank lines](docs/rules/blank_lines.md) · [braces](docs/rules/braces.md) · [strings](docs/rules/strings.md). Or browse [`example/`](example/): one folder per setting, one subfolder per value, each with its `.beaver.yaml` and the output it produces.
+Every setting with its preset value and alternatives, ready to copy as a starting point: [`docs/beaver.template.yaml`](docs/beaver.template.yaml) (or `beaver config --template`). Every setting, with examples: [wrapping](docs/rules/wrap.md) · [indentation](docs/rules/indent.md) · [spaces](docs/rules/spaces.md) · [blank lines](docs/rules/blank_lines.md) · [braces](docs/rules/braces.md) · [strings](docs/rules/strings.md). Or browse [`example/`](example/): one folder per setting, one subfolder per value, each with its `.beaver.yaml` and the output it produces.
 
 ## Editors
 

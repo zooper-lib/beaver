@@ -1,0 +1,3 @@
+strings:
+  quotes_avoid_escapes: true
+  quotes: single

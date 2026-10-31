@@ -1,0 +1,43 @@
+80 columns                                                                      |
+>>> Hugging enabled under the preset.
+test('adds', () { expect(add(1, 2), 3); });
+<<<
+test('adds', () {
+  expect(add(1, 2), 3);
+});
+>>> (wrap.arguments.hug_block_argument=false) Hugging disabled: the list is laid out by its policy.
+test('adds', () { expect(add(1, 2), 3); });
+<<<
+test(
+  'adds',
+  () {
+    expect(add(1, 2), 3);
+  },
+);
+>>> (wrap.arguments.hug_block_argument=false) A list that fits flat is not forced to chop.
+f(a, [1, 2]);
+<<<
+f(a, [1, 2]);
+>>> (wrap.arguments.hug_block_argument=false wrap.arguments=if_long) Disabled under if_long: the arguments fill.
+someFunction(firstArgumentName, secondArgumentName, [elementOne, elementTwo, three]);
+<<<
+someFunction(
+  firstArgumentName, secondArgumentName, [elementOne, elementTwo, three],
+);
+>>> An arrow lambda is not hugged.
+someFunction(firstArgumentName, secondArgumentName, (x) => x + someLongName + more);
+<<<
+someFunction(
+  firstArgumentName,
+  secondArgumentName,
+  (x) => x + someLongName + more,
+);
+>>> (wrap.chop_on_trailing_comma=false) A source trailing comma prevents hugging.
+test('adds', () { x(); },);
+<<<
+test(
+  'adds',
+  () {
+    x();
+  },
+);

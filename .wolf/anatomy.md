@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T16:39:34.170Z
-> Files: 911 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T17:05:28.126Z
+> Files: 1192 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -9,11 +9,12 @@
 
 ## ./
 
+- `.gitattributes` — Git attributes (~27 tok)
 - `AGENTS.md` — OpenWolf (~75 tok)
 - `CLAUDE.md` — OpenWolf (~99 tok)
 - `DRAFT.md` — Beaver — a configurable Dart formatter (~11634 tok)
 - `LICENSE` — Project license (~284 tok)
-- `README.md` — Project documentation (~2387 tok)
+- `README.md` — Project documentation (~2432 tok)
 
 ## .github/workflows/
 
@@ -22,13 +23,14 @@
 
 ## docs/
 
-- `cli.md` — Command line (~960 tok)
+- `beaver.template.yaml` — Every Beaver setting with its `dart` preset value and, in the comment, (~2392 tok)
+- `cli.md` — Command line (~1326 tok)
 - `directives.md` — Ignore directives (~606 tok)
-- `install.md` — Installing Beaver (~694 tok)
+- `install.md` — Installing Beaver (~789 tok)
 - `performance.md` — Performance (~936 tok)
-- `proposed-settings.md` — Proposed settings (~16001 tok)
+- `proposed-settings.md` — Proposed settings (~16181 tok)
 - `safety-corpus.md` — Safety corpus (~390 tok)
-- `stdin-protocol.md` — The stdin protocol (~805 tok)
+- `stdin-protocol.md` — The stdin protocol (~872 tok)
 - `versioning.md` — Versions (~337 tok)
 
 ## docs/editors/
@@ -43,12 +45,12 @@
 
 ## docs/rules/
 
-- `blank_lines.md` — Blank line rules (~467 tok)
-- `braces.md` — Brace rules (~209 tok)
-- `indent.md` — Indentation rules (~740 tok)
-- `spaces.md` — Space rules (~544 tok)
-- `strings.md` — String rules (~206 tok)
-- `wrap.md` — Wrapping rules (~2306 tok)
+- `blank_lines.md` — Blank line rules (~1489 tok)
+- `braces.md` — Brace rules (~449 tok)
+- `indent.md` — Indentation rules (~1307 tok)
+- `spaces.md` — Space rules (~912 tok)
+- `strings.md` — String rules (~388 tok)
+- `wrap.md` — Wrapping rules (~7219 tok)
 
 ## editors/intellij/
 
@@ -144,7 +146,7 @@
 
 - `.beaver.yaml` — Inputs stay as written; every <key>/<value>/ folder has its own config. (~30 tok)
 - `analysis_options.yaml` — Formatter input and output, not a program: the names in these files are (~48 tok)
-- `README.md` — Project documentation (~3548 tok)
+- `README.md` — Project documentation (~6517 tok)
 
 ## example/blank_lines.after_imports/
 
@@ -160,6 +162,20 @@
 - `.beaver.yaml` (~10 tok)
 - `after.dart` (~10 tok)
 
+## example/blank_lines.after_last_member/
+
+- `before.dart` — Counter: increment (~22 tok)
+
+## example/blank_lines.after_last_member/0/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` — Counter: increment (~22 tok)
+
+## example/blank_lines.after_last_member/1/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` — Counter: increment (~22 tok)
+
 ## example/blank_lines.around_class_declarations/
 
 - `before.dart` — Declares A (~7 tok)
@@ -173,6 +189,20 @@
 
 - `.beaver.yaml` (~13 tok)
 - `after.dart` — Declares A (~7 tok)
+
+## example/blank_lines.at_block_edges/
+
+- `before.dart` (~13 tok)
+
+## example/blank_lines.at_block_edges/0/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~13 tok)
+
+## example/blank_lines.at_block_edges/1/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~13 tok)
 
 ## example/blank_lines.before_first_member/
 
@@ -188,6 +218,44 @@
 - `.beaver.yaml` (~11 tok)
 - `after.dart` — Declares Point (~9 tok)
 
+## example/blank_lines.between_comment_and_declaration/
+
+- `before.dart` — --- Lifecycle --- (~24 tok)
+
+## example/blank_lines.between_comment_and_declaration/0/
+
+- `.beaver.yaml` (~15 tok)
+- `after.dart` — --- Lifecycle --- (~24 tok)
+
+## example/blank_lines.between_comment_and_declaration/1/
+
+- `.beaver.yaml` (~15 tok)
+- `after.dart` — --- Lifecycle --- (~25 tok)
+
+## example/blank_lines.between_comment_and_declaration/preserve/
+
+- `.beaver.yaml` (~17 tok)
+- `after.dart` — --- Lifecycle --- (~24 tok)
+
+## example/blank_lines.between_import_groups/
+
+- `before.dart` (~36 tok)
+
+## example/blank_lines.between_import_groups/0/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~35 tok)
+
+## example/blank_lines.between_import_groups/1/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~36 tok)
+
+## example/blank_lines.between_import_groups/preserve/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~36 tok)
+
 ## example/blank_lines.between_members/
 
 - `before.dart` — Point: moveRight, moveDown (~38 tok)
@@ -201,6 +269,53 @@
 
 - `.beaver.yaml` (~10 tok)
 - `after.dart` — Point: moveRight, moveDown (~40 tok)
+
+## example/blank_lines.between_top_level_declarations/
+
+- `before.dart` (~36 tok)
+
+## example/blank_lines.between_top_level_declarations/1/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~36 tok)
+
+## example/blank_lines.between_top_level_declarations/2/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~37 tok)
+
+## example/blank_lines.between_top_level_declarations/preserve/
+
+- `.beaver.yaml` (~16 tok)
+- `after.dart` (~35 tok)
+
+## example/blank_lines.keep_between_non_block_members/
+
+- `before.dart` — Point: reset (~34 tok)
+
+## example/blank_lines.keep_between_non_block_members/false/
+
+- `.beaver.yaml` (~16 tok)
+- `after.dart` — Point: reset (~35 tok)
+
+## example/blank_lines.keep_between_non_block_members/true/
+
+- `.beaver.yaml` (~15 tok)
+- `after.dart` — Point: reset (~34 tok)
+
+## example/blank_lines.keep_between_non_block_top_level_declarations/
+
+- `before.dart` — Declares red (~25 tok)
+
+## example/blank_lines.keep_between_non_block_top_level_declarations/false/
+
+- `.beaver.yaml` (~30 tok)
+- `after.dart` — Declares red (~26 tok)
+
+## example/blank_lines.keep_between_non_block_top_level_declarations/true/
+
+- `.beaver.yaml` (~30 tok)
+- `after.dart` — Declares red (~25 tok)
 
 ## example/blank_lines.max_consecutive/
 
@@ -221,6 +336,44 @@
 - `.beaver.yaml` (~10 tok)
 - `after.dart` (~13 tok)
 
+## example/blank_lines.max_consecutive_in_code/
+
+- `before.dart` — Steps: run (~30 tok)
+
+## example/blank_lines.max_consecutive_in_code/0/
+
+- `.beaver.yaml` (~18 tok)
+- `after.dart` — Steps: run (~29 tok)
+
+## example/blank_lines.max_consecutive_in_code/2/
+
+- `.beaver.yaml` (~18 tok)
+- `after.dart` — Steps: run (~30 tok)
+
+## example/blank_lines.max_consecutive_in_code/inherit/
+
+- `.beaver.yaml` (~20 tok)
+- `after.dart` — Steps: run (~30 tok)
+
+## example/braces.catch_on_new_line/
+
+- `before.dart` (~30 tok)
+
+## example/braces.catch_on_new_line/false/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~35 tok)
+
+## example/braces.catch_on_new_line/inherit/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~35 tok)
+
+## example/braces.catch_on_new_line/true/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~35 tok)
+
 ## example/braces.else_on_new_line/
 
 - `before.dart` (~45 tok)
@@ -235,6 +388,53 @@
 - `.beaver.yaml` (~10 tok)
 - `after.dart` (~47 tok)
 
+## example/braces.finally_on_new_line/
+
+- `before.dart` (~24 tok)
+
+## example/braces.finally_on_new_line/false/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~29 tok)
+
+## example/braces.finally_on_new_line/inherit/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~29 tok)
+
+## example/braces.finally_on_new_line/true/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~30 tok)
+
+## example/braces.while_on_new_line/
+
+- `before.dart` (~16 tok)
+
+## example/braces.while_on_new_line/false/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~17 tok)
+
+## example/braces.while_on_new_line/inherit/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~17 tok)
+
+## example/braces.while_on_new_line/true/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~18 tok)
+
+## example/editorconfig/
+
+- `.beaver.yaml` — Reads indent_style, indent_size and end_of_line from .editorconfig. (~26 tok)
+- `.editorconfig` — Editor configuration (~27 tok)
+
+## example/editorconfig/lib/
+
+- `counter.dart` — Counter: increment (~24 tok)
+
 ## example/exclude/
 
 - `.beaver.yaml` — Added to the dart preset's exclusions (which already skip **/*.g.dart). (~29 tok)
@@ -247,6 +447,18 @@
 
 - `model.dart` — Declares Model (~17 tok)
 - `model.g.dart` (~42 tok)
+
+## example/include/
+
+- `.beaver.yaml` — Only files under lib/ are formatted; tool/gen.dart is skipped. (~25 tok)
+
+## example/include/lib/
+
+- `model.dart` — Declares Model (~15 tok)
+
+## example/include/tool/
+
+- `gen.dart` (~10 tok)
 
 ## example/indent.align.arguments/
 
@@ -351,6 +563,25 @@
 - `.beaver.yaml` (~9 tok)
 - `after.dart` (~39 tok)
 
+## example/line_ending/
+
+- `before.dart` (~12 tok)
+
+## example/line_ending/auto/
+
+- `.beaver.yaml` (~6 tok)
+- `after.dart` (~12 tok)
+
+## example/line_ending/crlf/
+
+- `.beaver.yaml` (~6 tok)
+- `after.dart` (~12 tok)
+
+## example/line_ending/lf/
+
+- `.beaver.yaml` (~5 tok)
+- `after.dart` (~11 tok)
+
 ## example/line_length/
 
 - `before.dart` (~51 tok)
@@ -383,6 +614,20 @@
 
 - `.beaver.yaml` (~8 tok)
 - `after.dart` (~24 tok)
+
+## example/spaces.after_colon_in_map_entry/
+
+- `before.dart` (~12 tok)
+
+## example/spaces.after_colon_in_map_entry/false/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~12 tok)
+
+## example/spaces.after_colon_in_map_entry/true/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~12 tok)
 
 ## example/spaces.after_colon_in_named_argument/
 
@@ -454,6 +699,62 @@
 - `.beaver.yaml` (~12 tok)
 - `after.dart` (~17 tok)
 
+## example/spaces.before_colon_in_initializer_list/
+
+- `before.dart` — Declares Point (~12 tok)
+
+## example/spaces.before_colon_in_initializer_list/false/
+
+- `.beaver.yaml` (~15 tok)
+- `after.dart` — Declares Point (~12 tok)
+
+## example/spaces.before_colon_in_initializer_list/true/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` — Declares Point (~12 tok)
+
+## example/spaces.before_colon_in_map_entry/
+
+- `before.dart` (~12 tok)
+
+## example/spaces.before_colon_in_map_entry/false/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~12 tok)
+
+## example/spaces.before_colon_in_map_entry/true/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~13 tok)
+
+## example/spaces.before_colon_in_named_argument/
+
+- `before.dart` (~18 tok)
+
+## example/spaces.before_colon_in_named_argument/false/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~18 tok)
+
+## example/spaces.before_colon_in_named_argument/true/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~18 tok)
+
+## example/spaces.before_colon_in_switch_case/
+
+- `before.dart` (~34 tok)
+
+## example/spaces.before_colon_in_switch_case/false/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~34 tok)
+
+## example/spaces.before_colon_in_switch_case/true/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~35 tok)
+
 ## example/spaces.before_comma/
 
 - `before.dart` (~17 tok)
@@ -480,6 +781,20 @@
 ## example/spaces.before_control_parentheses/true/
 
 - `.beaver.yaml` (~13 tok)
+- `after.dart` (~30 tok)
+
+## example/spaces.before_trailing_comment/
+
+- `before.dart` (~30 tok)
+
+## example/spaces.before_trailing_comment/1/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~30 tok)
+
+## example/spaces.before_trailing_comment/2/
+
+- `.beaver.yaml` (~11 tok)
 - `after.dart` (~30 tok)
 
 ## example/spaces.in_empty_braces/
@@ -557,24 +872,104 @@
 - `.beaver.yaml` (~8 tok)
 - `after.dart` (~22 tok)
 
+## example/strings.quotes_avoid_escapes/
+
+- `before.dart` (~16 tok)
+
+## example/strings.quotes_avoid_escapes/false/
+
+- `.beaver.yaml` (~16 tok)
+- `after.dart` (~16 tok)
+
+## example/strings.quotes_avoid_escapes/true/
+
+- `.beaver.yaml` (~16 tok)
+- `after.dart` (~16 tok)
+
 ## example/trailing_commas/
 
-- `before.dart` (~42 tok)
+- `before.dart` (~48 tok)
+
+## example/trailing_commas/add_when_chopped/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~60 tok)
 
 ## example/trailing_commas/add_when_wrapped/
 
 - `.beaver.yaml` (~10 tok)
-- `after.dart` (~52 tok)
+- `after.dart` (~60 tok)
 
 ## example/trailing_commas/preserve/
 
 - `.beaver.yaml` (~8 tok)
-- `after.dart` (~51 tok)
+- `after.dart` (~59 tok)
 
 ## example/trailing_commas/remove/
 
 - `.beaver.yaml` (~7 tok)
-- `after.dart` (~51 tok)
+- `after.dart` (~59 tok)
+
+## example/wrap.annotations/
+
+- `before.dart` — Widget: dispose, initState (~35 tok)
+
+## example/wrap.annotations/own_line/
+
+- `.beaver.yaml` (~9 tok)
+- `after.dart` — Widget: dispose, initState (~39 tok)
+
+## example/wrap.annotations/preserve/
+
+- `.beaver.yaml` (~9 tok)
+- `after.dart` — Widget: dispose, initState (~38 tok)
+
+## example/wrap.annotations/same_line/
+
+- `.beaver.yaml` (~9 tok)
+- `after.dart` — Widget: dispose, initState (~38 tok)
+
+## example/wrap.arguments.align/
+
+- `before.dart` (~31 tok)
+
+## example/wrap.arguments.align/false/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~37 tok)
+
+## example/wrap.arguments.align/true/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~60 tok)
+
+## example/wrap.arguments.chop_from/
+
+- `before.dart` (~21 tok)
+
+## example/wrap.arguments.chop_from/0/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~21 tok)
+
+## example/wrap.arguments.chop_from/3/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~26 tok)
+
+## example/wrap.arguments.hug_block_argument/
+
+- `before.dart` (~28 tok)
+
+## example/wrap.arguments.hug_block_argument/false/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~40 tok)
+
+## example/wrap.arguments.hug_block_argument/true/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~31 tok)
 
 ## example/wrap.arguments/
 
@@ -614,6 +1009,20 @@
 - `.beaver.yaml` (~9 tok)
 - `after.dart` (~44 tok)
 
+## example/wrap.binary_expressions.align/
+
+- `before.dart` (~63 tok)
+
+## example/wrap.binary_expressions.align/false/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~78 tok)
+
+## example/wrap.binary_expressions.align/true/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~81 tok)
+
 ## example/wrap.binary_expressions/
 
 - `before.dart` (~41 tok)
@@ -637,6 +1046,147 @@
 
 - `.beaver.yaml` (~10 tok)
 - `after.dart` (~43 tok)
+
+## example/wrap.braceless_bodies/
+
+- `before.dart` (~41 tok)
+
+## example/wrap.braceless_bodies/new_line/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~42 tok)
+
+## example/wrap.braceless_bodies/preserve/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~41 tok)
+
+## example/wrap.braceless_bodies/same_line_if_fits/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~40 tok)
+
+## example/wrap.break_before.arrow/
+
+- `before.dart` (~27 tok)
+
+## example/wrap.break_before.arrow/false/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~28 tok)
+
+## example/wrap.break_before.arrow/true/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~28 tok)
+
+## example/wrap.break_before.assignment/
+
+- `before.dart` (~29 tok)
+
+## example/wrap.break_before.assignment/false/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~31 tok)
+
+## example/wrap.break_before.assignment/true/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~31 tok)
+
+## example/wrap.break_before.binary_operator/
+
+- `before.dart` (~36 tok)
+
+## example/wrap.break_before.binary_operator/false/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~44 tok)
+
+## example/wrap.break_before.binary_operator/true/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~44 tok)
+
+## example/wrap.break_before.conditional_operator/
+
+- `before.dart` (~31 tok)
+
+## example/wrap.break_before.conditional_operator/false/
+
+- `.beaver.yaml` (~16 tok)
+- `after.dart` (~34 tok)
+
+## example/wrap.break_before.conditional_operator/true/
+
+- `.beaver.yaml` (~16 tok)
+- `after.dart` (~34 tok)
+
+## example/wrap.cascades/
+
+- `before.dart` (~64 tok)
+
+## example/wrap.cascades/chop_always/
+
+- `.beaver.yaml` (~9 tok)
+- `after.dart` (~74 tok)
+
+## example/wrap.cascades/chop_if_long/
+
+- `.beaver.yaml` (~9 tok)
+- `after.dart` (~73 tok)
+
+## example/wrap.cascades/if_long/
+
+- `.beaver.yaml` (~8 tok)
+- `after.dart` (~73 tok)
+
+## example/wrap.cascades/never/
+
+- `.beaver.yaml` (~7 tok)
+- `after.dart` (~70 tok)
+
+## example/wrap.chained_calls.align/
+
+- `before.dart` (~34 tok)
+
+## example/wrap.chained_calls.align/false/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~40 tok)
+
+## example/wrap.chained_calls.align/true/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~47 tok)
+
+## example/wrap.chained_calls.chop_from/
+
+- `before.dart` (~36 tok)
+
+## example/wrap.chained_calls.chop_from/0/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~36 tok)
+
+## example/wrap.chained_calls.chop_from/3/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~42 tok)
+
+## example/wrap.chained_calls.keep_first_call_on_receiver_line/
+
+- `before.dart` (~30 tok)
+
+## example/wrap.chained_calls.keep_first_call_on_receiver_line/false/
+
+- `.beaver.yaml` (~20 tok)
+- `after.dart` (~36 tok)
+
+## example/wrap.chained_calls.keep_first_call_on_receiver_line/true/
+
+- `.beaver.yaml` (~19 tok)
+- `after.dart` (~34 tok)
 
 ## example/wrap.chained_calls.keep_single_line_if_fits/
 
@@ -690,6 +1240,20 @@
 - `.beaver.yaml` (~22 tok)
 - `after.dart` (~48 tok)
 
+## example/wrap.chop_on_calls/
+
+- `before.dart` (~25 tok)
+
+## example/wrap.chop_on_calls/Row/
+
+- `.beaver.yaml` (~9 tok)
+- `after.dart` (~28 tok)
+
+## example/wrap.chop_on_calls/empty/
+
+- `.beaver.yaml` (~8 tok)
+- `after.dart` (~25 tok)
+
 ## example/wrap.chop_on_named_arguments/
 
 - `before.dart` (~33 tok)
@@ -717,6 +1281,58 @@
 
 - `.beaver.yaml` (~11 tok)
 - `after.dart` (~26 tok)
+
+## example/wrap.class_header.clauses_on_new_line/
+
+- `before.dart` — Stateful widget: HomeScreen (~26 tok)
+
+## example/wrap.class_header.clauses_on_new_line/false/
+
+- `.beaver.yaml` (~16 tok)
+- `after.dart` — Stateful widget: HomeScreen (~28 tok)
+
+## example/wrap.class_header.clauses_on_new_line/true/
+
+- `.beaver.yaml` (~15 tok)
+- `after.dart` — Stateful widget: HomeScreen (~30 tok)
+
+## example/wrap.class_header/
+
+- `before.dart` — Stateful widget: HomeScreen (~34 tok)
+
+## example/wrap.class_header/chop_always/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` — Stateful widget: HomeScreen (~40 tok)
+
+## example/wrap.class_header/chop_if_long/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` — Stateful widget: HomeScreen (~38 tok)
+
+## example/wrap.class_header/if_long/
+
+- `.beaver.yaml` (~9 tok)
+- `after.dart` — Stateful widget: HomeScreen (~36 tok)
+
+## example/wrap.class_header/never/
+
+- `.beaver.yaml` (~8 tok)
+- `after.dart` — Stateful widget: HomeScreen (~34 tok)
+
+## example/wrap.close_bracket/
+
+- `before.dart` (~54 tok)
+
+## example/wrap.close_bracket/after_last_item/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~62 tok)
+
+## example/wrap.close_bracket/own_line/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~65 tok)
 
 ## example/wrap.collection_literals/
 
@@ -766,6 +1382,87 @@
 - `.beaver.yaml` (~12 tok)
 - `after.dart` (~43 tok)
 
+## example/wrap.control_conditions/
+
+- `before.dart` (~34 tok)
+
+## example/wrap.control_conditions/block/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~38 tok)
+
+## example/wrap.control_conditions/continuation/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~40 tok)
+
+## example/wrap.enum_values/
+
+- `before.dart` — Declares Side (~34 tok)
+
+## example/wrap.enum_values/chop_always/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` — Declares Side (~40 tok)
+
+## example/wrap.enum_values/if_long/
+
+- `.beaver.yaml` (~9 tok)
+- `after.dart` — Declares Side (~34 tok)
+
+## example/wrap.enum_values/inherit/
+
+- `.beaver.yaml` (~9 tok)
+- `after.dart` — Declares Side (~38 tok)
+
+## example/wrap.enum_values/never/
+
+- `.beaver.yaml` (~8 tok)
+- `after.dart` — Declares Side (~34 tok)
+
+## example/wrap.initializer_lists.colon/
+
+- `before.dart` — Declares Point (~62 tok)
+
+## example/wrap.initializer_lists.colon/auto/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` — Declares Point (~70 tok)
+
+## example/wrap.initializer_lists.colon/end_of_header/
+
+- `.beaver.yaml` (~15 tok)
+- `after.dart` — Declares Point (~69 tok)
+
+## example/wrap.initializer_lists.colon/new_line/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` — Declares Point (~70 tok)
+
+## example/wrap.initializer_lists/
+
+- `before.dart` — Declares Point (~64 tok)
+
+## example/wrap.initializer_lists/chop_always/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` — Declares Point (~74 tok)
+
+## example/wrap.initializer_lists/chop_if_long/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` — Declares Point (~68 tok)
+
+## example/wrap.initializer_lists/if_long/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` — Declares Point (~65 tok)
+
+## example/wrap.initializer_lists/never/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` — Declares Point (~66 tok)
+
 ## example/wrap.keep_existing_line_breaks/
 
 - `before.dart` (~24 tok)
@@ -779,6 +1476,20 @@
 
 - `.beaver.yaml` (~12 tok)
 - `after.dart` (~28 tok)
+
+## example/wrap.parameters.align/
+
+- `before.dart` (~27 tok)
+
+## example/wrap.parameters.align/false/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~30 tok)
+
+## example/wrap.parameters.align/true/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~48 tok)
 
 ## example/wrap.parameters/
 
@@ -818,6 +1529,20 @@
 - `.beaver.yaml` (~12 tok)
 - `after.dart` (~33 tok)
 
+## example/wrap.simple_case_bodies_on_one_line/
+
+- `before.dart` (~45 tok)
+
+## example/wrap.simple_case_bodies_on_one_line/false/
+
+- `.beaver.yaml` (~14 tok)
+- `after.dart` (~45 tok)
+
+## example/wrap.simple_case_bodies_on_one_line/true/
+
+- `.beaver.yaml` (~13 tok)
+- `after.dart` (~40 tok)
+
 ## example/wrap.simple_lambdas_on_one_line/
 
 - `before.dart` (~18 tok)
@@ -831,6 +1556,44 @@
 
 - `.beaver.yaml` (~12 tok)
 - `after.dart` (~18 tok)
+
+## example/wrap.simple_methods_on_one_line/
+
+- `before.dart` — Controller: close, reset (~27 tok)
+
+## example/wrap.simple_methods_on_one_line/false/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` — Controller: close, reset (~30 tok)
+
+## example/wrap.simple_methods_on_one_line/true/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` — Controller: close, reset (~27 tok)
+
+## example/wrap.switch_expressions/
+
+- `before.dart` (~65 tok)
+
+## example/wrap.switch_expressions/chop_always/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~68 tok)
+
+## example/wrap.switch_expressions/chop_if_long/
+
+- `.beaver.yaml` (~12 tok)
+- `after.dart` (~68 tok)
+
+## example/wrap.switch_expressions/if_long/
+
+- `.beaver.yaml` (~11 tok)
+- `after.dart` (~67 tok)
+
+## example/wrap.switch_expressions/never/
+
+- `.beaver.yaml` (~10 tok)
+- `after.dart` (~68 tok)
 
 ## openspec/
 
@@ -981,7 +1744,7 @@
 
 ## packages/zooper_beaver/lib/src/cli/
 
-- `cli.dart` — / The `beaver` command line: file selection, modes, the stdin (~4434 tok)
+- `cli.dart` — / The `beaver` command line: file selection, modes, the stdin (~4624 tok)
 - `diff.dart` — / Minimal unified diff of two texts by line (Myers' algorithm), so the CLI (~922 tok)
 
 ## packages/zooper_beaver/lib/src/comments/
@@ -990,11 +1753,13 @@
 
 ## packages/zooper_beaver/lib/src/config/
 
-- `config.dart` — / The resolved configuration the engine formats with. (~1435 tok)
-- `dart_preset.dart` — / The built-in `dart` preset: dart_style 3.x conventions. Embedded as a (~419 tok)
-- `loader.dart` — / Parses and validates one `.beaver.yaml`. (~768 tok)
-- `resolve.dart` — / Configuration resolution: discovery, the `extends` chain, the (~1574 tok)
-- `schema.dart` — / The `.beaver.yaml` schema: every key, its type and its allowed values. (~932 tok)
+- `config.dart` — / The resolved configuration the engine formats with. (~2615 tok)
+- `dart_preset.dart` — / The built-in `dart` preset: dart_style 3.x conventions. Embedded as a (~1160 tok)
+- `editorconfig.dart` — /$pattern'; (~2554 tok)
+- `loader.dart` — / Parses and validates one `.beaver.yaml`. (~1202 tok)
+- `resolve.dart` — / Configuration resolution: discovery, the `extends` chain, the (~2244 tok)
+- `schema.dart` — / The `.beaver.yaml` schema: every key, its type and its allowed values. (~2620 tok)
+- `template.dart` — / The reference template printed by `beaver config --template`: every (~567 tok)
 
 ## packages/zooper_beaver/lib/src/directives/
 
@@ -1019,13 +1784,13 @@
 
 ## packages/zooper_beaver/lib/src/rules/
 
-- `builder.dart` — / AST → Doc. One builder per format call; the syntax areas live in (~4051 tok)
-- `chains.dart` — / Method chains and cascades. (~2706 tok)
-- `collections.dart` — / Collection literals and their elements. (~911 tok)
-- `declarations.dart` — / Declarations: compilation unit, directives, classes and other type (~5354 tok)
-- `expressions.dart` — / Expressions: operators, assignments, invocations and arguments, access, (~7907 tok)
-- `lists.dart` — / The shared wrappable-construct helper: argument and parameter lists, (~3050 tok)
-- `statements.dart` — / Statements: blocks, control flow, switch, try, jumps. (~3065 tok)
+- `builder.dart` — / AST → Doc. One builder per format call; the syntax areas live in (~4221 tok)
+- `chains.dart` — / Method chains and cascades. (~3360 tok)
+- `collections.dart` — / Collection literals and their elements. (~948 tok)
+- `declarations.dart` — / Declarations: compilation unit, directives, classes and other type (~6723 tok)
+- `expressions.dart` — / Expressions: operators, assignments, invocations and arguments, access, (~9818 tok)
+- `lists.dart` — / The shared wrappable-construct helper: argument and parameter lists, (~3345 tok)
+- `statements.dart` — / Statements: blocks, control flow, switch, try, jumps. (~3528 tok)
 - `strings.dart` — / String literals and `strings.quotes` (value-preserving delimiter changes). (~1444 tok)
 
 ## packages/zooper_beaver/lib/src/verify/
@@ -1035,17 +1800,19 @@
 
 ## packages/zooper_beaver/test/
 
-- `cli_test.dart` — _Capture: toString, main (~2758 tok)
+- `cli_test.dart` — _Capture: toString, main (~2999 tok)
 - `comments_test.dart` — A: main, init, f (~846 tok)
-- `config_resolve_test.dart` (~1964 tok)
-- `config_schema_test.dart` (~350 tok)
+- `config_resolve_test.dart` — Declares values (~4903 tok)
+- `config_schema_test.dart` — Declares is (~962 tok)
+- `config_template_test.dart` (~413 tok)
 - `dart_style_corpus_test.dart` — / Scores Beaver against dart_style's tall corpus. Mismatches are reported, (~383 tok)
 - `directives_test.dart` — Declares source (~655 tok)
-- `docs_test.dart` — / Every example in the rule and directive docs is a golden test case. (~254 tok)
-- `example_test.dart` — / The rule showcase in `example/` is real formatter output: every (~493 tok)
+- `docs_test.dart` — / Every example in the rule and directive docs is a golden test case. (~360 tok)
+- `editorconfig_test.dart` — / Resolves [path] against in-memory [files], returning property → value. (~3872 tok)
+- `example_test.dart` — / The rule showcase in `example/` is real formatter output: every (~725 tok)
 - `format_test.dart` (~104 tok)
 - `golden_file_test.dart` — Declares FormatException (~913 tok)
-- `golden_runner_test.dart` — Declares VerificationFailure (~753 tok)
+- `golden_runner_test.dart` — Declares VerificationFailure (~1048 tok)
 - `golden_test.dart` — / Beaver's strict golden suites: every case under `test/golden/<area>/` must (~245 tok)
 - `ir_test.dart` — Declares Marker (~1997 tok)
 - `parse_test.dart` (~400 tok)

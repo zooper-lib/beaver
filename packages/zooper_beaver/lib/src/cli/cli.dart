@@ -14,6 +14,7 @@ import 'package:path/path.dart' as p;
 import '../config/loader.dart';
 import '../config/resolve.dart';
 import '../config/schema.dart';
+import '../config/template.dart';
 import '../directives/directives.dart';
 import '../format.dart';
 import '../parse/parse.dart';
@@ -101,6 +102,11 @@ ArgParser _parser() {
         'for',
         valueHelp: 'file',
         help: 'Resolve as if formatting this file.',
+      )
+      ..addFlag(
+        'template',
+        negatable: false,
+        help: 'Print every key with its preset value and allowed values.',
       ),
   );
   parser.addCommand('init');
@@ -111,6 +117,7 @@ String _usage(ArgParser parser) => '''
 Usage: beaver [options] <paths...>
        beaver --stdin [--stdin-name <path>] [--range <range>]
        beaver config --print [--for <file>]
+       beaver config --template
        beaver init
 
 Paths may be files, directories (searched recursively for .dart files) or globs.
@@ -119,6 +126,7 @@ ${parser.usage}
 
 Commands:
   config --print [--for <file>]   Print the resolved configuration with provenance.
+  config --template               Print every key with its preset value and allowed values.
   init                            Write a starter .beaver.yaml (never overwrites).
 
 Exit codes: 0 ok, 1 changes found (--check/--diff), 64 usage, 65 unparseable input
@@ -160,7 +168,15 @@ Future<int> runCli(
   final command = args.command;
   if (command != null) {
     if (command.name == 'init') return _init(out, err);
-    if (!command.flag('print')) return usage('Use "beaver config --print".');
+    if (command.flag('template')) {
+      out.write(configTemplate());
+      return ExitCode.success;
+    }
+    if (!command.flag('print')) {
+      return usage(
+        'Use "beaver config --print" or "beaver config --template".',
+      );
+    }
     return _printConfig(command.option('for'), args.option('config'), out, err);
   }
 
@@ -269,18 +285,23 @@ Future<int> _files(
     }
   }
 
-  // Configuration per directory; each distinct error reported once.
+  // Configuration per directory, or per file where EditorConfig sections
+  // can tell files apart; each distinct error or warning reported once.
   final configs = <String, Object>{};
   final reported = <String>{};
+  Object resolve(String path) {
+    try {
+      return resolveConfig(path, read: _read, explicit: explicitConfig);
+    } on ConfigException catch (e) {
+      return e;
+    }
+  }
+
   for (final path in files.toList()..sort()) {
-    final directory = p.dirname(path);
-    final resolved = configs[directory] ??= () {
-      try {
-        return resolveConfig(path, read: _read, explicit: explicitConfig);
-      } on ConfigException catch (e) {
-        return e;
-      }
-    }();
+    var resolved = configs[p.dirname(path)] ??= resolve(path);
+    if (resolved is ResolvedConfig && _usesEditorConfig(resolved)) {
+      resolved = configs[path] ??= resolve(path);
+    }
     if (resolved is ConfigException) {
       if (reported.add(resolved.message)) {
         fail(ExitCode.config, resolved.message);
@@ -288,6 +309,9 @@ Future<int> _files(
       continue;
     }
     resolved as ResolvedConfig;
+    for (final warning in resolved.warnings) {
+      if (reported.add(warning)) err.writeln(warning);
+    }
     final pattern = resolved.excludedBy(path);
     if (pattern != null) {
       if (verbose) err.writeln('Skipped ${_display(path)} ($pattern)');
@@ -343,6 +367,9 @@ Future<int> _files(
   }
   return exitCode;
 }
+
+bool _usesEditorConfig(ResolvedConfig resolved) =>
+    resolved.config.values['editorconfig'] == true;
 
 bool _isGlob(String argument) => argument.contains(RegExp(r'[*?\[{]'));
 
@@ -400,6 +427,14 @@ Future<int> _stdin(
     err.writeln(e.message);
     return ExitCode.config;
   }
+  if (name == null && _usesEditorConfig(resolved)) {
+    err.writeln(
+      '--stdin-name is required while EditorConfig integration is enabled '
+      '(editorconfig: true).\n\nRun "beaver --help" for usage.',
+    );
+    return ExitCode.usage;
+  }
+  resolved.warnings.forEach(err.writeln);
   if (name != null &&
       resolved.excludedBy(p.normalize(p.absolute(name))) != null) {
     // Excluded: echo unchanged, never parsed.
@@ -455,13 +490,27 @@ Future<int> _printConfig(
     err.writeln(e.message);
     return ExitCode.config;
   }
+  if (forFile == null && _usesEditorConfig(resolved)) {
+    err.writeln(
+      '--for is required while EditorConfig integration is enabled '
+      '(editorconfig: true).\n\nRun "beaver --help" for usage.',
+    );
+    return ExitCode.usage;
+  }
+  resolved.warnings.forEach(err.writeln);
   out.writeln('# Chain: ${resolved.chain.map(_origin).join(' → ')}');
   out.writeln('# Exclusion root: ${_display(resolved.root)}');
   for (final key in schema.keys) {
     final value = resolved.config.values[key];
+    final source = resolved.provenance[key]!;
+    final origin = [
+      source.origin.split(', ').map(_origin).join(', '),
+      ?source.detail,
+    ].join(' ');
     out.writeln(
-      '$key: ${value is List ? jsonEncode(value) : value}'
-      '  # ${resolved.provenance[key]!.split(', ').map(_origin).join(', ')}',
+      '$key: ${value is List ? jsonEncode(value) : value}  # '
+      '${source.fallback == null ? origin : 'inherit from $origin; '
+                '${source.fallback} from ${_origin(source.fallbackOrigin!)}'}',
     );
   }
   return ExitCode.success;

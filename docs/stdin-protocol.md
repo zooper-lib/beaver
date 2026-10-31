@@ -21,7 +21,7 @@ Beaver reads the complete document from stdin and, on success, writes the comple
 
 ## `--stdin-name`
 
-The path the buffer belongs to. It is used for configuration discovery (as if formatting that file), exclusion matching and diagnostics. Beaver never reads the file at that path, so unsaved edits are formatted as they are in the buffer. Without it, configuration is discovered from the working directory.
+The path the buffer belongs to. It is used for configuration discovery (as if formatting that file), EditorConfig resolution, exclusion matching and diagnostics. Beaver never reads the file at that path, so unsaved edits are formatted as they are in the buffer. Without it, configuration is discovered from the working directory. While the effective configuration has `editorconfig: true`, `--stdin-name` is required, also with `--config`: without it Beaver exits with code 64 and writes nothing to stdout, because EditorConfig sections are matched against the file name.
 
 ## `--range`
 

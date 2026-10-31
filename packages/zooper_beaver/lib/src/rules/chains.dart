@@ -60,7 +60,7 @@ extension ChainRules on DocBuilder {
   /// print attached; otherwise, from the first call on, each `.member` (with
   /// the indexes, `!` and arguments after it) may move to its own line with
   /// continuation indent, per `wrap.chained_calls`, or aligned under the
-  /// first `.` with `indent.align.chained_calls` while the target is flat.
+  /// first `.` with `wrap.chained_calls.align` while the target is flat.
   Doc chain(Expression expression) {
     final (target, selectors) = _unwind(expression);
     final calls = selectors.where((s) => s.isCall).length;
@@ -76,12 +76,13 @@ extension ChainRules on DocBuilder {
     }
     final lines = <Doc>[];
     final kept = <bool>[];
+    final settings = config.chainedCalls;
     for (; i < selectors.length; i++) {
       final selector = selectors[i];
       if (selector.isMember || lines.isEmpty) {
         lines.add(selector.doc);
         kept.add(
-          config.keepExistingLineBreaks &&
+          settings.keepExistingLineBreaks &&
               newlinesBetween(selector.previousEnd, selector.start) > 0,
         );
       } else {
@@ -89,14 +90,14 @@ extension ChainRules on DocBuilder {
       }
     }
 
-    var policy = config.wrapChains;
+    var policy = settings.policy;
     if (policy == WrapPolicy.never) {
       if (!hasLineCommentIn(expression.offset, expression.end)) {
         return concat([target, ...head, ...lines]);
       }
       policy = WrapPolicy.chopIfLong;
     }
-    final minCalls = config.chainMinCalls;
+    final minCalls = settings.chopFrom;
     final forced =
         (minCalls > 0 && calls >= minCalls) ||
         (policy == WrapPolicy.chopAlways && !config.chainKeepSingleLineIfFits);
@@ -140,8 +141,24 @@ extension ChainRules on DocBuilder {
       return concat(parts);
     }
 
-    final continued = cont(separated(lines, kept, first: true));
-    if (!config.alignChainedCalls) {
+    final continued = align(
+      settings.indent,
+      separated(lines, kept, first: true),
+    );
+    if (!settings.align) {
+      if (config.flag('wrap.chained_calls.keep_first_call_on_receiver_line')) {
+        return group(
+          concat([
+            target,
+            ...head,
+            lines.first,
+            align(
+              settings.indent,
+              separated(lines.sublist(1), kept.sublist(1), first: true),
+            ),
+          ]),
+        );
+      }
       return group(concat([target, ...head, continued]));
     }
     // Alignment: aligned under the first call's `.` while the target printed flat,
@@ -255,31 +272,86 @@ extension ChainRules on DocBuilder {
     tok(node.rightBracket),
   ]);
 
+  /// A target and its `..` sections, per `wrap.cascades`. Only breaks
+  /// before a section are cascade-level breaks; newlines inside the target
+  /// or a section are not.
   Doc cascade(CascadeExpression node) {
+    final settings = config.cascades;
     final sections = node.cascadeSections;
     final target = node.target;
+    var policy = settings.policy;
+    if (policy == WrapPolicy.never && hasLineCommentIn(node.offset, node.end)) {
+      policy = WrapPolicy.chopIfLong;
+    }
+    final never = policy == WrapPolicy.never;
+    final forced =
+        !never &&
+        (policy == WrapPolicy.chopAlways ||
+            settings.reachesThreshold(sections.length));
+    final kept = [
+      for (final (i, section) in sections.indexed)
+        !never &&
+            settings.keepExistingLineBreaks &&
+            newlinesBetween(
+                  i == 0 ? target.end : sections[i - 1].end,
+                  section.offset,
+                ) >
+                0,
+    ];
     if (sections.length == 1 &&
+        !forced &&
+        !kept.single &&
         (target is ListLiteral || target is SetOrMapLiteral)) {
       // Decided on its own, so a collection that splits keeps the section
       // on its last line: `]..sort()`.
       return concat([
-        visit(node.target),
-        group(indent(concat([softline, visit(sections.single)]))),
+        visit(target),
+        group(
+          indentBy(
+            settings.indent,
+            concat([never ? empty : softline, visit(sections.single)]),
+          ),
+        ),
       ]);
     }
-    return group(
-      concat([
-        visit(node.target),
-        indent(
-          concat([
-            for (final section in sections) ...[
-              sections.length > 1 ? hardline : softline,
-              visit(section),
-            ],
-          ]),
-        ),
-      ]),
-    );
+    final separator = never ? empty : (forced ? hardline : softline);
+    Doc layout(Iterable<Expression> run) {
+      final parts = [
+        for (final section in run) ...[separator, visit(section)],
+      ];
+      return policy == WrapPolicy.ifLong && !forced
+          ? Fill(_fillParts(parts))
+          : concat(parts);
+    }
+
+    final Doc body;
+    if (!kept.contains(true)) {
+      body = layout(sections);
+    } else {
+      // A kept break is hard and starts a run that breaks on its own.
+      final parts = <Doc>[];
+      var start = 0;
+      for (var i = 1; i <= sections.length; i++) {
+        if (i < sections.length && !kept[i]) continue;
+        final run = sections.sublist(start, i);
+        if (kept[start]) {
+          parts.addAll([
+            hardline,
+            group(
+              concat([
+                visit(run.first),
+                if (run.length > 1) layout(run.skip(1)),
+              ]),
+            ),
+          ]);
+        } else {
+          parts.add(group(layout(run)));
+        }
+        start = i;
+      }
+      body = concat(parts);
+    }
+    return group(concat([visit(target), indentBy(settings.indent, body)]));
   }
 
   /// A cascade section (`..a()`, `..b = c`, `?..[i]`): the cascade operator

@@ -1,0 +1,3 @@
+wrap:
+  arguments:
+    hug_block_argument: true

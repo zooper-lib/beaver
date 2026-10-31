@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 import 'package:zooper_beaver/src/cli/cli.dart';
+import 'package:zooper_beaver/src/config/schema.dart';
 import 'package:zooper_beaver/src/version.dart';
 
 final class _Capture implements StreamConsumer<List<int>> {
@@ -73,6 +74,7 @@ void main() {
         '--version',
         'config --print',
         '--for',
+        'config --template',
         'init',
       ]) {
         expect(r.out, contains(mode));
@@ -289,6 +291,79 @@ void main() {
     });
   });
 
+  group('include', () {
+    test('beaver . skips a file outside include', () async {
+      write('.beaver.yaml', 'include: ["lib/**"]');
+      write('lib/a.dart', ugly);
+      write('tool/gen.dart', ugly);
+      final r = await beaver(['--verbose', '.']);
+      expect(r.code, 0);
+      expect(File('lib/a.dart').readAsStringSync(), pretty);
+      expect(File('tool/gen.dart').readAsStringSync(), ugly);
+      expect(r.err, contains('not in include'));
+    });
+
+    test('stdin echoes a file outside include', () async {
+      write('.beaver.yaml', 'include: ["lib/**"]');
+      final r = await beaver([
+        '--stdin',
+        '--stdin-name',
+        'tool/gen.dart',
+      ], stdin: ugly);
+      expect((r.code, r.out), (0, ugly));
+    });
+  });
+
+  group('editorconfig', () {
+    test('config --print requires --for', () async {
+      write('.beaver.yaml', 'editorconfig: true');
+      final r = await beaver(['config', '--print']);
+      expect((r.code, r.out), (64, ''));
+      expect(r.err, contains('--for is required'));
+    });
+
+    test('config --print shows the EditorConfig source', () async {
+      write('.beaver.yaml', 'editorconfig: true');
+      write(
+        '.editorconfig',
+        'root = true\n[*.dart]\nindent_style = tab\nindent_size = tab\ntab_width = 4\n',
+      );
+      final r = await beaver(['config', '--print', '--for', 'lib/a.dart']);
+      expect(r.code, 0);
+      expect(
+        r.out,
+        contains(
+          'indent.size: 4  # .editorconfig [*.dart] indent_size, tab_width',
+        ),
+      );
+    });
+
+    test('--stdin requires --stdin-name', () async {
+      write('team.beaver.yaml', 'editorconfig: true');
+      final r = await beaver([
+        '--stdin',
+        '--config',
+        'team.beaver.yaml',
+      ], stdin: ugly);
+      expect((r.code, r.out), (64, ''));
+      expect(r.err, contains('--stdin-name is required'));
+    });
+
+    test('files are indented per their EditorConfig section', () async {
+      write('.beaver.yaml', 'editorconfig: true');
+      write('.editorconfig', 'root = true\n[a.dart]\nindent_size = 4\n');
+      const source = 'void f() {\nx();\n}\n';
+      write('lib/a.dart', source);
+      write('lib/b.dart', source);
+      expect((await beaver(['lib'])).code, 0);
+      expect(
+        File('lib/a.dart').readAsStringSync(),
+        'void f() {\n    x();\n}\n',
+      );
+      expect(File('lib/b.dart').readAsStringSync(), 'void f() {\n  x();\n}\n');
+    });
+  });
+
   group('config and init', () {
     test('config --print shows values with provenance', () async {
       write('.beaver.yaml', 'line_length: 100');
@@ -296,6 +371,37 @@ void main() {
       expect(r.code, 0);
       expect(r.out, contains('line_length: 100  # .beaver.yaml'));
       expect(r.out, contains('indent.size: 2  # preset dart'));
+    });
+
+    test('config --print lists every schema key', () async {
+      final r = await beaver(['config', '--print']);
+      expect(r.code, 0);
+      for (final key in schema.keys) {
+        expect(r.out, contains('\n$key: '), reason: key);
+      }
+      expect(r.out, isNot(contains(': inherit ')));
+    });
+
+    test('config --print shows both sources of an inherited value', () async {
+      write('.beaver.yaml', 'wrap: {chop_on_trailing_comma: false}');
+      final r = await beaver(['config', '--print']);
+      expect(r.code, 0);
+      expect(
+        r.out,
+        contains(
+          'wrap.arguments.chop_on_trailing_comma: false  # inherit from '
+          'preset dart; wrap.chop_on_trailing_comma from .beaver.yaml',
+        ),
+      );
+      expect(r.out, isNot(contains(': inherit')));
+    });
+
+    test('config --template ignores the project configuration', () async {
+      write('.beaver.yaml', 'line_length: 120');
+      final r = await beaver(['config', '--template']);
+      expect(r.code, 0);
+      expect(r.out, contains('line_length: 80  #'));
+      expect(r.out, isNot(contains('120')));
     });
 
     test('init writes a starter file and refuses to overwrite', () async {

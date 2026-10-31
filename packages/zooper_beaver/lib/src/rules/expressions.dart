@@ -91,6 +91,7 @@ extension ExpressionRules on DocBuilder {
     ArgumentList() => argumentList(node),
     NamedArgument() => concat([
       tok(node.name),
+      if (config.flag('spaces.before_colon_in_named_argument')) space,
       assignmentRhs(
         node.colon,
         node.argumentExpression,
@@ -114,7 +115,7 @@ extension ExpressionRules on DocBuilder {
       open: node.leftBracket,
       items: node.arguments,
       close: node.rightBracket,
-      policy: config.wrapArguments,
+      settings: config.arguments.unaligned,
       optionalTrailingComma: false,
     ),
     GenericFunctionType() => concat([
@@ -140,7 +141,7 @@ extension ExpressionRules on DocBuilder {
         open: node.leftParenthesis,
         items: node.fields,
         close: node.rightParenthesis,
-        policy: config.wrapArguments,
+        settings: config.recordLiterals,
         spaceInside: config.spaceInsideParens,
         requiredTrailingComma:
             node.fields.length == 1 &&
@@ -151,7 +152,7 @@ extension ExpressionRules on DocBuilder {
       open: node.leftParenthesis,
       items: node.fields,
       close: node.rightParenthesis,
-      policy: config.wrapArguments,
+      settings: config.recordLiterals,
       spaceInside: config.spaceInsideParens,
       requiredTrailingComma:
           node.fields.length == 1 && node.fields.single.name == null,
@@ -162,7 +163,7 @@ extension ExpressionRules on DocBuilder {
         open: node.leftParenthesis,
         items: node.fields,
         close: node.rightParenthesis,
-        policy: config.wrapArguments,
+        settings: config.arguments.unaligned,
         spaceInside: config.spaceInsideParens,
         optionalTrailingComma: false,
       ),
@@ -179,7 +180,7 @@ extension ExpressionRules on DocBuilder {
         open: node.leftBracket,
         items: node.elements,
         close: node.rightBracket,
-        policy: config.wrapCollections,
+        settings: config.collectionLiterals,
         spaceInside: config.spaceInsideBrackets,
         optionalTrailingComma: false,
       ),
@@ -190,15 +191,16 @@ extension ExpressionRules on DocBuilder {
         open: node.leftBracket,
         items: node.elements,
         close: node.rightBracket,
-        policy: config.wrapCollections,
+        settings: config.collectionLiterals,
         spaceInside: config.spaceInsideBraces,
         optionalTrailingComma: false,
       ),
     ]),
     MapPatternEntry() => concat([
       visit(node.key),
+      if (config.flag('spaces.before_colon_in_map_entry')) space,
       tok(node.separator),
-      space,
+      if (config.flag('spaces.after_colon_in_map_entry')) space,
       visit(node.value),
     ]),
     LogicalOrPattern() || LogicalAndPattern() => binaryPattern(
@@ -278,6 +280,7 @@ extension ExpressionRules on DocBuilder {
     ]),
     RecordLiteralNamedField() => concat([
       tok(node.name),
+      if (config.flag('spaces.before_colon_in_named_argument')) space,
       tok(node.colon),
       if (config.spaceAfterNamedColon) space,
       visit(node.fieldExpression),
@@ -359,12 +362,25 @@ extension ExpressionRules on DocBuilder {
     final op = tok(operator);
     final lead = Line.soft(spaced ? ' ' : '');
     Doc nextLine(Doc doc) => blockIndent ? indent(doc) : cont(doc);
+    // `wrap.break_before.arrow`/`assignment`: the operator starts the next
+    // line. The space before it is printed by the caller.
+    final before = switch (operator.type) {
+      TokenType.FUNCTION => config.flag('wrap.break_before.arrow'),
+      TokenType.COLON => false,
+      _ => config.flag('wrap.break_before.assignment'),
+    };
+    final beforeLead = concat([softline, op, if (spaced) space]);
+    Doc moved(Doc value) => before
+        ? nextLine(concat([beforeLead, value]))
+        : concat([op, nextLine(concat([lead, value]))]);
     // Built without [visit], so only when no comment hangs on the node itself.
     if (rhs is ConditionalExpression &&
-        config.wrapConditional != WrapPolicy.never &&
+        config.conditionalExpressions.policy != WrapPolicy.never &&
         comments.leading[rhs] == null &&
         comments.trailing[rhs] == null) {
-      final split = concat([op, conditional(rhs, lead: lead)]);
+      final split = before
+          ? conditional(rhs, lead: beforeLead)
+          : concat([op, conditional(rhs, lead: lead)]);
       // After `=>` it moves to the next line when it fits there whole. The
       // alternatives build it twice, so only when it holds no comment.
       if (operator.type != TokenType.FUNCTION ||
@@ -374,12 +390,14 @@ extension ExpressionRules on DocBuilder {
       final value = visit(rhs);
       return ConditionalGroup([
         concat([op, if (spaced) space, value]),
-        concat([op, nextLine(concat([lead, value]))]),
+        moved(value),
         split,
       ]);
     }
     if (!isBlockLike(rhs)) {
-      return concat([op, group(nextLine(concat([lead, visit(rhs)])))]);
+      return before
+          ? group(moved(visit(rhs)))
+          : concat([op, group(nextLine(concat([lead, visit(rhs)])))]);
     }
     final value = visit(rhs);
     final hugged = concat([op, if (spaced) space, value]);
@@ -389,9 +407,9 @@ extension ExpressionRules on DocBuilder {
     // After `=>` a call or chain moves to the next line when it fits there
     // whole; otherwise it stays on the arrow's line if that line fits, and
     // moves to the next line, splitting there, if not.
-    final moved = concat([op, nextLine(concat([lead, value]))]);
+    final next = moved(value);
     return ConditionalGroup(
-      [hugged, moved, hugged, moved],
+      [hugged, next, hugged, next],
       firstLineOnly: const {2},
     );
   }
@@ -431,7 +449,12 @@ extension ExpressionRules on DocBuilder {
         parent is FormalParameterDefaultClause ||
         parent is NamedArgument ||
         parent is PatternVariableDeclaration ||
-        parent is SwitchExpressionCase;
+        parent is SwitchExpressionCase ||
+        // `wrap.control_conditions: block` indents the condition itself.
+        (config.values['wrap.control_conditions'] == 'block' &&
+            (parent is IfStatement ||
+                parent is WhileStatement ||
+                parent is DoStatement));
   }
 
   Doc binary(BinaryExpression node) {
@@ -452,12 +475,13 @@ extension ExpressionRules on DocBuilder {
     }
 
     collect(node);
-    var policy = config.wrapBinary;
+    final settings = config.binaryExpressions;
+    var policy = settings.policy;
     if (policy == WrapPolicy.never && hasLineCommentIn(node.offset, node.end)) {
       policy = WrapPolicy.chopIfLong;
     }
     final spaced = config.spaceAroundBinary;
-    final before = config.breakBeforeOperator;
+    final before = config.breakBeforeBinaryOperator;
     // Without spaces, keep one where two operator characters would touch
     // and lex as a different token (`x! == y` → `x!==y`).
     bool spaceBetween(Token left, Token right) =>
@@ -497,7 +521,7 @@ extension ExpressionRules on DocBuilder {
       for (var i = 0; i < operands.length; i++)
         i > 0 &&
             policy != WrapPolicy.never &&
-            config.keepExistingLineBreaks &&
+            settings.keepExistingLineBreaks &&
             newlinesBetween(
                   operands[i - 1].end,
                   startWithComments(operands[i]),
@@ -505,17 +529,23 @@ extension ExpressionRules on DocBuilder {
                 0,
     ];
     final keepSpace = spaced || separatorTouches.contains(true);
+    // Operands of this one same-precedence run count for `chop_from`.
+    final threshold =
+        policy != WrapPolicy.never &&
+        settings.reachesThreshold(operands.length);
     final body = runs(
       segments,
       kept,
       separator: switch (policy) {
         WrapPolicy.never => keepSpace ? space : empty,
+        _ when threshold => hardline,
         WrapPolicy.chopAlways => hardline,
         _ => Line.soft(keepSpace ? ' ' : ''),
       },
-      fill: policy == WrapPolicy.ifLong,
+      fill: policy == WrapPolicy.ifLong && !threshold,
     );
-    return group(_parentIndents(node) ? body : cont(body));
+    if (settings.align) return group(alignToColumn(body));
+    return group(_parentIndents(node) ? body : align(settings.indent, body));
   }
 
   /// `a || b || c` (or `&&`): the whole chain splits at once, continuation
@@ -542,7 +572,7 @@ extension ExpressionRules on DocBuilder {
     }
 
     collect(node);
-    final before = config.breakBeforeOperator;
+    final before = config.breakBeforeBinaryOperator;
     final parts = <Doc>[];
     for (var i = 0; i < operands.length; i++) {
       if (i > 0) {
@@ -568,50 +598,77 @@ extension ExpressionRules on DocBuilder {
   /// `c ? a : b`. With [lead] (the line after `=`, `=>` or `:`), the
   /// condition stays on the operator's line only when it fits there.
   Doc conditional(ConditionalExpression node, {Doc? lead}) {
-    var policy = config.wrapConditional;
+    final settings = config.conditionalExpressions;
+    var policy = settings.policy;
     if (policy == WrapPolicy.never && hasLineCommentIn(node.offset, node.end)) {
       policy = WrapPolicy.chopIfLong;
     }
-    bool keptBefore(Token token) =>
-        policy != WrapPolicy.never &&
-        config.keepExistingLineBreaks &&
-        newlinesBetween(token.previous!.end, token.offset) > 0;
-    // A branch's own wrapped lines indent past its `? ` or `: `.
-    Doc branch(Token operator, Expression expression) =>
-        concat([tok(operator), space, align(2, visit(expression))]);
-    final condition = visit(node.condition);
-    final segments = [
-      lead == null ? condition : group(concat([lead, condition])),
-    ];
-    final kept = [false];
+    // With `wrap.break_before.conditional_operator: false`, `?` and `:` end
+    // their lines instead of starting them.
+    final before = config.flag('wrap.break_before.conditional_operator');
+    bool keptAt(Token operator) {
+      if (policy == WrapPolicy.never || !settings.keepExistingLineBreaks) {
+        return false;
+      }
+      final (from, to) = before
+          ? (operator.previous!.end, operator.offset)
+          : (operator.end, operator.next!.offset);
+      return newlinesBetween(from, to) > 0;
+    }
+
     // `a ? b : c ? d : e` is one chain: the nested condition follows `: `.
+    final operands = <(Expression, bool)>[(node.condition, false)];
+    final operators = <Token>[];
     var current = node;
     while (true) {
-      segments.add(branch(current.question, current.thenExpression));
-      kept.add(keptBefore(current.question));
+      operators.add(current.question);
+      operands.add((current.thenExpression, true));
+      operators.add(current.colon);
       final otherwise = current.elseExpression;
-      kept.add(keptBefore(current.colon));
       if (otherwise is ConditionalExpression &&
           comments.leading[otherwise] == null &&
           comments.trailing[otherwise] == null) {
-        segments.add(
-          concat([tok(current.colon), space, visit(otherwise.condition)]),
-        );
+        operands.add((otherwise.condition, false));
         current = otherwise;
         continue;
       }
-      segments.add(branch(current.colon, otherwise));
+      operands.add((otherwise, true));
       break;
     }
+    final segments = <Doc>[];
+    final kept = <bool>[false];
+    for (final (i, (expression, isBranch)) in operands.indexed) {
+      // A branch's own wrapped lines indent past its `? ` or `: `.
+      final value = before && isBranch
+          ? align(2, visit(expression))
+          : visit(expression);
+      final segment = before
+          ? concat([
+              if (i > 0) ...[tok(operators[i - 1]), space],
+              value,
+            ])
+          : concat([
+              value,
+              if (i < operators.length) ...[space, tok(operators[i])],
+            ]);
+      segments.add(
+        i == 0 && lead != null ? group(concat([lead, segment])) : segment,
+      );
+      if (i > 0) kept.add(keptAt(operators[i - 1]));
+    }
+    final threshold =
+        policy != WrapPolicy.never &&
+        settings.reachesThreshold(segments.length);
     final body = runs(
       segments,
       kept,
       separator: switch (policy) {
         WrapPolicy.never => space,
+        _ when threshold => hardline,
         WrapPolicy.chopAlways => hardline,
         _ => line,
       },
-      fill: policy == WrapPolicy.ifLong,
+      fill: policy == WrapPolicy.ifLong && !threshold,
     );
     return group(cont(body));
   }
@@ -624,21 +681,25 @@ extension ExpressionRules on DocBuilder {
         arguments.any(
           (a) => a is NamedArgument && names.contains(a.name.lexeme),
         );
-    final policy = config.wrapArguments;
+    final callMatch = _matchesChopOnCalls(node);
+    final settings = config.arguments;
+    final policy = settings.policy;
     Doc chopped() => delimited(
       open: node.leftParenthesis,
       items: arguments,
       close: node.rightParenthesis,
-      policy: policy,
+      settings: settings,
       spaceInside: config.spaceInsideParens,
-      forceChop: namedMatch,
-      align: config.alignArguments,
+      forceChop: namedMatch || callMatch,
     );
     final block =
-        policy != WrapPolicy.never &&
+        config.flag('wrap.arguments.hug_block_argument') &&
+            policy != WrapPolicy.never &&
             policy != WrapPolicy.chopAlways &&
             !namedMatch &&
-            !config.alignArguments
+            !callMatch &&
+            !settings.reachesThreshold(arguments.length) &&
+            !settings.align
         ? _hugBlock(node)
         : null;
     if (block == null) return chopped();
@@ -675,6 +736,60 @@ extension ExpressionRules on DocBuilder {
     return ConditionalGroup([hug, hug, chopped()], firstLineOnly: const {1});
   }
 
+  /// Whether the invocation owning [node] has a callable name matching a
+  /// `wrap.chop_on_calls` entry: a one-segment entry matches the final or
+  /// penultimate segment, a longer one the complete suffix.
+  bool _matchesChopOnCalls(ArgumentList node) {
+    final entries = config.chopOnCalls;
+    if (entries.isEmpty) return false;
+    final name = switch (node.parent) {
+      MethodInvocation(:final target, :final methodName) => target == null
+          ? [methodName.name]
+          : switch (_dottedName(target)) {
+              final prefix? => [...prefix, methodName.name],
+              null => null,
+            },
+      InstanceCreationExpression(:final constructorName) => [
+        if (constructorName.type.importPrefix case final prefix?)
+          prefix.name.lexeme,
+        constructorName.type.name.lexeme,
+        if (constructorName.name case final name?) name.name,
+      ],
+      FunctionExpressionInvocation(:final function) => _dottedName(function),
+      _ => null,
+    };
+    if (name == null) return false;
+    bool endsWith(List<String> suffix, int skip) {
+      final end = name.length - skip;
+      if (end < suffix.length) return false;
+      for (var i = 0; i < suffix.length; i++) {
+        if (name[end - suffix.length + i] != suffix[i]) return false;
+      }
+      return true;
+    }
+
+    return entries.any(
+      (entry) => entry.length == 1
+          ? endsWith(entry, 0) || endsWith(entry, 1)
+          : endsWith(entry, 0),
+    );
+  }
+
+  /// The segments of `a.b.c`, or `null` for anything computed.
+  List<String>? _dottedName(Expression expression) => switch (expression) {
+    SimpleIdentifier(:final name) => [name],
+    PrefixedIdentifier(:final prefix, :final identifier) => [
+      prefix.name,
+      identifier.name,
+    ],
+    PropertyAccess(:final target?, :final propertyName, :final operator)
+        when operator.type == TokenType.PERIOD => switch (_dottedName(target)) {
+      final prefix? => [...prefix, propertyName.name],
+      null => null,
+    },
+    _ => null,
+  };
+
   /// The one argument that is a block-bodied function or a collection, with
   /// no trailing comma, kept breaks or other block arguments, that may hug
   /// the parentheses: `foo(a, () {` ... `})`, `f(a, [` ... `], b)`.
@@ -703,7 +818,8 @@ extension ExpressionRules on DocBuilder {
     final before = (node.leftParenthesis.end, startWithComments(block));
     final after = (endWithComments(block), node.rightParenthesis.offset);
     for (final (from, to) in [before, after]) {
-      if (config.keepExistingLineBreaks && newlinesBetween(from, to) > 0) {
+      if (config.arguments.keepExistingLineBreaks &&
+          newlinesBetween(from, to) > 0) {
         return null;
       }
       if (hasLineCommentIn(from, to)) return null;
@@ -751,7 +867,7 @@ extension ExpressionRules on DocBuilder {
         open: node.leftParenthesis,
         items: [...positional, ...?named?.fields],
         close: node.rightParenthesis,
-        policy: config.wrapParameters,
+        settings: config.recordTypes,
         spaceInside: config.spaceInsideParens,
         requiredTrailingComma: positional.length == 1 && named == null,
         leftDelimiter: named?.leftBracket,
@@ -763,22 +879,87 @@ extension ExpressionRules on DocBuilder {
     ]);
   }
 
+  /// `switch (x) { a => 1, b => 2 }`, arms laid out per
+  /// `wrap.switch_expressions`. Arm commas print exactly as in the source.
   Doc switchExpression(SwitchExpression node) {
+    final settings = config.switchExpressions;
     final cases = node.cases;
-    final body = <Doc>[];
-    for (final (i, c) in cases.indexed) {
-      if (i > 0) {
-        body.add(hardline);
-        if (capBlank(blankLinesBetween(cases[i - 1], c)) > 0) {
-          body.add(hardline);
-        }
-      }
-      body.add(visit(c));
-      // Case commas are not in the optional-comma allowlist: keep as is.
-      if (i < cases.length - 1 || hasTrailingComma(c)) {
-        body.add(tok(c.endToken.next));
-      }
+    var policy = settings.policy;
+    if (policy == WrapPolicy.never &&
+        hasLineCommentIn(node.leftBracket.end, node.rightBracket.offset)) {
+      policy = WrapPolicy.chopIfLong;
     }
+    final never = policy == WrapPolicy.never;
+    final forced =
+        !never &&
+        (policy == WrapPolicy.chopAlways ||
+            settings.reachesThreshold(cases.length));
+    final kept = [
+      for (final (i, c) in cases.indexed)
+        !never &&
+            settings.keepExistingLineBreaks &&
+            newlinesBetween(
+                  i == 0
+                      ? node.leftBracket.end
+                      : cases[i - 1].endToken.next!.end,
+                  startWithComments(c),
+                ) >
+                0,
+    ];
+    final separator = never ? space : (forced ? hardline : line);
+    final arms = <Doc>[];
+    for (final (i, c) in cases.indexed) {
+      arms.add(
+        concat([
+          visit(c),
+          // Case commas are not in the optional-comma allowlist: keep as is.
+          if (i < cases.length - 1 || hasTrailingComma(c)) tok(c.endToken.next),
+        ]),
+      );
+    }
+    // Blank lines between arms survive where the arms break.
+    Doc blank(int i) =>
+        !never && capBlank(blankLinesBetween(cases[i - 1], cases[i])) > 0
+        ? IfBreak(softline)
+        : empty;
+    Doc between(int i) => concat([separator, blank(i)]);
+
+    final Doc body;
+    if (forced || !kept.skip(1).contains(true)) {
+      final parts = <Doc>[];
+      for (var i = 0; i < arms.length; i++) {
+        if (i > 0) parts.add(between(i));
+        parts.add(arms[i]);
+      }
+      body = policy == WrapPolicy.ifLong && !forced
+          ? Fill([
+              for (var i = 0; i < arms.length; i++) ...[
+                if (i > 0) separator,
+                arms[i],
+              ],
+            ])
+          : concat(parts);
+    } else {
+      final parts = <Doc>[];
+      var start = 0;
+      for (var i = 1; i <= arms.length; i++) {
+        if (i < arms.length && !kept[i]) continue;
+        if (start > 0) parts.addAll([hardline, blank(start)]);
+        parts.add(
+          group(
+            concat([
+              for (var k = start; k < i; k++) ...[
+                if (k > start) between(k),
+                arms[k],
+              ],
+            ]),
+          ),
+        );
+        start = i;
+      }
+      body = concat(parts);
+    }
+    final edge = never ? space : (forced || kept[0] ? hardline : line);
     return concat([
       tok(node.switchKeyword),
       if (config.spaceBeforeControlParens) space,
@@ -788,12 +969,14 @@ extension ExpressionRules on DocBuilder {
       space,
       cases.isEmpty
           ? emptyDelimited(node.leftBracket, node.rightBracket)
-          : concat([
-              tok(node.leftBracket),
-              indent(concat([hardline, ...body])),
-              hardline,
-              tok(node.rightBracket),
-            ]),
+          : group(
+              concat([
+                tok(node.leftBracket),
+                indent(concat([edge, body])),
+                edge,
+                tok(node.rightBracket),
+              ]),
+            ),
     ]);
   }
 }

@@ -6,6 +6,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/syntactic_entity.dart';
 import 'package:analyzer/dart/ast/token.dart';
 
+import '../config/config.dart';
 import '../ir/doc.dart';
 import 'builder.dart';
 import 'expressions.dart';
@@ -82,7 +83,7 @@ extension DeclarationRules on DocBuilder {
       open: node.leftBracket,
       items: node.typeParameters,
       close: node.rightBracket,
-      policy: config.wrapParameters,
+      settings: config.parameters.unaligned,
       optionalTrailingComma: false,
     ),
     TypeParameter() => declarationHeader(node, inlineMetadata: true),
@@ -240,11 +241,39 @@ extension DeclarationRules on DocBuilder {
     if (previous is Directive && next is! Directive) {
       return config.blankLinesAfterImports;
     }
-    if (_isClassLike(previous) || _isClassLike(next)) {
+    if (previous is Directive && next is Directive) {
+      final count = config.values['blank_lines.between_import_groups'];
+      final (a, b) = (_directiveGroup(previous), _directiveGroup(next));
+      return count is int && a != null && b != null && a != b ? count : null;
+    }
+    if ((_isClassLike(previous) || _isClassLike(next)) &&
+        config.settings['blank_lines.around_class_declarations'] != 'inherit') {
       return config.blankLinesAroundClasses;
     }
-    return null;
+    // Two declarations without a block body keep their source grouping.
+    if (config.flag(
+          'blank_lines.keep_between_non_block_top_level_declarations',
+        ) &&
+        !_hasBlockBody(previous) &&
+        !_hasBlockBody(next)) {
+      return null;
+    }
+    final count = config.values['blank_lines.between_top_level_declarations'];
+    return count is int ? count : null;
   }
+
+  /// `dart:`, `package:` and relative imports, exports and parts are the
+  /// groups `blank_lines.between_import_groups` separates.
+  static String? _directiveGroup(AstNode directive) => switch (directive) {
+    ImportDirective(:final uri) => switch (uri.stringValue) {
+      final u? when u.startsWith('dart:') => 'dart',
+      final u? when u.startsWith('package:') => 'package',
+      _ => 'relative',
+    },
+    ExportDirective() => 'export',
+    PartDirective() => 'part',
+    _ => null,
+  };
 
   static bool _isClassLike(AstNode node) =>
       node is ClassDeclaration ||
@@ -253,13 +282,23 @@ extension DeclarationRules on DocBuilder {
       node is ExtensionDeclaration ||
       node is ExtensionTypeDeclaration;
 
-  /// Annotations, each on its own line, or inline for parameters.
-  Doc metadata(AnnotatedNode node, {bool inline = false}) => concat([
-    for (final annotation in node.metadata) ...[
-      visit(annotation),
-      inline ? space : hardline,
-    ],
-  ]);
+  /// Annotations, placed per `wrap.annotations`, or inline for parameters.
+  Doc metadata(AnnotatedNode node, {bool inline = false}) {
+    final placement = config.values['wrap.annotations'];
+    return concat([
+      for (final annotation in node.metadata) ...[
+        visit(annotation),
+        if (inline || placement == 'same_line')
+          space
+        else if (placement == 'preserve' &&
+            newlinesBetween(annotation.end, annotation.endToken.next!.offset) ==
+                0)
+          space
+        else
+          hardline,
+      ],
+    ]);
+  }
 
   /// A declaration printed child by child with single spaces, except where
   /// tokens attach (`name(`, `name<`, `this.x`, `int?`). Clauses (`extends`,
@@ -376,26 +415,109 @@ extension DeclarationRules on DocBuilder {
 
   /// `: a = b, c = d`. When the parameter list in [header] split, the
   /// initializers follow `) : ` one per line, lined up under the first.
+  /// `: a = 1, b = 2` per `wrap.initializer_lists`. [header] is the
+  /// constructor header's group: under `colon: auto`, when it split the colon
+  /// follows `)` and the initializers align after it.
   Doc initializerList(
     Token colon,
     List<ConstructorInitializer> initializers, {
     GroupId? header,
   }) {
+    final settings = config.initializerLists;
+    var policy = settings.policy;
+    if (policy == WrapPolicy.never &&
+        hasLineCommentIn(colon.end, initializers.last.end)) {
+      policy = WrapPolicy.chopIfLong;
+    }
+    final never = policy == WrapPolicy.never;
+    final forced =
+        !never &&
+        (policy == WrapPolicy.chopAlways ||
+            settings.reachesThreshold(initializers.length));
+    final kept = [
+      for (final (i, initializer) in initializers.indexed)
+        i > 0 &&
+            !never &&
+            settings.keepExistingLineBreaks &&
+            newlinesBetween(
+                  initializers[i - 1].endToken.next!.end,
+                  startWithComments(initializer),
+                ) >
+                0,
+    ];
     // Built once: they may carry comments, and only one branch prints.
     final colonDoc = tok(colon);
-    final list = commaSeparated(initializers);
-    final flatHeader = group(
-      indent(concat([line, colonDoc, space, align(2, list)])),
+    final spaced = config.flag('spaces.before_colon_in_initializer_list');
+    final beforeColon = spaced ? space : empty;
+    final items = [
+      for (final (i, initializer) in initializers.indexed)
+        concat([
+          visit(initializer),
+          if (i < initializers.length - 1) ...[
+            if (config.spaceBeforeComma) space,
+            tok(initializer.endToken.next),
+          ],
+        ]),
+    ];
+    final afterComma = config.spaceAfterComma ? ' ' : '';
+    final list = runs(
+      items,
+      kept,
+      separator: never
+          ? Text(afterComma)
+          : forced
+          ? hardline
+          : Line.soft(afterComma),
+      fill: policy == WrapPolicy.ifLong && !forced,
     );
-    if (header == null) return flatHeader;
+    if (never) return concat([beforeColon, colonDoc, space, list]);
+
+    final width = settings.indent;
+    // Later initializers under the first, or [width] past the baseline.
+    Doc afterColon(Doc list) =>
+        settings.align ? align(2, list) : indentBy(width, list);
+    final newLine = group(
+      indentBy(
+        width,
+        concat([
+          Line.soft(spaced ? ' ' : ''),
+          colonDoc,
+          space,
+          afterColon(list),
+        ]),
+      ),
+    );
+    switch (config.values['wrap.initializer_lists.colon']) {
+      case 'new_line':
+        return newLine;
+      case 'end_of_header':
+        final broken = concat([line, list]);
+        return group(
+          concat([
+            beforeColon,
+            colonDoc,
+            indentBy(
+              width,
+              settings.align ? broken : indentBy(width, broken),
+            ),
+          ]),
+        );
+    }
+    if (header == null) return newLine;
+    final afterHeader = group(
+      list,
+      shouldBreak: initializers.length > 1,
+    );
     return IfBreak(
       concat([
-        space,
+        beforeColon,
         colonDoc,
         space,
-        alignToColumn(group(list, shouldBreak: initializers.length > 1)),
+        settings.align
+            ? alignToColumn(afterHeader)
+            : indentBy(width, indentBy(width, afterHeader)),
       ]),
-      flatHeader,
+      newLine,
       header,
     );
   }
@@ -413,10 +535,73 @@ extension DeclarationRules on DocBuilder {
     }
     return concat([
       metadata(node),
-      group(_header(parts)),
+      _classHeader(parts),
       if (body is! EmptyClassBody && body is! EmptyEnumBody) space,
       visit(body),
     ]);
+  }
+
+  /// A type declaration's header with its `extends`, `with`, `implements`
+  /// and `on` clauses laid out per `wrap.class_header`.
+  Doc _classHeader(List<(SyntacticEntity, Doc, Doc)> parts) {
+    final clauses = [
+      for (final part in parts)
+        if (_isClause(part.$1)) part,
+    ];
+    if (clauses.isEmpty) return group(_header(parts));
+    final head = _header(parts.where((p) => !_isClause(p.$1)).toList());
+    final settings = config.classHeader;
+    var policy = settings.policy;
+    final first = clauses.first.$1 as AstNode;
+    final last = clauses.last.$1 as AstNode;
+    if (policy == WrapPolicy.never &&
+        hasLineCommentIn(first.offset, last.end)) {
+      policy = WrapPolicy.chopIfLong;
+    }
+    final never = policy == WrapPolicy.never;
+    final forced =
+        !never &&
+        (policy == WrapPolicy.chopAlways ||
+            settings.reachesThreshold(clauses.length));
+    final kept = [
+      for (final (entity, _, _) in clauses)
+        !never &&
+            settings.keepExistingLineBreaks &&
+            newlinesBetween(
+                  (entity as AstNode).beginToken.previous!.end,
+                  entity.offset,
+                ) >
+                0,
+    ];
+    // `extends` may stay on the name's line.
+    final extendsStays =
+        !config.flag('wrap.class_header.clauses_on_new_line') &&
+        first is ExtendsClause;
+    Doc separator(int i) => never || (i == 0 && extendsStays)
+        ? space
+        : forced
+        ? hardline
+        : line;
+    final docs = [for (final (_, _, doc) in clauses) doc];
+    // A kept break breaks the whole header, the layout it produces, so the
+    // next run lays it out the same way.
+    final broken = forced || kept.contains(true);
+    return group(
+      concat([
+        head,
+        if (policy == WrapPolicy.ifLong && !broken)
+          cont(
+            Fill([
+              empty,
+              for (var i = 0; i < docs.length; i++) ...[separator(i), docs[i]],
+            ]),
+          )
+        else
+          for (var i = 0; i < docs.length; i++)
+            cont(concat([separator(i), docs[i]])),
+      ]),
+      shouldBreak: broken,
+    );
   }
 
   Doc typeClause(Token keyword, List<AstNode> types) =>
@@ -431,6 +616,7 @@ extension DeclarationRules on DocBuilder {
         sequence(members, blankLines: _memberBlankLines),
       ]),
       close,
+      after: config.blankLinesAfterLastMember,
     );
   }
 
@@ -438,16 +624,25 @@ extension DeclarationRules on DocBuilder {
   /// two members without one (fields, `=>` members, constructors ending in
   /// `;`) the source's grouping is kept, up to the cap.
   int _memberBlankLines(AstNode previous, AstNode next, int sourceBlank) {
-    if (!_hasBlockBody(previous) && !_hasBlockBody(next)) {
+    if (config.flag('blank_lines.keep_between_non_block_members') &&
+        !_hasBlockBody(previous) &&
+        !_hasBlockBody(next)) {
       return capBlank(sourceBlank);
     }
     return config.blankLinesBetweenMembers;
   }
 
-  bool _hasBlockBody(AstNode member) => switch (member) {
+  /// Whether [declaration] has a `{ }` body of its own, syntactically: a
+  /// variable initialised with a block-bodied closure has none.
+  bool _hasBlockBody(AstNode declaration) => switch (declaration) {
     MethodDeclaration(:final body) || ConstructorDeclaration(:final body) =>
       body is BlockFunctionBody,
-    FieldDeclaration() => false,
+    FunctionDeclaration(:final functionExpression) =>
+      functionExpression.body is BlockFunctionBody,
+    FieldDeclaration() ||
+    TopLevelVariableDeclaration() ||
+    TypeAlias() ||
+    Directive() => false,
     _ => true,
   };
 
@@ -459,7 +654,7 @@ extension DeclarationRules on DocBuilder {
         open: node.leftBracket,
         items: constants,
         close: node.rightBracket,
-        policy: config.wrapCollections,
+        settings: config.enumValues,
         spaceInside: true,
       );
     }
@@ -489,6 +684,7 @@ extension DeclarationRules on DocBuilder {
         ],
       ]),
       node.rightBracket,
+      after: members.isEmpty ? 0 : config.blankLinesAfterLastMember,
     );
   }
 
@@ -567,14 +763,13 @@ extension DeclarationRules on DocBuilder {
       open: node.leftParenthesis,
       items: parameters,
       close: node.rightParenthesis,
-      policy: config.wrapParameters,
+      settings: config.parameters,
       spaceInside: config.spaceInsideParens,
       leftDelimiter: leftDelimiter,
       rightDelimiter: node.rightDelimiter,
       optionalStart: leftDelimiter == null
           ? -1
           : parameters.indexWhere((p) => p.offset > leftDelimiter.offset),
-      align: config.alignParameters,
     );
   }
 }

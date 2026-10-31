@@ -1,0 +1,7 @@
+void example() {
+
+  start();
+
+  finish();
+
+}

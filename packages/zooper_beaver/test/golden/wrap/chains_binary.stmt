@@ -1,0 +1,14 @@
+50 columns                                        |
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=true) The first call stays on the receiver line.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users.where((u) => u.active)
+    .map((u) => u.name)
+    .toList();
+>>> The preset breaks before every call.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .toList();

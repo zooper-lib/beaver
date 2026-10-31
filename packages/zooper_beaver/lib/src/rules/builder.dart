@@ -46,7 +46,7 @@ final class DocBuilder {
     final trailing = comments.trailing[node];
     if (leading == null && trailing == null) return doc;
     return concat([
-      if (leading != null) leadingComments(leading),
+      if (leading != null) leadingComments(leading, node),
       doc,
       if (trailing != null) trailingComments(trailing),
     ]);
@@ -91,7 +91,13 @@ final class DocBuilder {
     final parts = <Doc>[];
     for (final c in dangling) {
       if (!_printed.add(c)) continue;
-      parts.add(c.newlineBefore ? hardline : space);
+      parts.add(
+        c.newlineBefore
+            ? hardline
+            : c.isLineComment
+            ? spaceBeforeTrailingComment
+            : space,
+      );
       parts.add(commentDoc(c));
       parts.add(_endsLine(c) ? hardline : space);
     }
@@ -119,20 +125,49 @@ final class DocBuilder {
     return concat(parts);
   }
 
+  /// Blank lines between [last], the last comment leading [node], and
+  /// [node]: none for a statement or list item, a doc comment, or a
+  /// line-sensitive directive that must stay next to its target.
+  int _gapBeforeDeclaration(SourceComment last, AstNode node) {
+    final isDeclaration =
+        node is CompilationUnitMember ||
+        node is ClassMember ||
+        node is EnumConstantDeclaration;
+    final text = last.text;
+    if (!isDeclaration ||
+        text.startsWith('///') ||
+        text.startsWith('/**') ||
+        RegExp(
+          r'^//\s*(ignore:|ignore_for_file:|coverage:ignore-line)',
+        ).hasMatch(text)) {
+      return 0;
+    }
+    final setting =
+        config.values['blank_lines.between_comment_and_declaration'];
+    if (setting is int) return setting;
+    return capBlank(blankLinesIn(last.end, startOf(node)));
+  }
+
   bool _endsLine(SourceComment c) =>
       c.isLineComment || c.position != CommentPosition.remaining;
 
-  Doc leadingComments(List<SourceComment> list) {
+  /// [list], the comments leading [node]. Between the last one and a
+  /// declaration, `blank_lines.between_comment_and_declaration` decides.
+  Doc leadingComments(List<SourceComment> list, [AstNode? node]) {
     final parts = <Doc>[];
     for (final c in list) {
       if (!_printed.add(c)) continue;
       parts.add(commentDoc(c));
       if (_endsLine(c)) {
         parts.add(hardline);
-        // Keep one blank line between separated comments, never between the
-        // last comment and the node.
         final next = c.token.next;
-        if (next != null && blankLineBefore(next.offset)) {
+        if (identical(c, list.last)) {
+          final gap = node == null ? 0 : _gapBeforeDeclaration(c, node);
+          for (var b = 0; b < gap; b++) {
+            parts.add(hardline);
+          }
+        } else if (next != null && blankLineBefore(next.offset)) {
+          // Keep one blank line between separated comments.
           parts.add(hardline);
         }
       } else {
@@ -141,6 +176,10 @@ final class DocBuilder {
     }
     return concat(parts);
   }
+
+  /// The gap between code and a `//` comment ending its line.
+  Doc get spaceBeforeTrailingComment =>
+      Text(' ' * config.spaceBeforeTrailingComment);
 
   Doc trailingComments(List<SourceComment> list) {
     final parts = <Doc>[];
@@ -166,13 +205,14 @@ final class DocBuilder {
           atLineStart = true;
         }
       } else if (_endsLine(c)) {
+        final gap = c.isLineComment ? spaceBeforeTrailingComment : space;
         if (deferrable) {
           parts.addAll([
-            lineSuffix(concat([space, commentDoc(c)])),
+            lineSuffix(concat([gap, commentDoc(c)])),
             breakParent,
           ]);
         } else {
-          parts.addAll([space, commentDoc(c), hardline]);
+          parts.addAll([gap, commentDoc(c), hardline]);
           atLineStart = true;
         }
       } else {
@@ -252,12 +292,14 @@ final class DocBuilder {
   }
 
   /// Blank lines in the source between two consecutive nodes.
-  int blankLinesBetween(AstNode previous, AstNode next) {
+  int blankLinesBetween(AstNode previous, AstNode next) =>
+      blankLinesIn(endWithComments(previous), startWithComments(next));
+
+  /// Whitespace-only lines between offsets [from] and [to].
+  int blankLinesIn(int from, int to) {
     // Only whitespace-only lines count: a separator such as a `,` may sit on
     // a line of its own between the two.
-    final lines = source
-        .substring(endWithComments(previous), startWithComments(next))
-        .split('\n');
+    final lines = source.substring(from, to).split('\n');
     var blank = 0;
     for (var i = 1; i < lines.length - 1; i++) {
       if (lines[i].trim().isEmpty) blank++;
@@ -387,6 +429,11 @@ final class DocBuilder {
   /// Continuation indentation for wrapped expression lines.
   Doc cont(Doc doc) => align(config.continuationIndent, doc);
 
+  /// [doc] indented by a list's `indent`: one indentation level when that
+  /// is its width (a tab under `indent.style: tabs`), spaces otherwise.
+  Doc indentBy(int width, Doc doc) =>
+      width == config.indentSize ? indent(doc) : align(width, doc);
+
   /// Members or statements on their own lines, with blank lines decided by
   /// [blankLines] (previous, next, source blank lines → blank lines to print).
   Doc sequence(
@@ -416,9 +463,23 @@ final class DocBuilder {
 
   int capBlank(int lines) => _capBlank(lines);
 
+  /// [lines] capped by `blank_lines.max_consecutive_in_code`, for blank
+  /// lines inside function bodies.
+  int capBlankInCode(int lines) {
+    final cap = config.maxBlankLinesInCode;
+    return lines > cap ? cap : lines;
+  }
+
   /// `{ ... }` holding [body] on indented lines, or the dangling comments
-  /// before [close], or nothing.
-  Doc braces(Token open, Doc? body, Token close) {
+  /// before [close], or nothing. [before] and [after] are blank lines to
+  /// print after [open] and before [close].
+  Doc braces(
+    Token open,
+    Doc? body,
+    Token close, {
+    int before = 0,
+    int after = 0,
+  }) {
     final dangling = danglingLines(close);
     if (body == null && dangling == null) {
       return concat([
@@ -431,10 +492,12 @@ final class DocBuilder {
       tok(open),
       indent(
         concat([
+          for (var b = 0; b < before; b++) hardline,
           if (body != null) ...[hardline, body],
           if (dangling != null) ...[hardline, dangling],
         ]),
       ),
+      for (var b = 0; b < after; b++) hardline,
       hardline,
       tok(close),
     ]);

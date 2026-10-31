@@ -1,6 +1,8 @@
 /// The rule showcase in `example/` is real formatter output: every
 /// `<key>/<value>/after.dart` is `<key>/before.dart` formatted with that
-/// folder's `.beaver.yaml`, and every configuration key has a folder.
+/// folder's `.beaver.yaml`, and every configuration key has a folder. A
+/// field of a list map without a folder of its own is shown by the list's
+/// folder (`wrap.<list>`).
 library;
 
 import 'dart:io';
@@ -18,11 +20,32 @@ String? _read(String path) {
   return file.existsSync() ? file.readAsStringSync() : null;
 }
 
+/// Names that show [key]: its own, and for a list field its list's.
+List<String> _names(String key) {
+  final [section, name, ...rest] = [...key.split('.'), '', ''];
+  final isList =
+      section == 'wrap' &&
+      rest.first.isNotEmpty &&
+      listConstructs.any((list) => list.name == name);
+  return [key, if (isList) ...['wrap.$name', 'wrap.$name.policy']];
+}
+
 void main() {
   test('every configuration key has a folder', () {
     for (final key in schema.keys) {
       expect(
-        Directory(p.join(_example, key)).existsSync(),
+        _names(key).any((n) => Directory(p.join(_example, n)).existsSync()),
+        isTrue,
+        reason: key,
+      );
+    }
+  });
+
+  test('the index lists every key', () {
+    final index = File(p.join(_example, 'README.md')).readAsStringSync();
+    for (final key in schema.keys) {
+      expect(
+        _names(key).any((n) => index.contains('`$n`')),
         isTrue,
         reason: key,
       );
@@ -30,8 +53,8 @@ void main() {
   });
 
   test('inputs are excluded from formatting', () {
-    for (final key in schema.keys) {
-      final before = p.join(_example, key, 'before.dart');
+    for (final key in Directory(_example).listSync().whereType<Directory>()) {
+      final before = p.join(key.path, 'before.dart');
       if (!File(before).existsSync()) continue;
       expect(
         resolveConfig(before, read: _read).excludedBy(p.absolute(before)),

@@ -1,0 +1,3 @@
+blank_lines:
+  max_consecutive_in_code: inherit
+  max_consecutive: 2

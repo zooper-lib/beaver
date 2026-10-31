@@ -1,0 +1,21 @@
+80 columns                                                                      |
+>>> (strings.quotes=single) Escapes avoided under the preset.
+final msg = "don't";
+<<<
+final msg = "don't";
+>>> (strings.quotes=single strings.quotes_avoid_escapes=false) Escapes added.
+final msg = "don't";
+<<<
+final msg = 'don\'t';
+>>> (strings.quotes=double strings.quotes_avoid_escapes=false) Into double quotes, with interpolation.
+final msg = 'say "hi" to $name';
+<<<
+final msg = "say \"hi\" to $name";
+>>> (strings.quotes=single strings.quotes_avoid_escapes=false) An existing escape is kept as is.
+final msg = "it's a \"quote\"";
+<<<
+final msg = 'it\'s a \"quote\"';
+>>> (strings.quotes=single strings.quotes_avoid_escapes=false) A multi-line string with the quote stays.
+final msg = """don't""";
+<<<
+final msg = """don't""";

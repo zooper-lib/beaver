@@ -1,0 +1,15 @@
+40 columns                              |
+>>> (wrap.enum_values.chop_from=2) Enum values.
+enum Side { left, right }
+<<<
+enum Side {
+  left,
+  right,
+}
+>>> (wrap.collection_literals.chop_from=2) Enum values follow collection literals.
+enum Side { left, right }
+<<<
+enum Side {
+  left,
+  right,
+}

@@ -1,0 +1,91 @@
+40 columns                              |
+>>> (wrap.collection_literals.keep_existing_line_breaks=true wrap.arguments.keep_existing_line_breaks=false) Collections keep breaks, arguments do not.
+const corners = [
+  Offset(0, 0), Offset(1, 0),
+  Offset(0, 1), Offset(1, 1),
+];
+<<<
+const corners = [
+  Offset(0, 0), Offset(1, 0),
+  Offset(0, 1), Offset(1, 1),
+];
+>>> (wrap.collection_literals.keep_existing_line_breaks=false) Per-construct normalisation.
+const corners = [
+  Offset(0, 0), Offset(1, 0),
+  Offset(0, 1), Offset(1, 1),
+];
+<<<
+const corners = [
+  Offset(0, 0),
+  Offset(1, 0),
+  Offset(0, 1),
+  Offset(1, 1),
+];
+>>> (wrap.arguments.keep_existing_line_breaks=false) Arguments normalised while the global flag keeps breaks.
+foo(a,
+    b, c);
+<<<
+foo(a, b, c);
+>>> (wrap.arguments.chop_on_trailing_comma=false) A source comma does not chop arguments.
+f(a, b,);
+<<<
+f(a, b);
+>>> (wrap.arguments.chop_on_trailing_comma=false) It still chops a list literal.
+x = [1, 2,];
+<<<
+x = [
+  1,
+  2,
+];
+>>> (wrap.collection_literals.chop_on_trailing_comma=false) Collections only: arguments still chop.
+f([1, 2,], b,);
+<<<
+f(
+  [1, 2],
+  b,
+);
+>>> (wrap.arguments.trailing_commas=remove) A record follows the global comma policy.
+final r = (firstLongField, secondLongField);
+<<<
+final r = (
+  firstLongField,
+  secondLongField,
+);
+>>> (wrap.arguments.trailing_commas=remove) The override applies to arguments.
+function(firstArgument, secondArgument, third);
+<<<
+function(
+  firstArgument,
+  secondArgument,
+  third
+);
+>>> (wrap.arguments.chop_on_trailing_comma=false) A record still chops on its comma.
+final r = (a, b,);
+<<<
+final r = (
+  a,
+  b,
+);
+>>> (indent.continuation=4 wrap.chained_calls.indent=2) Per-construct chain indent.
+final r = obj.doThisThing().thenThatThing().andMore();
+<<<
+final r = obj
+  .doThisThing()
+  .thenThatThing()
+  .andMore();
+>>> (wrap.arguments.indent=4) Argument indent.
+function(firstArgument, secondArgument, third);
+<<<
+function(
+    firstArgument,
+    secondArgument,
+    third,
+);
+>>> (indent.size=4) Inherited argument indent follows indent.size.
+function(firstArgument, secondArgument, third);
+<<<
+function(
+    firstArgument,
+    secondArgument,
+    third,
+);

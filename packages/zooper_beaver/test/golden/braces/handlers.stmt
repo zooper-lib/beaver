@@ -1,0 +1,49 @@
+80 columns                                                                      |
+>>> (braces.else_on_new_line=true braces.finally_on_new_line=false) finally overrides the fallback.
+try { a(); } catch (e) { b(); } finally { c(); }
+<<<
+try {
+  a();
+}
+catch (e) {
+  b();
+} finally {
+  c();
+}
+>>> (braces.catch_on_new_line=true) An on clause moves as a whole.
+try { a(); } on FormatException catch (e) { b(); }
+<<<
+try {
+  a();
+}
+on FormatException catch (e) {
+  b();
+}
+>>> (braces.else_on_new_line=true) Handlers follow else_on_new_line by default.
+try { a(); } finally { c(); }
+<<<
+try {
+  a();
+}
+finally {
+  c();
+}
+>>> (braces.while_on_new_line=true) The while of a do loop.
+do { a(); } while (x);
+<<<
+do {
+  a();
+}
+while (x);
+>>> (braces.while_on_new_line=true) An ordinary while is unaffected.
+while (x) { a(); }
+<<<
+while (x) {
+  a();
+}
+>>> (braces.else_on_new_line=true braces.while_on_new_line=false) while can stay with the brace.
+do { a(); } while (x);
+<<<
+do {
+  a();
+} while (x);
