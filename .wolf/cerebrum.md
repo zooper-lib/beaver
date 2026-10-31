@@ -21,6 +21,8 @@ budget_tokens: 2000
 <!-- Mistakes made and corrected. Each entry prevents the same mistake recurring. -->
 <!-- Format: [YYYY-MM-DD] Description of what went wrong and what to do instead. -->
 
+- [2026-10-30] `git stash` + test run + `git stash pop` fails here: OpenWolf hooks rewrite `.wolf/anatomy*.json|md` while commands run, so the pop aborts. For a before/after baseline use `git worktree add` on HEAD instead of stashing.
+
 ## Decision Log
 
 <!-- Significant technical decisions with rationale. Why X was chosen over Y. -->

@@ -1,0 +1,35 @@
+60 columns                                                  |
+>>> (wrap.break_before.arrow=true wrap.break_before.assignment=true) Break before the arrow and the assignment.
+final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+<<<
+final decoded
+    = jsonDecode(response.body) as Map<String, dynamic>;
+>>> The preset breaks after the assignment.
+final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+<<<
+final decoded =
+    jsonDecode(response.body) as Map<String, dynamic>;
+>>> (wrap.break_before.assignment=true) A fitting assignment is unchanged.
+final x = a + b;
+<<<
+final x = a + b;
+>>> (wrap.break_before.conditional_operator=false) The conditional operators end their lines.
+final value = someCondition ? firstAlternativeValue : secondAlternative;
+<<<
+final value = someCondition ?
+    firstAlternativeValue :
+    secondAlternative;
+>>> The preset starts lines with the conditional operators.
+final value = someCondition ? firstAlternativeValue : secondAlternative;
+<<<
+final value = someCondition
+    ? firstAlternativeValue
+    : secondAlternative;
+>>> (wrap.break_before.conditional_operator=false) A nested conditional chain.
+final v = a ? firstAlternativeValue : b ? secondAlternative : third;
+<<<
+final v = a ?
+    firstAlternativeValue :
+    b ?
+    secondAlternative :
+    third;

@@ -1,0 +1,6 @@
+# Only this folder: stop the walk here.
+root = true
+
+[*.dart]
+indent_style = space
+indent_size = 4

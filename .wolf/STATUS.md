@@ -4,7 +4,7 @@ budget_tokens: 1000
 ---
 # STATUS — beaver
 
-> Read this FIRST when resuming. Last updated: 2026-10-28
+> Read this FIRST when resuming. Last updated: 2026-10-30
 
 ## ✅ Done
 
@@ -14,7 +14,14 @@ budget_tokens: 1000
 - CI/release: `.github/workflows/ci.yml` (dart both bounds, vscode+xvfb, intellij IDE matrix, editor configs), `release.yml` (5 binaries, checksums+manifest via `tool/release/manifest.sh`, signing gated on secrets, VSIX, plugin, pub publish). Never run on GitHub.
 - Docs: `docs/{cli,stdin-protocol,directives,install,versioning,performance,safety-corpus}.md`, `docs/rules/*`, `docs/editors/*`.
 
-## 🚀 Next quest
+## add-new-settings (2026-10-30, branch feature/new-settings)
+
+- OpenSpec `add-new-settings`: 45/45 tasks ticked, not committed (user chose no commits). 915 tests pass, `--check .` clean, `openspec validate --strict` passes; corpus 1692/3126 (54.1%), see `test/golden/dart_style/UPSTREAM.md`.
+- Config: `schema.dart` builds list keys from `listConstructs`; `BeaverConfig.settings` (raw, may hold `inherit`) vs `.values` (resolved); `ListSettings` per list; `loader.dart` `normalizeAndValidateValues` holds the alias table; `resolve.dart` `Source` provenance + EditorConfig merge; `editorconfig.dart`, `template.dart` (`docs/beaver.template.yaml`, kept in sync by `docs_test`).
+- Preset deviations from the proposal: `wrap.initializer_lists` and `wrap.class_header` have `keep_existing_line_breaks: false` (inherit would change 0.1.0 output). Spec scenario "Different caps" can't hold for block-bodied methods (`between_members` is exact); golden uses fields.
+- Next: review diff, commit, archive `initial-implementation`, then `/opsx:archive add-new-settings`.
+
+## 🚀 Previous quest
 
 Release prep for 0.1.0 done (DRAFT.md deleted; decisions live in git history and openspec/). VS Code Marketplace trusted publishing set up by the user (variable VSCODE_MARKETPLACE). JetBrains: step in release.yml gated on vars.JETBRAINS_MARKETPLACE + secrets.JETBRAINS_TOKEN; first upload is manual. No Open VSX. Next: push, tag v0.1.0, manual pub.dev publish + enable automated publishing, manual JetBrains upload; then verify 13.3/13.4 and /opsx:archive.
 

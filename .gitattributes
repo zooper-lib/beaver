@@ -1,0 +1,2 @@
+# Line-ending examples must keep their exact bytes on every platform.
+example/line_ending/** -text

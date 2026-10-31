@@ -1,0 +1,81 @@
+80 columns                                                                      |
+>>> (wrap.switch_expressions=chop_if_long) A short switch stays on one line.
+final label = switch (side) { Side.left => 'L', Side.right => 'R' };
+<<<
+final label = switch (side) { Side.left => 'L', Side.right => 'R' };
+>>> The preset chops every arm.
+final label = switch (side) { Side.left => 'L', Side.right => 'R' };
+<<<
+final label = switch (side) {
+  Side.left => 'L',
+  Side.right => 'R'
+};
+>>> (wrap.switch_expressions=chop_if_long) Commas print exactly as in the source.
+final label = switch (side) { Side.left => 'L', Side.right => 'R', };
+<<<
+final label = switch (side) { Side.left => 'L', Side.right => 'R', };
+>>> (wrap.switch_expressions=chop_if_long) A long switch chops and keeps its commas.
+final label = switch (side) { Side.left => 'the left side of it', Side.right => 'the right side' };
+<<<
+final label = switch (side) {
+  Side.left => 'the left side of it',
+  Side.right => 'the right side'
+};
+>>> (wrap.switch_expressions=never) never keeps the arms on one line; an arm body still wraps.
+final label = switch (side) { Side.left => 'the left side of it', Side.right => 'the right side' };
+<<<
+final label = switch (side) { Side.left => 'the left side of it', Side.right =>
+    'the right side' };
+>>> (wrap.switch_expressions.policy=chop_if_long wrap.switch_expressions.chop_from=2) The threshold chops.
+final label = switch (side) { Side.left => 'L', Side.right => 'R' };
+<<<
+final label = switch (side) {
+  Side.left => 'L',
+  Side.right => 'R'
+};
+>>> The preset class header at 80 columns.
+class HomeScreen extends StatefulWidget with RouteAware implements PreferredSizeWidget {}
+<<<
+class HomeScreen
+    extends StatefulWidget
+    with RouteAware
+    implements PreferredSizeWidget {}
+>>> (wrap.class_header.clauses_on_new_line=false) extends stays with the name.
+class HomeScreen extends StatefulWidget with RouteAware implements PreferredSizeWidget {}
+<<<
+class HomeScreen extends StatefulWidget
+    with RouteAware
+    implements PreferredSizeWidget {}
+>>> (wrap.class_header=chop_always) chop_always splits a short header.
+class A extends B with C {}
+<<<
+class A
+    extends B
+    with C {}
+>>> (wrap.class_header=never) never keeps a long header on one line.
+class HomeScreen extends StatefulWidget with RouteAware implements PreferredSizeWidget {}
+<<<
+class HomeScreen extends StatefulWidget with RouteAware implements PreferredSizeWidget {}
+>>> (wrap.class_header=if_long) if_long fills the clauses.
+class HomeScreen extends StatefulWidget with RouteAware implements PreferredSizeWidget {}
+<<<
+class HomeScreen extends StatefulWidget with RouteAware
+    implements PreferredSizeWidget {}
+>>> (wrap.class_header.chop_from=2) The threshold splits two clauses.
+class A extends B with C {}
+<<<
+class A
+    extends B
+    with C {}
+>>> (wrap.class_header.keep_existing_line_breaks=true) A kept break splits the header.
+class A extends B
+    with C {}
+<<<
+class A
+    extends B
+    with C {}
+>>> Under the preset a developer break is joined.
+class A extends B
+    with C {}
+<<<
+class A extends B with C {}

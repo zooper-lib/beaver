@@ -11,17 +11,17 @@ import '../ir/doc.dart';
 import 'builder.dart';
 
 extension ListRules on DocBuilder {
-  /// `open item, item close` laid out per [policy].
+  /// `open item, item close` laid out per the list's [settings].
   ///
   /// Items separated by a source newline (or a newline right after [open])
-  /// keep that break when `keep_existing_line_breaks` is on: the items
+  /// keep that break when the list's `keep_existing_line_breaks` is on: the items
   /// between kept breaks form runs, each its own group, joined by hard lines,
   /// so a kept break never expands its siblings. [forceChop] (a source
   /// trailing comma under `chop_on_trailing_comma`, or a named-argument
   /// match) breaks every separator.
   ///
-  /// With [align] (`indent.align.arguments`/`parameters`), items after the
-  /// first align to its column instead of being indented.
+  /// With the list's `align`, items after the first align to its column
+  /// instead of being indented.
   ///
   /// [optionalTrailingComma] is false for constructs whose trailing comma
   /// the verifier compares exactly; the source's comma is kept.
@@ -34,7 +34,7 @@ extension ListRules on DocBuilder {
     required Token open,
     required List<AstNode> items,
     required Token close,
-    required WrapPolicy policy,
+    required ListSettings settings,
     bool spaceInside = false,
     bool forceChop = false,
     bool requiredTrailingComma = false,
@@ -43,9 +43,9 @@ extension ListRules on DocBuilder {
     Token? rightDelimiter,
     int optionalStart = -1,
     AstNode? optionalNode,
-    bool align = false,
   }) {
     if (items.isEmpty) return emptyDelimited(open, close);
+    var policy = settings.policy;
 
     final sourceTrailingComma = hasTrailingComma(items.last);
     // A comment that ends its line forces a break even under `never`.
@@ -79,11 +79,12 @@ extension ListRules on DocBuilder {
         !never &&
         (forceChop ||
             policy == WrapPolicy.chopAlways ||
+            settings.reachesThreshold(items.length) ||
             (sourceTrailingComma &&
                 !requiredTrailingComma &&
-                config.chopOnTrailingComma &&
+                settings.chopOnTrailingComma &&
                 !mixed));
-    final fill = policy == WrapPolicy.ifLong;
+    final fill = policy == WrapPolicy.ifLong && !chop;
     final outer = GroupId('list');
 
     final comma = concat([if (config.spaceBeforeComma) space, Text(',')]);
@@ -95,7 +96,7 @@ extension ListRules on DocBuilder {
     // Whether the source broke the line before item i.
     final kept = [
       for (var i = 0; i < items.length; i++)
-        !never && config.keepExistingLineBreaks && gaps[i],
+        !never && settings.keepExistingLineBreaks && gaps[i],
     ];
 
     // Built once: it may carry comments, and only one of the two IfBreak
@@ -122,23 +123,38 @@ extension ListRules on DocBuilder {
       ]);
     }
 
+    // `close_bracket: after_last_item` hugs the closer to the last item and
+    // suppresses the optional comma; a comment ending that line still
+    // needs the closer on a line of its own.
+    final afterLastItem =
+        settings.closeBracket == CloseBracket.afterLastItem &&
+        !hasLineCommentIn(startWithComments(items.last), close.offset);
     final Doc trailing;
     if (requiredTrailingComma) {
       trailing = comma;
     } else if (!optionalTrailingComma) {
       // Not in the verifier's optional-comma allowlist: keep the source.
       trailing = sourceTrailingComma ? comma : empty;
+    } else if (afterLastItem && !never) {
+      trailing = empty;
     } else if (never) {
       trailing =
           sourceTrailingComma &&
-              config.trailingCommas == TrailingCommas.preserve
+              settings.trailingCommas == TrailingCommas.preserve
           ? comma
           : empty;
     } else {
-      trailing = switch (config.trailingCommas) {
+      trailing = switch (settings.trailingCommas) {
         TrailingCommas.preserve => sourceTrailingComma ? comma : empty,
         TrailingCommas.remove => empty,
         TrailingCommas.addWhenWrapped => IfBreak(comma, empty, outer),
+        // Only a chopped list, with every item starting its own line: not
+        // a filled one, nor one whose kept breaks group several items.
+        TrailingCommas.addWhenChopped =>
+            fill ||
+                (!chop && kept.contains(true) && kept.skip(1).contains(false))
+            ? empty
+            : IfBreak(comma, empty, outer),
       };
     }
     // Built before the closing tokens, which would otherwise print these
@@ -169,7 +185,7 @@ extension ListRules on DocBuilder {
       ]);
     }
 
-    if (align) {
+    if (settings.align) {
       // Alignment: items after the first line up under it; the brackets hug the
       // first and last item.
       final docs = [for (var i = 0; i < items.length; i++) itemDoc(i)];
@@ -186,7 +202,8 @@ extension ListRules on DocBuilder {
               // request that keeps this layout stable).
               if (requiredTrailingComma ||
                   (sourceTrailingComma &&
-                      config.trailingCommas != TrailingCommas.remove) ||
+                      settings.trailingCommas != TrailingCommas.remove &&
+                      !afterLastItem) ||
                   (sourceTrailingComma && !optionalTrailingComma))
                 comma,
               closeComments,
@@ -259,8 +276,14 @@ extension ListRules on DocBuilder {
       concat([
         tok(open),
         if (optionalStart == 0) optionalOpen,
-        indent(concat([first, body, trailing, closeComments])),
-        Line.soft(insideFlat),
+        indentBy(
+          settings.indent,
+          concat([first, body, trailing, closeComments]),
+        ),
+        if (afterLastItem)
+          IfBreak(empty, Text(insideFlat), outer)
+        else
+          Line.soft(insideFlat),
         closing,
       ]),
       shouldBreak: chop,
@@ -276,7 +299,11 @@ extension ListRules on DocBuilder {
     for (final c in dangling) {
       if (!markPrinted(c)) continue;
       parts.addAll([
-        c.newlineBefore ? hardline : space,
+        c.newlineBefore
+            ? hardline
+            : c.isLineComment
+            ? spaceBeforeTrailingComment
+            : space,
         commentDoc(c),
         if (c.isLineComment || c.position != CommentPosition.remaining)
           breakParent,

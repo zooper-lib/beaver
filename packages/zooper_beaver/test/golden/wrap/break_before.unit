@@ -1,0 +1,11 @@
+60 columns                                                  |
+>>> (wrap.break_before.arrow=true) Break before the arrow.
+String describe(Order order) => '${order.id}: ${order.items.length} items';
+<<<
+String describe(Order order)
+    => '${order.id}: ${order.items.length} items';
+>>> The preset puts the arrow at the end of the declaration line.
+String describe(Order order) => '${order.id}: ${order.items.length} items';
+<<<
+String describe(Order order) =>
+    '${order.id}: ${order.items.length} items';

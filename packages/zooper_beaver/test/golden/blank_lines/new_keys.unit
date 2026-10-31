@@ -1,0 +1,185 @@
+80 columns                                                                      |
+>>> Block edges are removed under the preset.
+void f() {
+
+  a();
+
+}
+<<<
+void f() {
+  a();
+}
+>>> (blank_lines.at_block_edges=1) One blank line kept at each edge.
+void f() {
+
+  a();
+
+}
+<<<
+void f() {
+
+  a();
+
+}
+>>> (blank_lines.at_block_edges=1) Capped at the edge value.
+void f() {
+
+
+  a();
+}
+<<<
+void f() {
+
+  a();
+}
+>>> The blank line after the last member is removed under the preset.
+class A {
+  int a = 0;
+
+}
+<<<
+class A {
+  int a = 0;
+}
+>>> (blank_lines.after_last_member=1) An exact count before the closing brace.
+class A {
+  int a = 0;
+}
+<<<
+class A {
+  int a = 0;
+
+}
+>>> (blank_lines.max_consecutive=2 blank_lines.max_consecutive_in_code=1) Different caps inside and outside code.
+class A {
+  int a = 0;
+
+
+  int b = 0;
+
+  void f() {
+    x();
+
+
+    y();
+  }
+}
+<<<
+class A {
+  int a = 0;
+
+
+  int b = 0;
+
+  void f() {
+    x();
+
+    y();
+  }
+}
+>>> (blank_lines.between_top_level_declarations=1 blank_lines.keep_between_non_block_top_level_declarations=false) An exact count between top-level declarations.
+int counter = 0;
+void increment() {
+  counter++;
+}
+typedef Callback = void Function();
+<<<
+int counter = 0;
+
+void increment() {
+  counter++;
+}
+
+typedef Callback = void Function();
+>>> (blank_lines.around_class_declarations=2 blank_lines.between_top_level_declarations=1) The class-specific count beats the general one.
+class A {}
+void f() {}
+void g() {}
+<<<
+class A {}
+
+
+void f() {}
+
+void g() {}
+>>> (blank_lines.around_class_declarations=inherit blank_lines.between_top_level_declarations=2) Classes use the general count under inherit.
+class A {}
+void f() {}
+<<<
+class A {}
+
+
+void f() {}
+>>> Two block-bodied functions stay adjacent under the preset.
+void f() {}
+void g() {}
+<<<
+void f() {}
+void g() {}
+>>> (blank_lines.between_top_level_declarations=1) Non-block declarations keep their grouping.
+int a = 0;
+int b = 1;
+
+int c = 2;
+<<<
+int a = 0;
+int b = 1;
+
+int c = 2;
+>>> (blank_lines.between_top_level_declarations=1 blank_lines.keep_between_non_block_top_level_declarations=true) A block-bodied closure initialiser is not a block body.
+final a = () {
+  x();
+};
+final b = 1;
+<<<
+final a = () {
+  x();
+};
+final b = 1;
+>>> (blank_lines.keep_between_non_block_members=false blank_lines.between_members=1) Uniform member spacing.
+class A {
+  int a = 0;
+  int b = 0;
+
+  int c = 0;
+}
+<<<
+class A {
+  int a = 0;
+
+  int b = 0;
+
+  int c = 0;
+}
+>>> (blank_lines.between_import_groups=1) One blank line between import groups.
+import 'dart:io';
+import 'package:path/path.dart';
+import 'src/a.dart';
+export 'src/b.dart';
+<<<
+import 'dart:io';
+
+import 'package:path/path.dart';
+
+import 'src/a.dart';
+
+export 'src/b.dart';
+>>> (blank_lines.between_import_groups=0) Groups collapse; directives are not reordered.
+import 'package:path/path.dart';
+
+import 'dart:io';
+import 'dart:async';
+<<<
+import 'package:path/path.dart';
+import 'dart:io';
+import 'dart:async';
+>>> Import groups keep their source spacing under the preset.
+import 'dart:io';
+import 'package:path/path.dart';
+
+import 'src/a.dart';
+<<<
+import 'dart:io';
+import 'package:path/path.dart';
+
+import 'src/a.dart';

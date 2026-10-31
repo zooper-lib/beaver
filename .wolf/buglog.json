@@ -1,4 +1,46 @@
 {
   "version": 1,
-  "bugs": []
+  "bugs": [
+    {
+      "error_message": "Null/undefined access in config_schema_test.dart",
+      "file": "packages/zooper_beaver/test/config_schema_test.dart",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "dart"
+      ],
+      "status": "candidate",
+      "observed_worktree": "/Users/daniel/Development/Projects/Zooper/beaver",
+      "id": "bug-001",
+      "timestamp": "2026-10-29T16:52:27.781Z",
+      "last_seen": "2026-10-29T16:52:27.781Z",
+      "occurrences": 1,
+      "related_bugs": []
+    },
+    {
+      "error_message": "Missing await",
+      "file": "packages/zooper_beaver/test/cli_test.dart",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "dart"
+      ],
+      "status": "candidate",
+      "observed_worktree": "/Users/daniel/Development/Projects/Zooper/beaver",
+      "id": "bug-002",
+      "timestamp": "2026-10-29T16:53:05.785Z",
+      "last_seen": "2026-10-29T16:53:05.785Z",
+      "occurrences": 1,
+      "related_bugs": []
+    }
+  ],
+  "applied_observations": {
+    "e7b892fe-ba3e-4ee3-b58a-32a99aa9f995": true,
+    "de7bc0d2-7d2d-4bda-bd4c-f8a0a011a765": true
+  },
+  "next_id": 3
 }

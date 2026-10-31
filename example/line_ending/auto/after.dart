@@ -1,0 +1,3 @@
+void example() {
+  print('hello');
+}

@@ -1,0 +1,3 @@
+wrap:
+  initializer_lists:
+    colon: end_of_header

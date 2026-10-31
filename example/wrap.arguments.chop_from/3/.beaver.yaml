@@ -1,0 +1,3 @@
+wrap:
+  arguments:
+    chop_from: 3

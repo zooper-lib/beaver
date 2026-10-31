@@ -1,0 +1,23 @@
+30 columns                    |
+>>> (wrap.binary_expressions.align=true) After `=` the right-hand side gets its own line, so this matches align=false.
+final total = subtotal + shipping + tax - discount;
+<<<
+final total =
+    subtotal +
+    shipping +
+    tax -
+    discount;
+>>> (wrap.binary_expressions.align=true) Inside an argument, under the first operand.
+f(subtotalValue + shipping + taxes);
+<<<
+f(
+  subtotalValue +
+  shipping +
+  taxes,
+);
+>>> (wrap.binary_expressions.align=true) In a return.
+return subtotal + shipping + tax;
+<<<
+return subtotal +
+       shipping +
+       tax;

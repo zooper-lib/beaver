@@ -1,0 +1,45 @@
+40 columns                              |
+>>> (spaces.before_trailing_comment=2) Two spaces before a trailing comment.
+final retries = 3;// never more than three
+<<<
+final retries = 3;  // never more than three
+>>> The preset uses one space.
+final retries = 3;    // never more than three
+<<<
+final retries = 3; // never more than three
+>>> (spaces.before_trailing_comment=2) After the last item of a list.
+foo(
+  a,
+  b, // last
+);
+<<<
+foo(
+  a,
+  b,  // last
+);
+>>> Map entries under the preset.
+final m = {'a' : 1, 'b' : 2};
+<<<
+final m = {'a': 1, 'b': 2};
+>>> (spaces.before_colon_in_map_entry=true spaces.after_colon_in_map_entry=false) Map colon spacing flipped.
+final m = {'a': 1};
+<<<
+final m = {'a' :1};
+>>> (spaces.before_colon_in_named_argument=true) Space before a named-argument colon.
+f(name: value);
+<<<
+f(name : value);
+>>> (spaces.before_colon_in_switch_case=true) Space before a case colon.
+switch (x) {
+  case 1:
+    a();
+  default:
+    b();
+}
+<<<
+switch (x) {
+  case 1 :
+    a();
+  default :
+    b();
+}

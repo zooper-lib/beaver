@@ -1,6 +1,6 @@
 # Space rules
 
-Keys under `spaces:`, each `true` or `false`, each controlling exactly the whitespace it names. Examples are taken verbatim from `packages/zooper_beaver/test/golden/spaces/spaces.stmt`.
+Keys under `spaces:`, each `true` or `false` (except `before_trailing_comment`, an integer), each controlling exactly the whitespace it names. Examples are taken verbatim from `packages/zooper_beaver/test/golden/spaces/spaces.stmt` and `new_spaces.stmt`.
 
 | Key | Preset `dart` |
 |---|---|
@@ -9,13 +9,19 @@ Keys under `spaces:`, each `true` or `false`, each controlling exactly the white
 | `around_arrow` | `true` |
 | `after_comma` | `true` |
 | `before_comma` | `false` |
+| `before_colon_in_named_argument` | `false` |
 | `after_colon_in_named_argument` | `true` |
+| `before_colon_in_map_entry` | `false` |
+| `after_colon_in_map_entry` | `true` |
+| `before_colon_in_initializer_list` | `true` |
+| `before_colon_in_switch_case` | `false` |
 | `inside_parentheses` | `false` |
 | `inside_brackets` | `false` |
 | `inside_braces` | `false` |
 | `before_control_parentheses` | `true` |
 | `in_empty_braces` | `false` |
 | `after_cast` | `true` |
+| `before_trailing_comment` | `1` (an integer, minimum 1) |
 
 Spaces that keep two tokens apart are never removed: `after_cast: false` only drops the space before a parenthesized (record) type, and a space is kept between `-` and a following `-`.
 
@@ -164,4 +170,74 @@ After with `spaces.after_cast=false`:
 
 ```dart
 var r = x as(int, int);
+```
+
+## `spaces.before_trailing_comment`
+
+The number of spaces between code and a `//` comment that ends the line. Preset `dart`: `1`; minimum `1`.
+
+Before:
+
+```dart
+final retries = 3;// never more than three
+```
+
+After with `spaces.before_trailing_comment=2`:
+
+```dart
+final retries = 3;  // never more than three
+```
+
+## Colon spacing
+
+Each colon position has its own key: `before_colon_in_named_argument` and `after_colon_in_named_argument` (also record fields), `before_colon_in_map_entry` and `after_colon_in_map_entry` (also map patterns), `before_colon_in_initializer_list` and `before_colon_in_switch_case` (also `default:`).
+
+Before:
+
+```dart
+final m = {'a' : 1, 'b' : 2};
+```
+
+After with the preset:
+
+```dart
+final m = {'a': 1, 'b': 2};
+```
+
+Before:
+
+```dart
+class Point {
+  Point(this.x) : y = 0;
+}
+```
+
+After with `spaces.before_colon_in_initializer_list=false`:
+
+```dart
+class Point {
+  Point(this.x): y = 0;
+}
+```
+
+Before:
+
+```dart
+switch (x) {
+  case 1:
+    a();
+  default:
+    b();
+}
+```
+
+After with `spaces.before_colon_in_switch_case=true`:
+
+```dart
+switch (x) {
+  case 1 :
+    a();
+  default :
+    b();
+}
 ```

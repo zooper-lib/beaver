@@ -1,0 +1,2 @@
+wrap:
+  initializer_lists: chop_always

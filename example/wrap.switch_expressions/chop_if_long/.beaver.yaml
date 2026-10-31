@@ -1,0 +1,2 @@
+wrap:
+  switch_expressions: chop_if_long

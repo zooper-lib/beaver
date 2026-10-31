@@ -1,0 +1,3 @@
+# Only files under lib/ are formatted; tool/gen.dart is skipped.
+include:
+  - 'lib/**'

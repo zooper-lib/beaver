@@ -1,0 +1,102 @@
+80 columns                                                                      |
+>>> (blank_lines.between_comment_and_declaration=0) Gap removed by an explicit zero.
+// --- Lifecycle ---
+
+@override
+void initState() {}
+<<<
+// --- Lifecycle ---
+@override
+void initState() {}
+>>> (blank_lines.between_comment_and_declaration=1) Only the last comment of a group.
+// First.
+// Second.
+void f() {}
+<<<
+// First.
+// Second.
+
+void f() {}
+>>> (blank_lines.between_comment_and_declaration=1) Annotations stay with the declaration.
+// Overrides.
+@override
+void f() {}
+<<<
+// Overrides.
+
+@override
+void f() {}
+>>> (blank_lines.between_comment_and_declaration=1) A directive keeps its target.
+class A {
+  // ignore: unused_field
+  int _a = 0;
+}
+<<<
+class A {
+  // ignore: unused_field
+  int _a = 0;
+}
+>>> (blank_lines.between_comment_and_declaration=preserve) A doc comment is unaffected.
+/// Doc.
+
+void f() {}
+<<<
+/// Doc.
+void f() {}
+>>> (blank_lines.between_comment_and_declaration=preserve) Section heading kept apart.
+// --- Lifecycle ---
+
+@override
+void initState() {}
+<<<
+// --- Lifecycle ---
+
+@override
+void initState() {}
+>>> (blank_lines.between_comment_and_declaration=preserve) No gap stays no gap.
+// Counts calls.
+int calls = 0;
+<<<
+// Counts calls.
+int calls = 0;
+>>> (blank_lines.between_comment_and_declaration=preserve) A member comment, capped by max_consecutive.
+class A {
+  // Fields.
+
+
+
+  int a = 0;
+}
+<<<
+class A {
+  // Fields.
+
+  int a = 0;
+}
+>>> (blank_lines.between_comment_and_declaration=1) Statements keep the comment next to them.
+void f() {
+  // Step one.
+
+  a();
+}
+<<<
+void f() {
+  // Step one.
+  a();
+}
+>>> The preset keeps a section heading apart.
+// --- Lifecycle ---
+
+@override
+void initState() {}
+<<<
+// --- Lifecycle ---
+
+@override
+void initState() {}
+>>> The preset inserts no gap.
+// Counts calls.
+int calls = 0;
+<<<
+// Counts calls.
+int calls = 0;

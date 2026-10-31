@@ -93,6 +93,42 @@ x
       expect(run(contents, 1), 'f(\n  a,\n  b,\n);');
     });
 
+    test('a shorthand case option keeps a file-level field', () {
+      const contents = '''
+(wrap.arguments.chop_from=3)
+>>> (wrap.arguments=if_long)
+f(a, b, c);
+<<<
+x
+''';
+      final file = loadGoldenFile('t.stmt', contents);
+      final values = caseConfig(file, file.cases[0]).values;
+      expect(values['wrap.arguments.policy'], 'if_long');
+      expect(values['wrap.arguments.chop_from'], 3);
+    });
+
+    test('conflicting spellings in one case fail with file, case and keys', () {
+      expect(
+        () => loadGoldenFile(
+          't.stmt',
+          '>>> (indent.align.arguments=true wrap.arguments.align=false) Desc.\n'
+              'f();\n<<<\nf();\n',
+        ),
+        throwsA(
+          isA<ConfigException>().having(
+            (e) => e.message,
+            'message',
+            allOf(
+              contains('t.stmt'),
+              contains('Desc.'),
+              contains('indent.align.arguments'),
+              contains('wrap.arguments.align'),
+            ),
+          ),
+        ),
+      );
+    });
+
     test('an unknown option fails with file and case', () {
       expect(
         () => loadGoldenFile(

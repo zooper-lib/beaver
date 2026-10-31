@@ -1,0 +1,50 @@
+80 columns                                                                      |
+>>> (wrap.annotations=own_line) Own line.
+@override void dispose() { super.dispose(); }
+<<<
+@override
+void dispose() {
+  super.dispose();
+}
+>>> (wrap.annotations=same_line) Same line.
+@override void dispose() { super.dispose(); }
+<<<
+@override void dispose() {
+  super.dispose();
+}
+>>> (wrap.annotations=preserve) Preserve keeps an own-line annotation.
+@override
+void dispose() {}
+<<<
+@override
+void dispose() {}
+>>> (wrap.annotations=preserve) Preserve keeps a same-line annotation.
+@override void dispose() {}
+<<<
+@override void dispose() {}
+>>> (wrap.annotations=same_line) Parameter annotations are unchanged.
+void f(@required int a) {}
+<<<
+void f(@required int a) {}
+>>> (wrap.simple_methods_on_one_line=true) A one-statement method stays on one line.
+class A {
+  void close() { _controller.close(); }
+}
+<<<
+class A {
+  void close() { _controller.close(); }
+}
+>>> The preset breaks a one-statement method.
+class A {
+  void close() { _controller.close(); }
+}
+<<<
+class A {
+  void close() {
+    _controller.close();
+  }
+}
+>>> (wrap.simple_methods_on_one_line=true) A top-level function too.
+void close() { _controller.close(); }
+<<<
+void close() { _controller.close(); }

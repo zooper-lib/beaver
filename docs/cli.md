@@ -4,6 +4,7 @@
 beaver [options] <paths...>
 beaver --stdin [--stdin-name <path>] [--range <range>]
 beaver config --print [--for <file>]
+beaver config --template
 beaver init
 ```
 
@@ -11,7 +12,9 @@ beaver init
 
 Paths may be files, directories or globs. Directories are searched recursively for `.dart` files, without following symbolic links; `.dart_tool/` and `.git/` are never entered. A file named in several arguments is processed once, and files are processed in sorted path order. A file named explicitly is formatted whatever its extension.
 
-Exclusions from `.beaver.yaml` (`exclude:`, which by default covers generated code such as `**/*.g.dart`) apply to every file, also one named explicitly. Skipped files are silent; `--verbose` lists each one with the pattern that excluded it, on stderr.
+Exclusions from `.beaver.yaml` (`exclude:`, which by default covers generated code such as `**/*.g.dart`) apply to every file, also one named explicitly. `include:` (default `['**']`) is the opposite list: a file that matches none of its patterns is skipped exactly like an excluded one, also for `--stdin` with `--stdin-name`, where the input is echoed unchanged. Both use the same glob syntax and root, `exclude` wins over `include`, and `exclude` patterns add up along the `extends` chain while the nearest `include` replaces the inherited one. Skipped files are silent; `--verbose` lists each one with the pattern that excluded it (or `not in include`), on stderr.
+
+The top-level `line_ending` chooses the output's line endings: `auto` (the preset) keeps the one the input uses (`\r\n` if it has any, else `\n`), `lf` and `crlf` pin one. A multi-line string keeps its own line breaks, because changing them would change its value. See [`example/line_ending`](../example/line_ending/before.dart).
 
 ## Modes
 
@@ -22,10 +25,13 @@ Exclusions from `.beaver.yaml` (`exclude:`, which by default covers generated co
 | `beaver --diff <paths>` | Change nothing; print a unified diff for every file that would change; exit 1 if there is one. |
 | `beaver --stdin` | Format the document on stdin and write it to stdout. See [the stdin protocol](stdin-protocol.md). |
 | `beaver config --print [--for <file>]` | Print the resolved configuration and, for each key, the file or preset that set it. |
+| `beaver config --template` | Print every setting with its `dart` preset value and allowed values; the same text as [`beaver.template.yaml`](beaver.template.yaml). Ignores any `.beaver.yaml`. |
 | `beaver init` | Write a starter `.beaver.yaml` in the current directory; never overwrites one. |
 | `beaver --version` | Print `beaver <version> (protocol <n>)`. |
 
 `--config <file>` uses that configuration for every file instead of discovering `.beaver.yaml`.
+
+With `editorconfig: true` in the effective configuration, `beaver config --print` requires `--for <file>` and `beaver --stdin` requires `--stdin-name` (exit 64 otherwise), because EditorConfig sections are matched against a file name. This holds under `--config` too. `config --print` names, for a value from EditorConfig, the `.editorconfig` file, the section and the property (`indent.size: 4  # .editorconfig [*.dart] indent_size, tab_width`). See [EditorConfig](rules/indent.md#editorconfig).
 
 Every formatted file is verified to be the same program as before (same tokens apart from optional trailing commas and quote style, same syntax tree, same comments in the same places) before anything is written. There is no option to turn this off.
 

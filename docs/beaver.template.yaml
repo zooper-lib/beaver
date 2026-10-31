@@ -1,0 +1,163 @@
+# Every Beaver setting with its `dart` preset value and, in the comment,
+# the allowed values. Copy it to .beaver.yaml and delete the lines you
+# do not want to pin; unset keys come from the preset.
+line_length: 80  # an integer >= 1
+line_ending: auto  # auto | lf | crlf
+editorconfig: false  # true | false
+indent:
+  size: 2  # an integer >= 1
+  style: spaces  # spaces | tabs
+  continuation: 4  # an integer >= 0
+  switch_cases: true  # true | false
+wrap:
+  keep_existing_line_breaks: true  # true | false
+  chop_on_trailing_comma: true  # true | false
+  close_bracket: own_line  # own_line | after_last_item
+  break_before:
+    binary_operator: false  # true | false
+    conditional_operator: true  # true | false
+    arrow: false  # true | false
+    assignment: false  # true | false
+  simple_blocks_on_one_line: false  # true | false
+  simple_lambdas_on_one_line: false  # true | false
+  chop_on_named_arguments: []  # a list of strings, e.g. [child, children]
+  chop_on_calls: []  # a list of dotted names such as Row or Row.center, e.g. [Row, Column]
+  annotations: own_line  # own_line | same_line | preserve
+  braceless_bodies: same_line_if_fits  # same_line_if_fits | new_line | preserve
+  control_conditions: continuation  # continuation | block
+  simple_case_bodies_on_one_line: false  # true | false
+  simple_methods_on_one_line: false  # true | false
+  arguments:  # or the shorthand arguments: <policy>
+    policy: chop_if_long  # never | if_long | chop_if_long | chop_always
+    chop_from: 0  # an integer >= 0
+    keep_existing_line_breaks: inherit  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+    align: false  # true | false
+    indent: inherit  # inherit | an integer >= 0
+    close_bracket: inherit  # inherit | own_line | after_last_item
+    trailing_commas: inherit  # inherit | preserve | remove | add_when_wrapped | add_when_chopped
+    hug_block_argument: true  # true | false
+  parameters:  # or the shorthand parameters: <policy>
+    policy: chop_if_long  # never | if_long | chop_if_long | chop_always
+    chop_from: 0  # an integer >= 0
+    keep_existing_line_breaks: inherit  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+    align: false  # true | false
+    indent: inherit  # inherit | an integer >= 0
+    close_bracket: inherit  # inherit | own_line | after_last_item
+    trailing_commas: inherit  # inherit | preserve | remove | add_when_wrapped | add_when_chopped
+  collection_literals:  # or the shorthand collection_literals: <policy>
+    policy: chop_if_long  # never | if_long | chop_if_long | chop_always
+    chop_from: 0  # an integer >= 0
+    keep_existing_line_breaks: inherit  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+    align: false  # true | false
+    indent: inherit  # inherit | an integer >= 0
+    close_bracket: inherit  # inherit | own_line | after_last_item
+    trailing_commas: inherit  # inherit | preserve | remove | add_when_wrapped | add_when_chopped
+  enum_values:  # or the shorthand enum_values: <policy>
+    policy: inherit  # inherit | never | if_long | chop_if_long | chop_always
+    chop_from: inherit  # inherit | an integer >= 0
+    keep_existing_line_breaks: inherit  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+    align: inherit  # inherit | true | false
+    indent: inherit  # inherit | an integer >= 0
+    close_bracket: inherit  # inherit | own_line | after_last_item
+    trailing_commas: inherit  # inherit | preserve | remove | add_when_wrapped | add_when_chopped
+  binary_expressions:  # or the shorthand binary_expressions: <policy>
+    policy: chop_if_long  # never | if_long | chop_if_long | chop_always
+    chop_from: 0  # an integer >= 0
+    keep_existing_line_breaks: inherit  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+    align: false  # true | false
+    indent: inherit  # inherit | an integer >= 0
+  conditional_expressions:  # or the shorthand conditional_expressions: <policy>
+    policy: chop_if_long  # never | if_long | chop_if_long | chop_always
+    chop_from: 0  # an integer >= 0
+    keep_existing_line_breaks: inherit  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+  chained_calls:  # or the shorthand chained_calls: <policy>
+    policy: chop_if_long  # never | if_long | chop_if_long | chop_always
+    chop_from: 0  # an integer >= 0
+    keep_existing_line_breaks: inherit  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+    align: false  # true | false
+    indent: inherit  # inherit | an integer >= 0
+    keep_single_line_if_fits: true  # true | false
+    keep_first_call_on_receiver_line: false  # true | false
+  cascades:  # or the shorthand cascades: <policy>
+    policy: chop_if_long  # never | if_long | chop_if_long | chop_always
+    chop_from: 2  # an integer >= 0
+    keep_existing_line_breaks: inherit  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+    indent: inherit  # inherit | an integer >= 0
+  initializer_lists:  # or the shorthand initializer_lists: <policy>
+    policy: chop_if_long  # never | if_long | chop_if_long | chop_always
+    chop_from: 0  # an integer >= 0
+    keep_existing_line_breaks: false  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+    align: true  # true | false
+    indent: inherit  # inherit | an integer >= 0
+    colon: auto  # auto | new_line | end_of_header
+  switch_expressions:  # or the shorthand switch_expressions: <policy>
+    policy: chop_always  # never | if_long | chop_if_long | chop_always
+    chop_from: 0  # an integer >= 0
+    keep_existing_line_breaks: inherit  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+  class_header:  # or the shorthand class_header: <policy>
+    policy: chop_if_long  # never | if_long | chop_if_long | chop_always
+    chop_from: 0  # an integer >= 0
+    keep_existing_line_breaks: false  # inherit | true | false
+    chop_on_trailing_comma: inherit  # inherit | true | false
+    clauses_on_new_line: true  # true | false
+trailing_commas: add_when_wrapped  # preserve | remove | add_when_wrapped | add_when_chopped
+spaces:
+  around_assignment: true  # true | false
+  around_binary_operators: true  # true | false
+  around_arrow: true  # true | false
+  after_comma: true  # true | false
+  before_comma: false  # true | false
+  before_colon_in_named_argument: false  # true | false
+  after_colon_in_named_argument: true  # true | false
+  before_colon_in_map_entry: false  # true | false
+  after_colon_in_map_entry: true  # true | false
+  before_colon_in_initializer_list: true  # true | false
+  before_colon_in_switch_case: false  # true | false
+  inside_parentheses: false  # true | false
+  inside_brackets: false  # true | false
+  inside_braces: false  # true | false
+  before_control_parentheses: true  # true | false
+  in_empty_braces: false  # true | false
+  after_cast: true  # true | false
+  before_trailing_comment: 1  # an integer >= 1
+blank_lines:
+  max_consecutive: 1  # an integer >= 0
+  max_consecutive_in_code: inherit  # inherit | an integer >= 0
+  at_block_edges: 0  # an integer >= 0
+  after_imports: 1  # an integer >= 0
+  between_members: 1  # an integer >= 0
+  before_first_member: 0  # an integer >= 0
+  after_last_member: 0  # an integer >= 0
+  keep_between_non_block_members: true  # true | false
+  between_import_groups: preserve  # preserve | an integer >= 0
+  between_comment_and_declaration: preserve  # preserve | an integer >= 0
+  between_top_level_declarations: preserve  # preserve | an integer >= 0
+  around_class_declarations: 1  # inherit | an integer >= 0
+  keep_between_non_block_top_level_declarations: true  # true | false
+braces:
+  else_on_new_line: false  # true | false
+  catch_on_new_line: inherit  # inherit | true | false
+  finally_on_new_line: inherit  # inherit | true | false
+  while_on_new_line: inherit  # inherit | true | false
+strings:
+  quotes: preserve  # preserve | single | double
+  quotes_avoid_escapes: true  # true | false
+include:  # a list of strings
+  - "**"
+exclude:  # a list of strings
+  - "**/*.g.dart"
+  - "**/*.freezed.dart"
+  - "**/*.gr.dart"
+  - "**/*.mocks.dart"
+  - "**/generated/**"
+  - "build/**"

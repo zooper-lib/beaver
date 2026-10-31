@@ -1,0 +1,3 @@
+blank_lines:
+  keep_between_non_block_top_level_declarations: false
+  between_top_level_declarations: 1

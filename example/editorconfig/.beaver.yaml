@@ -1,0 +1,2 @@
+# Reads indent_style, indent_size and end_of_line from .editorconfig.
+editorconfig: true

@@ -1,0 +1,66 @@
+40 columns                              |
+>>> (wrap.braceless_bodies=new_line) A braceless body on a new line.
+if (items.isEmpty) return null;
+<<<
+if (items.isEmpty)
+  return null;
+>>> The preset joins a body that fits.
+if (items.isEmpty)
+  return null;
+<<<
+if (items.isEmpty) return null;
+>>> (wrap.braceless_bodies=preserve) preserve keeps a source break.
+if (items.isEmpty)
+  return null;
+<<<
+if (items.isEmpty)
+  return null;
+>>> (wrap.braceless_bodies=preserve) preserve keeps a joined body.
+while (busy) wait();
+<<<
+while (busy) wait();
+>>> (wrap.control_conditions=block) The block layout.
+if (user.isActive && user.hasVerifiedEmail && !user.isSuspended) { grant(); }
+<<<
+if (
+  user.isActive &&
+  user.hasVerifiedEmail &&
+  !user.isSuspended
+) {
+  grant();
+}
+>>> The continuation layout under the preset.
+if (user.isActive && user.hasVerifiedEmail && !user.isSuspended) { grant(); }
+<<<
+if (user.isActive &&
+    user.hasVerifiedEmail &&
+    !user.isSuspended) {
+  grant();
+}
+>>> (wrap.control_conditions=block) A fitting condition is unchanged.
+while (busy) { wait(); }
+<<<
+while (busy) {
+  wait();
+}
+>>> (wrap.simple_case_bodies_on_one_line=true) Two short cases.
+switch (code) {
+  case 200:
+    return ok;
+  case 404:
+    return missing;
+}
+<<<
+switch (code) {
+  case 200: return ok;
+  case 404: return missing;
+}
+>>> The preset keeps case bodies on their own lines.
+switch (code) {
+  case 200: return ok;
+}
+<<<
+switch (code) {
+  case 200:
+    return ok;
+}

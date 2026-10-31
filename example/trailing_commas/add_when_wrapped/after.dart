@@ -10,4 +10,8 @@ void example() {
     b,
   );
   final record = (42,);
+  foo(
+    a,
+    b, c,
+  );
 }

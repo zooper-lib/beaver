@@ -113,6 +113,11 @@ extension StringRules on DocBuilder {
     required bool start,
     required bool end,
   }) {
+    // `quotes_avoid_escapes: false`: a one-line literal is converted anyway,
+    // escaping the new delimiter (see [_requote]).
+    if (!node.isMultiline && !config.flag('strings.quotes_avoid_escapes')) {
+      return true;
+    }
     final length = node.isMultiline ? 3 : 1;
     final from = start ? length : 0;
     final to = end ? text.length - length : text.length;
@@ -131,7 +136,8 @@ extension StringRules on DocBuilder {
   }
 
   /// [text] with the delimiter at the ends marked by [start] and [end]
-  /// replaced by [target] quotes.
+  /// replaced by [target] quotes, and in a one-line literal any unescaped
+  /// [target] inside escaped.
   String _requote(
     String text,
     String target,
@@ -141,13 +147,30 @@ extension StringRules on DocBuilder {
   }) {
     final length = node.isMultiline ? 3 : 1;
     final delimiter = target * length;
+    final inner = text.substring(
+      start ? length : 0,
+      end ? text.length - length : text.length,
+    );
     return [
       if (start) delimiter,
-      text.substring(
-        start ? length : 0,
-        end ? text.length - length : text.length,
-      ),
+      node.isMultiline ? inner : _escape(inner, target),
       if (end) delimiter,
     ].join();
+  }
+
+  /// [text] with every unescaped [quote] preceded by a backslash.
+  String _escape(String text, String quote) {
+    final out = StringBuffer();
+    for (var i = 0; i < text.length; i++) {
+      final c = text[i];
+      if (c == r'\' && i + 1 < text.length) {
+        out
+          ..write(c)
+          ..write(text[++i]);
+      } else {
+        out.write(c == quote ? '\\$quote' : c);
+      }
+    }
+    return out.toString();
   }
 }
