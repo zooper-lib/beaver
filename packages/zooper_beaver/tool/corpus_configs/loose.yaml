@@ -5,7 +5,7 @@ strings:
 wrap:
   keep_existing_line_breaks: false
   chop_on_trailing_comma: false
-  arguments: if_long
+  arguments: fill
   conditional_expressions: never
 spaces:
   inside_parentheses: true

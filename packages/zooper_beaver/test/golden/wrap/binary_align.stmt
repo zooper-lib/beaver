@@ -1,5 +1,5 @@
 30 columns                    |
->>> (wrap.binary_expressions.align=true) After `=` the right-hand side gets its own line, so this matches align=false.
+>>> (wrap.binary_expressions.indent=first_item) After `=` the right-hand side gets its own line, so this matches indent=inherit.
 final total = subtotal + shipping + tax - discount;
 <<<
 final total =
@@ -7,7 +7,7 @@ final total =
     shipping +
     tax -
     discount;
->>> (wrap.binary_expressions.align=true) Inside an argument, under the first operand.
+>>> (wrap.binary_expressions.indent=first_item) Inside an argument, under the first operand.
 f(subtotalValue + shipping + taxes);
 <<<
 f(
@@ -15,7 +15,7 @@ f(
   shipping +
   taxes,
 );
->>> (wrap.binary_expressions.align=true) In a return.
+>>> (wrap.binary_expressions.indent=first_item) In a return.
 return subtotal + shipping + tax;
 <<<
 return subtotal +

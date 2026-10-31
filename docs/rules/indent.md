@@ -26,7 +26,7 @@ void f() {
 
 Wrapped continuation lines of an expression are indented by this many spaces beyond the statement. Preset `dart`: `4`.
 
-A list map with an `indent` field uses that field as the offset of its broken items. Its preset `inherit` follows `indent.continuation` for `wrap.chained_calls` and `wrap.binary_expressions`, and `indent.size` for the other lists, so a team that only changes these two keys keeps today's layout everywhere. The numeric indent is never added on top of an alignment column. `wrap.chained_calls.indent_from` and `wrap.binary_expressions.indent_from` choose what that offset is measured from: the line (`line`, the preset) or the column where the chain's target or the first operand starts (`target`), see [wrap](wrap.md).
+A list map with an `indent` field uses that field as the offset of its broken items. Its preset `inherit` follows `indent.continuation` for `wrap.chained_calls` and `wrap.binary_expressions`, and `indent.size` for the other lists, so a team that only changes these two keys keeps today's layout everywhere. An integer is never added on top of an alignment column; see [`wrap.<list>.indent`](#wraplistindent) for `first_item`. `wrap.chained_calls.indent_from` and `wrap.binary_expressions.indent_from` choose what that offset is measured from: the line (`line`, the preset) or the column where the chain's target or the first operand starts (`target`), see [wrap](wrap.md).
 
 Before:
 
@@ -92,9 +92,75 @@ default:
 }
 ```
 
-## `wrap.<list>.align`
+## `wrap.<list>.indent`
 
-The `align` field of a list map (see [list maps](wrap.md#list-maps)); `indent.align.arguments`, `indent.align.parameters` and `indent.align.chained_calls` are aliases of `wrap.arguments.align`, `wrap.parameters.align` and `wrap.chained_calls.align`. When `true`, wrapped items align to the column where the anchor ends (the text before the first wrapped item), as long as the anchor itself printed on one line. If Beaver's own rules wrapped the anchor, continuation indent applies instead. Alignment is never dropped because aligned lines are too long. Preset `dart`: all `false`.
+The `indent` field of a list map (see [list maps](wrap.md#list-maps)) answers one question: where do the second and later items start. It takes one of three values:
+
+- `inherit` (the preset): the list's fallback, `indent.continuation` for `chained_calls` and `binary_expressions` and `indent.size` for the other lists.
+- an integer: that many columns from the base `indent_from` names (the line, for the lists without `indent_from`).
+- `first_item`: the column where the first item starts, when the first item shares a line with what precedes it (the opening bracket, or the chain's receiver). When it does not, because `break_after_open_bracket: true` or because the chain's first call broke, there is nothing beside it to align to and `inherit` applies. Not offered on `cascades`, where nothing precedes the first section.
+
+`first_item` never moves the brackets: those are `break_after_open_bracket` and `break_before_close_bracket` ([wrap](wrap.md#wrapbreak_after_open_bracket-and-wrapbreak_before_close_bracket)). On a chain, the first call shares the receiver's line only when the receiver's kind is in `keep_first_call_on_receiver_line`. `indent_from` is a sub-option of an integer or `inherit` and is ignored under `first_item`. Alignment is never dropped because aligned lines are too long. Aliases: `align: true` and `indent.align.arguments`, `indent.align.parameters`, `indent.align.chained_calls` set to `true`; `false` is accepted and dropped. Preset `dart`: `inherit`, except `wrap.initializer_lists` (`first_item`).
+
+The three values side by side, at 40 columns with `break_after_open_bracket=false` and `break_before_close_bracket=false`.
+
+Before:
+
+```dart
+print(firstArgument, secondArgument, third);
+```
+
+After with `wrap.arguments.indent=inherit`:
+
+```dart
+print(firstArgument,
+  secondArgument,
+  third);
+```
+
+After with `wrap.arguments.indent=4`:
+
+```dart
+print(firstArgument,
+    secondArgument,
+    third);
+```
+
+After with `wrap.arguments.indent=first_item`:
+
+```dart
+print(firstArgument,
+      secondArgument,
+      third);
+```
+
+With the preset bracket fields the first item starts its own line, so `first_item` falls back to `inherit`. After with `wrap.arguments.indent=first_item`:
+
+```dart
+print(
+  firstArgument,
+  secondArgument,
+  third,
+);
+```
+
+Parameters, with both bracket fields `false`:
+
+Before:
+
+```dart
+void function(int first, int second, int third) {}
+```
+
+After with `wrap.parameters.indent=first_item`:
+
+```dart
+void function(int first,
+              int second,
+              int third) {}
+```
+
+Chains, with `keep_first_call_on_receiver_line=true`: the calls align under the first `.` while the target prints on one line.
 
 Before:
 
@@ -102,7 +168,7 @@ Before:
 final r = obj.doThis().thenThat().andMore();
 ```
 
-After with `wrap.chained_calls.align=true`:
+After with `wrap.chained_calls.indent=first_item`:
 
 ```dart
 final r = obj.doThis()
@@ -110,13 +176,13 @@ final r = obj.doThis()
              .andMore();
 ```
 
-Before:
+When the target itself wraps, continuation indent applies. Before:
 
 ```dart
 final r = target(argumentNumberOne, argumentNumberTwo).doThis().thenThat();
 ```
 
-After with `wrap.chained_calls.align=true`:
+After with `wrap.chained_calls.indent=first_item`:
 
 ```dart
 final r = target(
@@ -133,39 +199,11 @@ Before:
 final result = someReceiverObject.doSomethingVeryLong().thenThat();
 ```
 
-After with `wrap.chained_calls.align=true wrap.chained_calls.chop_from=2`:
+After with `wrap.chained_calls.indent=first_item wrap.chained_calls.chop_from=2`:
 
 ```dart
 final result = someReceiverObject.doSomethingVeryLong()
                                  .thenThat();
-```
-
-Before:
-
-```dart
-print(firstArgument, secondArgument, third);
-```
-
-After with `wrap.arguments.align=true`:
-
-```dart
-print(firstArgument,
-      secondArgument,
-      third);
-```
-
-Before:
-
-```dart
-void function(int first, int second, int third) {}
-```
-
-After with `wrap.parameters.align=true`:
-
-```dart
-void function(int first,
-              int second,
-              int third) {}
 ```
 
 ## EditorConfig

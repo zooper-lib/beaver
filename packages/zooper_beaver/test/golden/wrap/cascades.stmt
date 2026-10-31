@@ -42,7 +42,7 @@ final p = Paint()
 final p = Paint()..color = Colors.red..strokeWidth = 2;
 <<<
 final p = Paint()..color = Colors.red..strokeWidth = 2;
->>> (wrap.cascades=chop_always) chop_always chops one section.
+>>> (wrap.cascades.chop_from=1) chop_from=1 chops one section.
 final p = Paint()..color = Colors.red;
 <<<
 final p = Paint()

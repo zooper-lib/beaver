@@ -14,7 +14,7 @@ f(
   a, // about a
   b,
 );
->>> (wrap.arguments=if_long wrap.keep_existing_line_breaks=false trailing_commas=preserve wrap.chop_on_trailing_comma=false) An own-line comment keeps its item on a new line in a filled list.
+>>> (wrap.arguments=fill wrap.keep_existing_line_breaks=false trailing_commas=preserve wrap.chop_on_trailing_comma=false) An own-line comment keeps its item on a new line in a filled list.
 f(
   // about a
   a,
@@ -28,21 +28,20 @@ f(
   // about b
   b,
 );
->>> (indent.align.arguments=true) Aligned list: a comment on the last item keeps the bracket off its line.
+>>> (wrap.arguments.indent=first_item wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false) Aligned list: a comment on the last item keeps the bracket off its line.
 f(a,
   b // about b
 );
 <<<
 f(a,
-  b // about b
+  b, // about b
 );
->>> (indent.align.arguments=true) Aligned list keeps the source comma that chopped it.
+>>> (wrap.arguments.indent=first_item wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false) With both bracket fields false, a source comma is dropped and is not a chop request.
 x = f(
   <int>{},
 )!;
 <<<
-x =
-    f(<int>{},)!;
+x = f(<int>{})!;
 >>> (wrap.binary_expressions=never) A line comment forces a binary expression to break.
 x = a + // about a
     b;
@@ -51,7 +50,7 @@ x =
     a +
     // about a
     b;
->>> (wrap.binary_expressions=if_long) A switch operand in a filled binary is measured broken, so its arms lay out stably.
+>>> (wrap.binary_expressions=fill) A switch operand in a filled binary is measured broken, so its arms lay out stably.
 x = a && switch (d) { Aspect.systemGestureInsets => data.systemGestureInsets != old.data.systemGestureInsets };
 <<<
 x =

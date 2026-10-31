@@ -9,13 +9,13 @@ final x = someLongExpressionName + other;
 <<<
 final x =
   someLongExpressionName + other;
->>> (indent.align.chained_calls=true) Flat anchor aligns.
+>>> (wrap.chained_calls.indent=first_item wrap.chained_calls.keep_first_call_on_receiver_line=true) Flat anchor aligns.
 final r = obj.doThis().thenThat().andMore();
 <<<
 final r = obj.doThis()
              .thenThat()
              .andMore();
->>> (indent.align.chained_calls=true) Broken anchor falls back to continuation.
+>>> (wrap.chained_calls.indent=first_item wrap.chained_calls.keep_first_call_on_receiver_line=true) Broken anchor falls back to continuation.
 final r = target(argumentNumberOne, argumentNumberTwo).doThis().thenThat();
 <<<
 final r = target(
@@ -24,24 +24,24 @@ final r = target(
 )
     .doThis()
     .thenThat();
->>> (indent.align.chained_calls=true wrap.chained_calls.min_calls=2) Overflow does not disable alignment.
+>>> (wrap.chained_calls.indent=first_item wrap.chained_calls.keep_first_call_on_receiver_line=true wrap.chained_calls.min_calls=2) Overflow does not disable alignment.
 final result = someReceiverObject.doSomethingVeryLong().thenThat();
 <<<
 final result = someReceiverObject.doSomethingVeryLong()
                                  .thenThat();
->>> (indent.align.arguments=true) Aligned arguments.
+>>> (wrap.arguments.indent=first_item wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false) Aligned arguments.
 print(firstArgument, secondArgument, third);
 <<<
 print(firstArgument,
       secondArgument,
       third);
->>> (indent.align.parameters=true) Aligned parameters.
+>>> (wrap.parameters.indent=first_item wrap.parameters.break_after_open_bracket=false wrap.parameters.break_before_close_bracket=false) Aligned parameters.
 void function(int first, int second, int third) {}
 <<<
 void function(int first,
               int second,
               int third) {}
->>> (indent.align.arguments=true) Nested aligned lists use the resolved column inside a block.
+>>> (wrap.arguments.indent=first_item wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false) Nested aligned lists use the resolved column inside a block.
 if (c) {
   print(first, inner(alphaArgument, betaArgument), last);
 }
@@ -52,14 +52,14 @@ if (c) {
               betaArgument),
         last);
 }
->>> (indent.align.arguments=true indent.align.chained_calls=true) Aligned arguments inside an aligned chain.
+>>> (wrap.arguments.indent=first_item wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false wrap.chained_calls.indent=first_item wrap.chained_calls.keep_first_call_on_receiver_line=true) Aligned arguments inside an aligned chain.
 obj.alpha().beta(argumentNumberOne, argumentNumberTwo).gamma();
 <<<
 obj.alpha()
    .beta(argumentNumberOne,
          argumentNumberTwo)
    .gamma();
->>> (indent.align.arguments=true) Aligned arguments inside a closure argument.
+>>> (wrap.arguments.indent=first_item wrap.arguments.break_after_open_bracket=false wrap.arguments.break_before_close_bracket=false) Aligned arguments inside a closure argument.
 outer(a, () {
   call(firstArgument, secondArgument, thirdArgument);
 });

@@ -1,0 +1,5 @@
+wrap:
+  arguments:
+    indent: 4
+    break_after_open_bracket: false
+    break_before_close_bracket: false

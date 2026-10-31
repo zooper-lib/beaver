@@ -5,5 +5,5 @@ trailing_commas: remove
 strings:
   quotes: single
 wrap:
-  binary_expressions: if_long
+  binary_expressions: fill
   before_operator: true

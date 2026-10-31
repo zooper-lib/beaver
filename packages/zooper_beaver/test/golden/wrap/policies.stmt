@@ -7,11 +7,11 @@ foo(alpha, beta, gamma);
 function(firstArgument, secondArgument, third);
 <<<
 function(firstArgument, secondArgument, third);
->>> (wrap.arguments=if_long) arguments if_long, fits.
+>>> (wrap.arguments=fill) arguments fill, fits.
 foo(alpha, beta, gamma);
 <<<
 foo(alpha, beta, gamma);
->>> (wrap.arguments=if_long trailing_commas=remove) arguments if_long, overflows.
+>>> (wrap.arguments=fill trailing_commas=remove) arguments fill, overflows.
 function(firstArgument, secondArgument, third);
 <<<
 function(
@@ -29,7 +29,7 @@ function(
   secondArgument,
   third,
 );
->>> (wrap.arguments=chop_always) arguments chop_always, fits.
+>>> (wrap.arguments.chop_from=1) arguments chop_from=1, fits.
 foo(alpha, beta, gamma);
 <<<
 foo(
@@ -37,7 +37,7 @@ foo(
   beta,
   gamma,
 );
->>> (wrap.arguments=chop_always) arguments chop_always, overflows.
+>>> (wrap.arguments.chop_from=1) arguments chop_from=1, overflows.
 function(firstArgument, secondArgument, third);
 <<<
 function(
@@ -53,11 +53,11 @@ void f(int a, int b) {}
 void function(int first, int second, int third) {}
 <<<
 void function(int first, int second, int third) {}
->>> (wrap.parameters=if_long) parameters if_long, fits.
+>>> (wrap.parameters=fill) parameters fill, fits.
 void f(int a, int b) {}
 <<<
 void f(int a, int b) {}
->>> (wrap.parameters=if_long trailing_commas=remove) parameters if_long, overflows.
+>>> (wrap.parameters=fill trailing_commas=remove) parameters fill, overflows.
 void function(int first, int second, int third) {}
 <<<
 void function(
@@ -75,14 +75,14 @@ void function(
   int second,
   int third,
 ) {}
->>> (wrap.parameters=chop_always) parameters chop_always, fits.
+>>> (wrap.parameters.chop_from=1) parameters chop_from=1, fits.
 void f(int a, int b) {}
 <<<
 void f(
   int a,
   int b,
 ) {}
->>> (wrap.parameters=chop_always) parameters chop_always, overflows.
+>>> (wrap.parameters.chop_from=1) parameters chop_from=1, overflows.
 void function(int first, int second, int third) {}
 <<<
 void function(
@@ -98,11 +98,11 @@ var l = [1, 2, 3];
 var list = [firstElement, secondElement, third];
 <<<
 var list = [firstElement, secondElement, third];
->>> (wrap.collection_literals=if_long) collection_literals if_long, fits.
+>>> (wrap.collection_literals=fill) collection_literals fill, fits.
 var l = [1, 2, 3];
 <<<
 var l = [1, 2, 3];
->>> (wrap.collection_literals=if_long trailing_commas=remove) collection_literals if_long, overflows.
+>>> (wrap.collection_literals=fill trailing_commas=remove) collection_literals fill, overflows.
 var list = [firstElement, secondElement, third];
 <<<
 var list = [
@@ -120,7 +120,7 @@ var list = [
   secondElement,
   third,
 ];
->>> (wrap.collection_literals=chop_always) collection_literals chop_always, fits.
+>>> (wrap.collection_literals.chop_from=1) collection_literals chop_from=1, fits.
 var l = [1, 2, 3];
 <<<
 var l = [
@@ -128,7 +128,7 @@ var l = [
   2,
   3,
 ];
->>> (wrap.collection_literals=chop_always) collection_literals chop_always, overflows.
+>>> (wrap.collection_literals.chop_from=1) collection_literals chop_from=1, overflows.
 var list = [firstElement, secondElement, third];
 <<<
 var list = [
@@ -145,11 +145,11 @@ value = operandOne + operandTwo + operandThree + four;
 <<<
 value =
     operandOne + operandTwo + operandThree + four;
->>> (wrap.binary_expressions=if_long) binary_expressions if_long, fits.
+>>> (wrap.binary_expressions=fill) binary_expressions fill, fits.
 x = a + b;
 <<<
 x = a + b;
->>> (wrap.binary_expressions=if_long) binary_expressions if_long, overflows.
+>>> (wrap.binary_expressions=fill) binary_expressions fill, overflows.
 value = operandOne + operandTwo + operandThree + four;
 <<<
 value =
@@ -167,13 +167,13 @@ value =
     operandTwo +
     operandThree +
     four;
->>> (wrap.binary_expressions=chop_always) binary_expressions chop_always, fits.
+>>> (wrap.binary_expressions.chop_from=1) binary_expressions chop_from=1, fits.
 x = a + b;
 <<<
 x =
     a +
     b;
->>> (wrap.binary_expressions=chop_always) binary_expressions chop_always, overflows.
+>>> (wrap.binary_expressions.chop_from=1) binary_expressions chop_from=1, overflows.
 value = operandOne + operandTwo + operandThree + four;
 <<<
 value =
@@ -190,11 +190,11 @@ value = condition ? whenTrueResult : whenFalseResult;
 <<<
 value =
     condition ? whenTrueResult : whenFalseResult;
->>> (wrap.conditional_expressions=if_long) conditional_expressions if_long, fits.
+>>> (wrap.conditional_expressions=fill) conditional_expressions fill, fits.
 x = c ? a : b;
 <<<
 x = c ? a : b;
->>> (wrap.conditional_expressions=if_long) conditional_expressions if_long, overflows.
+>>> (wrap.conditional_expressions=fill) conditional_expressions fill, overflows.
 value = condition ? whenTrueResult : whenFalseResult;
 <<<
 value = condition ? whenTrueResult
@@ -209,28 +209,28 @@ value = condition ? whenTrueResult : whenFalseResult;
 value = condition
     ? whenTrueResult
     : whenFalseResult;
->>> (wrap.conditional_expressions=chop_always) conditional_expressions chop_always, fits.
+>>> (wrap.conditional_expressions.chop_from=1) conditional_expressions chop_from=1, fits.
 x = c ? a : b;
 <<<
 x = c
     ? a
     : b;
->>> (wrap.conditional_expressions=chop_always) conditional_expressions chop_always, overflows.
+>>> (wrap.conditional_expressions.chop_from=1) conditional_expressions chop_from=1, overflows.
 value = condition ? whenTrueResult : whenFalseResult;
 <<<
 value = condition
     ? whenTrueResult
     : whenFalseResult;
->>> (wrap.chained_calls.policy=never wrap.chained_calls.keep_single_line_if_fits=false) chained_calls never.
+>>> (wrap.chained_calls.policy=never) chained_calls never.
 result = source.first().second().third().fourth();
 <<<
 result = source.first().second().third().fourth();
->>> (wrap.chained_calls.policy=if_long wrap.chained_calls.keep_single_line_if_fits=false) chained_calls if_long.
+>>> (wrap.chained_calls.policy=fill) chained_calls fill.
 result = source.first().second().third().fourth();
 <<<
 result = source.first().second().third()
     .fourth();
->>> (wrap.chained_calls.policy=chop_if_long wrap.chained_calls.keep_single_line_if_fits=false) chained_calls chop_if_long.
+>>> (wrap.chained_calls.policy=chop_if_long) chained_calls chop_if_long.
 result = source.first().second().third().fourth();
 <<<
 result = source
@@ -238,7 +238,7 @@ result = source
     .second()
     .third()
     .fourth();
->>> (wrap.chained_calls.policy=chop_always wrap.chained_calls.keep_single_line_if_fits=false) chained_calls chop_always.
+>>> (wrap.chained_calls.chop_from=2) chained_calls chop_from=2.
 result = source.first().second().third().fourth();
 <<<
 result = source
@@ -246,7 +246,7 @@ result = source
     .second()
     .third()
     .fourth();
->>> (wrap.arguments=if_long) if_long under the dart preset: the added comma is not a chop request while items share a line.
+>>> (wrap.arguments=fill) fill under the dart preset: the added comma is not a chop request while items share a line.
 function(firstArgument, secondArgument, third);
 <<<
 function(
@@ -263,7 +263,7 @@ a
 a.b().c();
 <<<
 a.b().c();
->>> (wrap.chained_calls.policy=chop_always) keep_single_line_if_fits keeps a short chain.
+>>> A short chain below the threshold stays on one line.
 a.b().c();
 <<<
 a.b().c();

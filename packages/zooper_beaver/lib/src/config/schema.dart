@@ -93,9 +93,42 @@ final class DottedNameListType extends ValueType {
   String describe() => 'a list of dotted names such as Row or Row.center';
 }
 
-const _policy = EnumType(['never', 'if_long', 'chop_if_long', 'chop_always']);
+/// An integer >= 0, or `first_item` (align under the first item) where
+/// something can precede the first item on its line.
+final class IndentType extends ValueType {
+  const IndentType();
+
+  @override
+  bool accepts(Object? value) =>
+      value == 'first_item' || const IntType().accepts(value);
+
+  @override
+  String describe() => '${const IntType().describe()} | first_item';
+}
+
+/// Receiver kinds for `keep_first_call_on_receiver_line`, or `true` (every
+/// kind) and `false` (none).
+final class ReceiverKindListType extends ValueType {
+  const ReceiverKindListType();
+
+  static const kinds = [
+    'type_names',
+    'identifiers',
+    'this',
+    'calls',
+    'properties',
+  ];
+
+  @override
+  bool accepts(Object? value) =>
+      value is bool || (value is List && value.every(kinds.contains));
+
+  @override
+  String describe() => 'a list of ${kinds.join(', ')} | true | false';
+}
+
+const _policy = EnumType(['never', 'fill', 'chop_if_long']);
 const _bool = BoolType();
-const _closeBracket = EnumType(['own_line', 'after_last_item']);
 const _indentFrom = EnumType(['line', 'target']);
 const _trailingCommas = EnumType([
   'preserve',
@@ -109,7 +142,7 @@ final class ListConstruct {
   const ListConstruct(
     this.name, {
     this.indent,
-    this.align = true,
+    this.firstItem = true,
     this.delimited = false,
     this.inheritsFrom,
     this.extra = const {},
@@ -121,12 +154,12 @@ final class ListConstruct {
   /// `indent` field.
   final String? indent;
 
-  /// Whether the list has an `align` field; `false` where alignment has no
-  /// meaning (a setting that does nothing is not offered).
-  final bool align;
+  /// Whether `indent` offers `first_item`; `false` where nothing precedes
+  /// the first item on its line (a setting that does nothing is not offered).
+  final bool firstItem;
 
-  /// Whether the list owns a closing delimiter and an optional trailing
-  /// comma (`close_bracket` and `trailing_commas` fields).
+  /// Whether the list owns its brackets and an optional trailing comma
+  /// (`chop_on_trailing_comma`, the bracket fields and `trailing_commas`).
   final bool delimited;
 
   /// The list every field falls back to (`enum_values` follows
@@ -142,11 +175,14 @@ final class ListConstruct {
       'policy': _policy,
       'chop_from': const IntType(),
       'keep_existing_line_breaks': const InheritOr(_bool),
-      'chop_on_trailing_comma': const InheritOr(_bool),
-      if (align) 'align': _bool,
-      if (indent != null) 'indent': const InheritOr(IntType()),
+      if (delimited) 'chop_on_trailing_comma': const InheritOr(_bool),
+      if (indent != null)
+        'indent': firstItem
+            ? const InheritOr(IndentType())
+            : const InheritOr(IntType()),
       if (delimited) ...{
-        'close_bracket': const InheritOr(_closeBracket),
+        'break_after_open_bracket': const InheritOr(_bool),
+        'break_before_close_bracket': const InheritOr(_bool),
         'trailing_commas': const InheritOr(_trailingCommas),
       },
       ...extra,
@@ -164,7 +200,8 @@ final class ListConstruct {
     return switch (field) {
       'keep_existing_line_breaks' => 'wrap.keep_existing_line_breaks',
       'chop_on_trailing_comma' => 'wrap.chop_on_trailing_comma',
-      'close_bracket' => 'wrap.close_bracket',
+      'break_after_open_bracket' => 'wrap.break_after_open_bracket',
+      'break_before_close_bracket' => 'wrap.break_before_close_bracket',
       'trailing_commas' => 'trailing_commas',
       'indent' => indent,
       _ => null,
@@ -193,18 +230,17 @@ const listConstructs = [
     indent: 'indent.continuation',
     extra: {'break_after_prefix': _bool, 'indent_from': _indentFrom},
   ),
-  ListConstruct('conditional_expressions', align: false),
+  ListConstruct('conditional_expressions'),
   ListConstruct(
     'chained_calls',
     indent: 'indent.continuation',
     extra: {
-      'keep_single_line_if_fits': _bool,
-      'keep_first_call_on_receiver_line': _bool,
+      'keep_first_call_on_receiver_line': ReceiverKindListType(),
       'break_after_prefix': _bool,
       'indent_from': _indentFrom,
     },
   ),
-  ListConstruct('cascades', indent: 'indent.size', align: false),
+  ListConstruct('cascades', indent: 'indent.size', firstItem: false),
   ListConstruct(
     'initializer_lists',
     indent: 'indent.size',
@@ -212,12 +248,8 @@ const listConstructs = [
       'colon': EnumType(['auto', 'new_line', 'end_of_header']),
     },
   ),
-  ListConstruct('switch_expressions', align: false),
-  ListConstruct(
-    'class_header',
-    align: false,
-    extra: {'clauses_on_new_line': _bool},
-  ),
+  ListConstruct('switch_expressions'),
+  ListConstruct('class_header', extra: {'clauses_on_new_line': _bool}),
 ];
 
 /// Dotted key → type, in documentation order. Every key here must be
@@ -232,7 +264,8 @@ final schema = <String, ValueType>{
   'indent.switch_cases': _bool,
   'wrap.keep_existing_line_breaks': _bool,
   'wrap.chop_on_trailing_comma': _bool,
-  'wrap.close_bracket': _closeBracket,
+  'wrap.break_after_open_bracket': _bool,
+  'wrap.break_before_close_bracket': _bool,
   'wrap.break_before.binary_operator': _bool,
   'wrap.break_before.conditional_operator': _bool,
   'wrap.break_before.arrow': _bool,

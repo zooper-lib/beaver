@@ -129,11 +129,12 @@ A `.beaver.yaml` only lists what differs from the `dart` preset:
 extends: dart
 
 line_length: 100
-indent:
-  align:
-    parameters: true
 wrap:
-  arguments: if_long
+  arguments: fill
+  parameters:
+    indent: first_item
+    break_after_open_bracket: false
+    break_before_close_bracket: false
 spaces:
   inside_braces: true   # { a: 1 } instead of {a: 1}
 strings:
@@ -181,7 +182,7 @@ final result = computeTheAnswer(
 );
 ```
 
-With `wrap.arguments: if_long`, it fills lines instead, like a paragraph:
+With `wrap.arguments: fill`, it fills lines instead, like a paragraph:
 
 ```dart
 final result = computeTheAnswer(

@@ -555,17 +555,18 @@ extension ExpressionRules on DocBuilder {
       separator: switch (policy) {
         WrapPolicy.never => keepSpace ? space : empty,
         _ when threshold => hardline,
-        WrapPolicy.chopAlways => hardline,
         _ => Line.soft(keepSpace ? ' ' : ''),
       },
-      fill: policy == WrapPolicy.ifLong && !threshold,
+      fill: policy == WrapPolicy.fill && !threshold,
     );
-    if (settings.align) return group(alignToColumn(body));
+    if (settings.indent is FirstItem) return group(alignToColumn(body));
     // `indent_from: target`: offset from the first operand's column.
     if (config.binaryIndentFromTarget) {
-      return group(alignToColumn(align(settings.indent, body)));
+      return group(alignToColumn(align(settings.indent.columns, body)));
     }
-    return group(_parentIndents(node) ? body : align(settings.indent, body));
+    return group(
+      _parentIndents(node) ? body : align(settings.indent.columns, body),
+    );
   }
 
   /// `a || b || c` (or `&&`): the whole chain splits at once, continuation
@@ -685,10 +686,9 @@ extension ExpressionRules on DocBuilder {
       separator: switch (policy) {
         WrapPolicy.never => space,
         _ when threshold => hardline,
-        WrapPolicy.chopAlways => hardline,
         _ => line,
       },
-      fill: policy == WrapPolicy.ifLong && !threshold,
+      fill: policy == WrapPolicy.fill && !threshold,
     );
     return group(cont(body));
   }
@@ -715,11 +715,10 @@ extension ExpressionRules on DocBuilder {
     final block =
         config.flag('wrap.arguments.hug_block_argument') &&
             policy != WrapPolicy.never &&
-            policy != WrapPolicy.chopAlways &&
             !namedMatch &&
             !callMatch &&
             !settings.reachesThreshold(arguments.length) &&
-            !settings.align
+            settings.indent is! FirstItem
         ? _hugBlock(node)
         : null;
     if (block == null) return chopped();
@@ -912,8 +911,7 @@ extension ExpressionRules on DocBuilder {
     final never = policy == WrapPolicy.never;
     final forced =
         !never &&
-        (policy == WrapPolicy.chopAlways ||
-            settings.reachesThreshold(cases.length));
+        settings.reachesThreshold(cases.length);
     final kept = [
       for (final (i, c) in cases.indexed)
         !never &&
@@ -951,7 +949,7 @@ extension ExpressionRules on DocBuilder {
         if (i > 0) parts.add(between(i));
         parts.add(arms[i]);
       }
-      body = policy == WrapPolicy.ifLong && !forced
+      body = policy == WrapPolicy.fill && !forced
           ? Fill([
               for (var i = 0; i < arms.length; i++) ...[
                 if (i > 0) separator,
@@ -979,7 +977,9 @@ extension ExpressionRules on DocBuilder {
       }
       body = concat(parts);
     }
-    final edge = never ? space : (forced || kept[0] ? hardline : line);
+    final edge = never
+        ? space
+        : (forced || kept.firstOrNull == true ? hardline : line);
     return concat([
       tok(node.switchKeyword),
       if (config.spaceBeforeControlParens) space,

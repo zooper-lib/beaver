@@ -18,7 +18,7 @@ test(
 f(a, [1, 2]);
 <<<
 f(a, [1, 2]);
->>> (wrap.arguments.hug_block_argument=false wrap.arguments=if_long) Disabled under if_long: the arguments fill.
+>>> (wrap.arguments.hug_block_argument=false wrap.arguments=fill) Disabled under fill: the arguments fill.
 someFunction(firstArgumentName, secondArgumentName, [elementOne, elementTwo, three]);
 <<<
 someFunction(

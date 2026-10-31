@@ -59,7 +59,7 @@ final total = subtotal
                   + shipping
                   + tax
                   - discount;
->>> (wrap.binary_expressions.align=true wrap.binary_expressions.indent_from=target) Alignment takes precedence.
+>>> (wrap.binary_expressions.indent=first_item wrap.binary_expressions.indent_from=target) indent_from is ignored under first_item.
 return subtotal + shipping + tax;
 <<<
 return subtotal +

@@ -95,7 +95,7 @@ call(
   date: formatterFactory.create()
             .format(value.toLocal()),
 );
->>> (wrap.chained_calls.align=true wrap.chained_calls.indent_from=target) Alignment takes precedence.
+>>> (wrap.chained_calls.indent=first_item wrap.chained_calls.keep_first_call_on_receiver_line=true wrap.chained_calls.indent_from=target) indent_from is ignored under first_item.
 call(date: formatterFactory.create().format(value.toLocal()));
 <<<
 call(

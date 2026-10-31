@@ -204,3 +204,29 @@ description: chronological action log per session, consolidated weekly
 |------|--------|---------|---------|--------|
 <!-- session:OTUyMDIxYWUtZTY2MC00MTU5LTljNTQtYmY4OGY4ZjhkM2Vi -->
 | 2026-10-31T16:00:08.845Z | Grill session on SETTINGS_AUDIT.md settled D2-D12 (fill rename, chop_always/keep_single_line_if_fits removal, sub-option rule, bracket fields break_after_open_bracket/break_before_close_bracket, indent: first_item replacing align, keep_first_call_on_receiver_line as a list of receiver kinds, removal errors). Stripped align: type_names from the open change chain-and-binary-continuation-indent since D8/D9 supersede it. | SETTINGS_AUDIT.md,packages/zooper_beaver/lib/src/config/{schema,config}.dart,packages/zooper_beaver/lib/src/rules/chains.dart,docs/rules/{indent,wrap}.md,example/README.md,openspec/changes/chain-and-binary-continuation-indent | 950 tests pass, analyze clean, --check clean, openspec validate --strict passes |
+| 00:08 | Session end: 12 writes across 8 files (proposal.md, spec.md, design.md, tasks.md, config_resolve_test.dart) | 6 reads | ~16775 tok |
+
+## Session: 2026-10-31 00:08
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:16 | Created openspec/changes/settings-audit-cleanup/proposal.md | — | ~1620 |
+| 00:20 | Created openspec/changes/settings-audit-cleanup/specs/formatting-rules/spec.md | — | ~5555 |
+| 00:21 | Created openspec/changes/settings-audit-cleanup/specs/config-resolution/spec.md | — | ~4029 |
+| 00:21 | Edited openspec/changes/settings-audit-cleanup/specs/config-resolution/spec.md | inline fix | ~13 |
+| 00:21 | Edited openspec/changes/settings-audit-cleanup/specs/formatting-rules/spec.md | 2→2 lines | ~25 |
+| 00:21 | Edited openspec/changes/settings-audit-cleanup/specs/formatting-rules/spec.md | inline fix | ~9 |
+| 00:22 | Edited openspec/changes/settings-audit-cleanup/specs/formatting-rules/spec.md | inline fix | ~11 |
+| 00:22 | Edited openspec/changes/settings-audit-cleanup/specs/formatting-rules/spec.md | inline fix | ~8 |
+| 00:24 | Created openspec/changes/settings-audit-cleanup/design.md | — | ~3030 |
+<!-- session:OGZmNWVhYzUtNDRjYy00NDQxLWFkZTItOTgwYWFlYzExOGRi -->
+| 2026-10-31T16:24:29.475Z | Created OpenSpec change settings-audit-cleanup from SETTINGS_AUDIT.md: proposal, delta specs for formatting-rules and config-resolution, and design (value aliases in normaliser, WrapPolicy drops chopAlways, indent becomes inherit int first_item, one list layout parameterised by bracket fields, receiver-kind classifier) | openspec/changes/settings-audit-cleanup/proposal.md,openspec/changes/settings-audit-cleanup/specs/formatting-rules/spec.md,openspec/changes/settings-audit-cleanup/specs/config-resolution/spec.md,openspec/changes/settings-audit-cleanup/design.md | openspec validate --strict passes |
+| 00:26 | Created openspec/changes/settings-audit-cleanup/tasks.md | — | ~2441 |
+<!-- session:OGZmNWVhYzUtNDRjYy00NDQxLWFkZTItOTgwYWFlYzExOGRi -->
+| 2026-10-31T16:26:17.847Z | Wrote tasks.md for settings-audit-cleanup: 6 groups (schema/config, loader aliases and removal errors, rule sites + golden header renames, layout brackets/first_item/receiver kinds, docs and examples, integration); planning complete | openspec/changes/settings-audit-cleanup/tasks.md | openspec status 4/4, validate --strict passes |
+| 00:26 | Session end: 10 writes across 4 files (proposal.md, spec.md, design.md, tasks.md) | 0 reads | ~17937 tok |
+
+## Session: 2026-10-31 00:26
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|

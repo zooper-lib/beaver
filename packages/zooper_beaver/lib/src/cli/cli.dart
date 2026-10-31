@@ -541,11 +541,7 @@ extends: dart
 #   style: spaces            # spaces | tabs
 #   continuation: 4
 #   switch_cases: true
-#   align:
-#     arguments: false
-#     parameters: false
-#     chained_calls: false
-# wrap:                       # never | if_long | chop_if_long | chop_always
+# wrap:                       # never | fill | chop_if_long
 #   arguments: chop_if_long
 #   parameters: chop_if_long
 #   collection_literals: chop_if_long
@@ -554,8 +550,7 @@ extends: dart
 #   before_operator: false
 #   chained_calls:
 #     policy: chop_if_long
-#     min_calls: 0             # 0 disables count-based chopping
-#     keep_single_line_if_fits: true
+#     chop_from: 0             # 0 disables count-based chopping
 #   keep_existing_line_breaks: true
 #   chop_on_trailing_comma: true
 #   simple_blocks_on_one_line: false

@@ -1,0 +1,77 @@
+60 columns                                                  |
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=true) The first call stays on the receiver line.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users.where((u) => u.active)
+    .map((u) => u.name)
+    .toList();
+>>> The preset breaks the first call.
+final d = DateFormat.yMMMMd().format(invitation.invitedAt.toLocal());
+<<<
+final d = DateFormat
+    .yMMMMd()
+    .format(invitation.invitedAt.toLocal());
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[type_names]) Type names keep the first call.
+final d = DateFormat.yMMMMd().format(invitation.invitedAt.toLocal());
+<<<
+final d = DateFormat.yMMMMd()
+    .format(invitation.invitedAt.toLocal());
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[type_names]) An identifier is not a type name.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .toList();
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[type_names]) An import-prefixed type name.
+final d = intl.DateFormat.yMMMMd().format(invitation.invitedAt.toLocal());
+<<<
+final d = intl.DateFormat.yMMMMd()
+    .format(invitation.invitedAt.toLocal());
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[identifiers]) Identifiers keep the first call.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users.where((u) => u.active)
+    .map((u) => u.name)
+    .toList();
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[identifiers]) A type name is not an identifier.
+final d = DateFormat.yMMMMd().format(invitation.invitedAt.toLocal());
+<<<
+final d = DateFormat
+    .yMMMMd()
+    .format(invitation.invitedAt.toLocal());
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[this]) this.
+final copy = this.copyWith(name: newName).validate().save(force: true);
+<<<
+final copy = this.copyWith(name: newName)
+    .validate()
+    .save(force: true);
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[calls]) A call result.
+final result = fetchEverything().then(handleResult).catchError(handleError);
+<<<
+final result = fetchEverything().then(handleResult)
+    .catchError(handleError);
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[properties]) A property path.
+final style = theme.textTheme.labelMedium.copyWith(color: c).merge(other);
+<<<
+final style = theme.textTheme.labelMedium.copyWith(color: c)
+    .merge(other);
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[type_names] wrap.chained_calls.indent=first_item) A kept first call aligns the rest under its dot.
+final d = DateFormat.yMMMMd().format(invitation.invitedAt.toLocal());
+<<<
+final d = DateFormat.yMMMMd()
+                    .format(invitation.invitedAt.toLocal());
+>>> (wrap.chained_calls.keep_first_call_on_receiver_line=[type_names] wrap.chained_calls.indent=first_item) A broken first call uses the continuation indent.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .toList();
+>>> (wrap.chained_calls.indent=first_item wrap.chained_calls.indent_from=target) indent_from is ignored under first_item.
+final names = users.where((u) => u.active).map((u) => u.name).toList();
+<<<
+final names = users
+    .where((u) => u.active)
+    .map((u) => u.name)
+    .toList();

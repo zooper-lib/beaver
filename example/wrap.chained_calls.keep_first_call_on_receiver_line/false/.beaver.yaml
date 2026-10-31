@@ -1,3 +1,0 @@
-wrap:
-  chained_calls:
-    keep_first_call_on_receiver_line: false

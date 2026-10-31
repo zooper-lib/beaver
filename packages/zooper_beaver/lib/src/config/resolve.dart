@@ -228,7 +228,7 @@ ResolvedConfig resolveConfig(
 /// Rejects, per construct, a removed optional comma together with
 /// comma-triggered chopping and no kept breaks: the chop deletes the comma
 /// that requested it, and the next run would undo the chop. `never` has no
-/// comma trigger and `chop_always` chops anyway. Records use the global keys.
+/// comma trigger and `chop_from: 1` chops anyway. Records use the global keys.
 void _checkTrailingCommas(BeaverConfig config, Map<String, Source> provenance) {
   final values = config.values;
   String describe(String key) {
@@ -247,11 +247,11 @@ void _checkTrailingCommas(BeaverConfig config, Map<String, Source> provenance) {
     ('records', ''),
   ]) {
     final policy = prefix.isEmpty ? null : values['${prefix}policy'];
-    if (policy == 'never' || policy == 'chop_always') continue;
+    if (policy == 'never' || values['${prefix}chop_from'] == 1) continue;
     final commas = '${prefix}trailing_commas';
     final close = prefix.isEmpty
-        ? 'wrap.close_bracket'
-        : '${prefix}close_bracket';
+        ? 'wrap.break_before_close_bracket'
+        : '${prefix}break_before_close_bracket';
     final chop = prefix.isEmpty
         ? 'wrap.chop_on_trailing_comma'
         : '${prefix}chop_on_trailing_comma';
@@ -259,7 +259,7 @@ void _checkTrailingCommas(BeaverConfig config, Map<String, Source> provenance) {
         ? 'wrap.keep_existing_line_breaks'
         : '${prefix}keep_existing_line_breaks';
     final removes = values[commas] == 'remove';
-    final suppresses = values[close] == 'after_last_item';
+    final suppresses = values[close] == false;
     if (!(removes || suppresses) ||
         values[chop] != true ||
         values[keep] != false) {
@@ -279,9 +279,10 @@ void _checkTrailingCommas(BeaverConfig config, Map<String, Source> provenance) {
     'The trailing comma that requests a chop is removed, and without kept '
     'line breaks the next run would undo the chop. '
     'Change one of them for that construct: keep the optional comma '
-    '(trailing_commas preserve or add_when_wrapped, close_bracket own_line), '
-    'set chop_on_trailing_comma to false, set keep_existing_line_breaks to '
-    'true, or use the policy never or chop_always.',
+    '(trailing_commas preserve or add_when_wrapped, '
+    'break_before_close_bracket true), set chop_on_trailing_comma to false, '
+    'set keep_existing_line_breaks to true, use the policy never, or set '
+    'chop_from to 1.',
   );
 }
 

@@ -21,7 +21,48 @@ void main() {
       template,
       contains(
         '  arguments:  # or the shorthand arguments: <policy>\n'
-        '    policy: chop_if_long  # never | if_long | chop_if_long | chop_always\n',
+        '    policy: chop_if_long  # never | fill | chop_if_long\n',
+      ),
+    );
+  });
+
+  test('indent, bracket and receiver-kind lines', () {
+    expect(
+      template,
+      contains(
+        '    indent: inherit  # inherit | an integer >= 0 | first_item\n',
+      ),
+    );
+    expect(
+      template,
+      contains(
+        '  break_after_open_bracket: true  # true | false\n'
+        '  break_before_close_bracket: true  # true | false\n',
+      ),
+    );
+    expect(
+      template,
+      contains(
+        '    break_before_close_bracket: inherit  # inherit | true | false\n',
+      ),
+    );
+    expect(
+      template,
+      contains(
+        '    keep_first_call_on_receiver_line: []  # a list of type_names, '
+        'identifiers, this, calls, properties | true | false\n',
+      ),
+    );
+    expect(
+      template,
+      isNot(
+        anyOf(
+          contains('align'),
+          contains(RegExp(r' close_bracket:')),
+          contains('chop_always'),
+          contains(RegExp(r'\bif_long')),
+          contains('keep_single_line_if_fits'),
+        ),
       ),
     );
   });
