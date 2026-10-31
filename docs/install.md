@@ -29,7 +29,7 @@ Each release on GitHub (`https://github.com/zooper-lib/beaver/releases`) carries
 Download the binary and `checksums.txt` from the same release, check the SHA-256, then put the binary on your PATH as `beaver`:
 
 ```sh
-version=0.1.0
+version=0.2.0
 file=beaver-macos-arm64
 base=https://github.com/zooper-lib/beaver/releases/download/v$version
 curl -fLO "$base/$file" -O "$base/checksums.txt"
