@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T17:05:28.126Z
-> Files: 1192 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-31T05:56:45.238Z
+> Files: 1197 tracked | Anatomy hits: 0 | Misses: 0
 
 > Project structure index. Auto-maintained by OpenWolf hooks and daemon.
 > Run `openwolf scan` to generate, or wait for the first Claude Code session.
@@ -1641,6 +1641,20 @@
 ## openspec/changes/archive/
 
 - `.gitkeep` (~0 tok)
+
+## openspec/changes/chain-and-binary-continuation-indent/
+
+- `design.md` — Design (~1461 tok)
+- `proposal.md` — Proposal (~805 tok)
+- `tasks.md` — Tasks (~1006 tok)
+
+## openspec/changes/chain-and-binary-continuation-indent/specs/config-resolution/
+
+- `spec.md` — ADDED Requirements (~465 tok)
+
+## openspec/changes/chain-and-binary-continuation-indent/specs/formatting-rules/
+
+- `spec.md` — ADDED Requirements (~1708 tok)
 
 ## openspec/changes/initial-implementation/
 
