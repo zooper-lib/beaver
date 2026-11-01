@@ -1,8 +1,6 @@
-## Unreleased
+## 0.3.0
 
 Settings cleanup: each layout question has one key, and every term is defined with real output in `docs/rules/wrap.md`. Output under the `dart` preset is unchanged.
-
-Needs a minor version bump on release.
 
 ### Breaking (configuration)
 

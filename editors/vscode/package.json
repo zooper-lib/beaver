@@ -3,7 +3,7 @@
   "displayName": "Beaver Dart Formatter",
   "icon": "icon.png",
   "description": "Format Dart with Beaver, the configurable formatter (.beaver.yaml).",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "zooper",
   "license": "MIT",
   "repository": {
@@ -24,7 +24,7 @@
   ],
   "main": "./out/src/extension.js",
   "beaver": {
-    "formatterVersion": "0.2.0",
+    "formatterVersion": "0.3.0",
     "protocolVersion": 1
   },
   "contributes": {
